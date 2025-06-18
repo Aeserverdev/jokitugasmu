@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f9; color: #333;
+      padding: 2rem; transition: 0.3s;
+    }
+    h1 { text-align: center; margin-bottom: 2rem; }
+    .section { margin-bottom: 3rem; }
+    table {
+      width: 100%; border-collapse: collapse;
+      margin-top: 1rem; background: white;
+    }
+    th, td {
+      border: 1px solid #ddd; padding: 10px;
+      text-align: left; font-size: 14px;
+    }
+    th { background: #007bff; color: white; }
+    select, button {
+      padding: 5px 10px; border-radius: 6px;
+      border: none; font-weight: bold;
+    }
+    button.verif { background: #28a745; color: white; }
+    button.tolak { background: #dc3545; color: white; }
+    input[type="text"] {
+      width: 100%; padding: 8px; margin-top: 0.5rem;
+      border: 1px solid #ccc; border-radius: 5px;
+    }
+    .dark-mode {
+      background: #1e1e2f; color: #eee;
+    }
+    .dark-mode table { background: #2c2c3e; color: white; }
+    .dark-mode th { background: #444; }
+    .dark-toggle {
+      float: right; cursor: pointer;
+      background: #007bff; color: white;
+      padding: 6px 10px; border-radius: 8px;
+    }
+    @media(max-width:768px){
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      th { position: sticky; top: 0; background: #007bff; }
+    }
+  </style>
+</head>
+<body>
+  <div class="dark-toggle" onclick="toggleDark()">🌙 Dark Mode</div>
+  <h1>📊 Admin Panel - Joki Tugas</h1>
+
+  <div class="section">
+    <h2>📥 Data Pesanan</h2>
+    <input type="text" placeholder="🔍 Cari pesanan..." oninput="filterPesanan()" id="searchPesanan">
+    <div id="tabelPesanan">Memuat...</div>
+  </div>
+
+  <div class="section">
+    <h2>💳 Data Pembayaran</h2>
+    <input type="text" placeholder="🔍 Cari pembayaran..." oninput="filterPembayaran()" id="searchPembayaran">
+    <div id="tabelPembayaran">Memuat...</div>
+  </div>
+
+  <script>
+    const BASE_URL = "https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec"; // Ganti dengan URL Anda
+
+    // === DARK MODE ===
+    function toggleDark() {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+    }
+    if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark-mode");
+
+    // === PESANAN ===
+    let semuaPesanan = [];
+    async function loadPesanan() {
+      try {
+        const res = await fetch(`${BASE_URL}?action=getSemuaPesanan`);
+        const data = await res.json();
+        semuaPesanan = data;
+        tampilkanPesanan(data);
+      } catch (e) {
+        document.getElementById("tabelPesanan").innerHTML = "❌ Gagal memuat data.";
+      }
+    }
+
+    function tampilkanPesanan(data) {
+      let html = `<table><tr><th>ID</th><th>Nama</th><th>Jenis</th><th>Deadline</th><th>Status</th></tr>`;
+      data.forEach(r => {
+        html += `<tr>
+          <td>${r.trackingID}</td>
+          <td>${r.nama}</td>
+          <td>${r.jenis}</td>
+          <td>${r.deadline}</td>
+          <td>
+            <select onchange="ubahStatus('${r.trackingID}', this.value)">
+              <option value="Menunggu" ${r.status === "Menunggu" ? "selected" : ""}>Menunggu</option>
+              <option value="Proses" ${r.status === "Proses" ? "selected" : ""}>Proses</option>
+              <option value="Selesai" ${r.status === "Selesai" ? "selected" : ""}>Selesai</option>
+              <option value="Batal" ${r.status === "Batal" ? "selected" : ""}>Batal</option>
+            </select>
+          </td>
+        </tr>`;
+      });
+      html += `</table>`;
+      document.getElementById("tabelPesanan").innerHTML = html;
+    }
+
+    function filterPesanan() {
+      const q = document.getElementById("searchPesanan").value.toLowerCase();
+      const f = semuaPesanan.filter(r =>
+        r.trackingID.toLowerCase().includes(q) ||
+        r.nama.toLowerCase().includes(q) ||
+        r.jenis.toLowerCase().includes(q) ||
+        r.status.toLowerCase().includes(q)
+      );
+      tampilkanPesanan(f);
+    }
+
+    async function ubahStatus(id, status) {
+      await fetch(`${BASE_URL}?action=ubahStatusPesanan&trackingID=${id}&status=${status}`);
+      Swal.fire({ icon: 'success', title: 'Status diperbarui', toast: true, timer: 2000, showConfirmButton: false });
+    }
+
+    // === PEMBAYARAN ===
+    let semuaPembayaran = [];
+    async function loadPembayaran() {
+      try {
+        const res = await fetch(`${BASE_URL}?action=getSemuaPembayaran`);
+        const data = await res.json();
+        semuaPembayaran = data;
+        tampilkanPembayaran(data);
+      } catch (e) {
+        document.getElementById("tabelPembayaran").innerHTML = "❌ Gagal memuat data.";
+      }
+    }
+
+    function tampilkanPembayaran(data) {
+      let html = `<table><tr><th>ID</th><th>NPM</th><th>Jumlah</th><th>Metode</th><th>Status</th><th>Aksi</th></tr>`;
+      data.forEach(p => {
+        html += `<tr>
+          <td>${p.id}</td>
+          <td>${p.npm}</td>
+          <td>Rp ${parseInt(p.jumlah).toLocaleString('id-ID')}</td>
+          <td>${p.metode}</td>
+          <td>${p.status}</td>
+          <td>
+            <button class="verif" onclick="verifikasi('${p.id}', 'Terverifikasi')">✔️</button>
+            <button class="tolak" onclick="verifikasi('${p.id}', 'Gagal')">❌</button>
+          </td>
+        </tr>`;
+      });
+      html += `</table>`;
+      document.getElementById("tabelPembayaran").innerHTML = html;
+    }
+
+    function filterPembayaran() {
+      const q = document.getElementById("searchPembayaran").value.toLowerCase();
+      const f = semuaPembayaran.filter(p =>
+        p.id.toLowerCase().includes(q) ||
+        p.npm.toLowerCase().includes(q) ||
+        p.metode.toLowerCase().includes(q) ||
+        p.status.toLowerCase().includes(q)
+      );
+      tampilkanPembayaran(f);
+    }
+
+    async function verifikasi(id, status) {
+      await fetch(`${BASE_URL}?action=verifikasiPembayaran&id=${id}&status=${status}`);
+      Swal.fire({ icon: 'success', title: 'Pembayaran diperbarui', toast: true, timer: 2000, showConfirmButton: false });
+      loadPembayaran();
+    }
+
+    // Auto load data saat pertama
+    loadPesanan();
+    loadPembayaran();
+  </script>
+</body>
+</html>
