@@ -328,9 +328,37 @@
     <button onclick="showSection('riwayat')">📚 Riwayat</button>
     <button onclick="showSection('pesanan')">📝 Pesanan</button>
     <button onclick="showSection('pembayaran')">💳 Pembayaran</button>
+    <button onclick="showSection('pengaturan')">⚙️ Pengaturan</button>
     <button onclick="logout()">🚪 Logout</button>
   </div>
   <div class="content">
+  	<div id="pengaturan" class="section">
+  <h2>⚙️ Pengaturan</h2>
+
+  <!-- Edit Profil -->
+  <div class="info-box">
+    <label>✏️ Edit Nama</label>
+    <input type="text" id="pengaturanNama" placeholder="Masukkan nama baru">
+    <button class="btn" onclick="simpanEditNama()">💾 Simpan Nama</button>
+  </div>
+
+  <!-- Ganti Password -->
+  <div class="info-box">
+    <label>🔐 Ganti Password</label>
+    <input type="password" id="passLama" placeholder="Password Lama">
+    <input type="password" id="passBaru" placeholder="Password Baru">
+    <button class="btn" onclick="gantiPassword()">🔁 Update Password</button>
+  </div>
+
+  <!-- Bahasa -->
+  <div class="info-box">
+    <label>🌐 Bahasa</label>
+    <select id="pilihBahasa" onchange="ubahBahasa()">
+      <option value="id">🇮🇩 Indonesia</option>
+      <option value="en">🇬🇧 English</option>
+    </select>
+  </div>
+</div>
     <div class="topbar">
       <h1>Dashboard</h1>
       <div class="toggle-dark" onclick="toggleTheme()">🌙 Mode</div>
@@ -438,6 +466,48 @@
   </div>
 </div>
 <script>
+	function simpanEditNama() {
+  const namaBaru = document.getElementById("pengaturanNama").value.trim();
+  if (!namaBaru) return showNotif("error", "Nama kosong", "Silakan masukkan nama baru.");
+  
+  const user = JSON.parse(localStorage.getItem("user"));
+  user.nama = namaBaru;
+  localStorage.setItem("user", JSON.stringify(user));
+
+  document.getElementById("namaDisplay").textContent = namaBaru;
+  document.getElementById("fotoProfil").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(namaBaru)}&background=0D8ABC&color=fff&size=128&rounded=true`;
+  showNotif("success", "Berhasil", "Nama berhasil diperbarui!");
+}
+
+function gantiPassword() {
+  const lama = document.getElementById("passLama").value;
+  const baru = document.getElementById("passBaru").value;
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!lama || !baru) return showNotif("error", "Lengkapi semua kolom");
+  if (lama !== user.password) return showNotif("error", "Password lama salah!");
+
+  user.password = baru;
+  localStorage.setItem("user", JSON.stringify(user));
+  showNotif("success", "Password diperbarui!");
+  document.getElementById("passLama").value = "";
+  document.getElementById("passBaru").value = "";
+}
+
+function ubahBahasa() {
+  const lang = document.getElementById("pilihBahasa").value;
+  localStorage.setItem("bahasa", lang);
+  showNotif("success", "Bahasa disimpan", lang === "id" ? "Bahasa Indonesia" : "English");
+  // Reload halaman jika ingin langsung pakai multi-bahasa real-time
+  // location.reload();
+}
+
+// Saat pertama kali buka pengaturan, isi bahasa
+document.addEventListener("DOMContentLoaded", () => {
+  const simpananBahasa = localStorage.getItem("bahasa");
+  if (simpananBahasa) document.getElementById("pilihBahasa").value = simpananBahasa;
+});
+
   // Inisialisasi
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user) location.href = "login_daftar.html";
