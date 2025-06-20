@@ -42,6 +42,17 @@
       background: #007bff; color: white;
       padding: 6px 10px; border-radius: 8px;
     }
+    .loading {
+      text-align: center; padding: 20px;
+    }
+    .spinner {
+      border: 4px solid #f3f3f3; border-top: 4px solid #007bff;
+      border-radius: 50%; width: 30px; height: 30px;
+      animation: spin 1s linear infinite; margin: auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); }
+    }
     @media(max-width:768px){
       table, thead, tbody, th, td, tr {
         display: block;
@@ -57,28 +68,27 @@
   <div class="section">
     <h2>📥 Data Pesanan</h2>
     <input type="text" placeholder="🔍 Cari pesanan..." oninput="filterPesanan()" id="searchPesanan">
-    <div id="tabelPesanan">Memuat...</div>
+    <div id="tabelPesanan"><div class="loading"><div class="spinner"></div></div></div>
   </div>
 
   <div class="section">
     <h2>💳 Data Pembayaran</h2>
     <input type="text" placeholder="🔍 Cari pembayaran..." oninput="filterPembayaran()" id="searchPembayaran">
-    <div id="tabelPembayaran">Memuat...</div>
+    <div id="tabelPembayaran"><div class="loading"><div class="spinner"></div></div></div>
   </div>
 
   <script>
     const BASE_URL = "https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec"; // Ganti dengan URL Anda
 
-    // === DARK MODE ===
     function toggleDark() {
       document.body.classList.toggle("dark-mode");
       localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
     }
     if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark-mode");
 
-    // === PESANAN ===
     let semuaPesanan = [];
     async function loadPesanan() {
+      document.getElementById("tabelPesanan").innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
       try {
         const res = await fetch(`${BASE_URL}?action=getSemuaPesanan`);
         const data = await res.json();
@@ -90,7 +100,8 @@
     }
 
     function tampilkanPesanan(data) {
-      let html = `<table><tr><th>ID</th><th>Nama</th><th>Jenis</th><th>Deadline</th><th>Status</th></tr>`;
+      let html = `<p>Menampilkan ${data.length} pesanan</p>`;
+      html += `<table><tr><th>ID</th><th>Nama</th><th>Jenis</th><th>Deadline</th><th>Status</th></tr>`;
       data.forEach(r => {
         html += `<tr>
           <td>${r.trackingID}</td>
@@ -123,13 +134,22 @@
     }
 
     async function ubahStatus(id, status) {
-      await fetch(`${BASE_URL}?action=ubahStatusPesanan&trackingID=${id}&status=${status}`);
-      Swal.fire({ icon: 'success', title: 'Status diperbarui', toast: true, timer: 2000, showConfirmButton: false });
+      const konfirmasi = await Swal.fire({
+        title: 'Ubah Status?',
+        text: `Yakin ingin mengubah status menjadi "${status}"?`,
+        icon: 'question', showCancelButton: true,
+        confirmButtonText: 'Ya, ubah!', cancelButtonText: 'Batal'
+      });
+      if (konfirmasi.isConfirmed) {
+        await fetch(`${BASE_URL}?action=ubahStatusPesanan&trackingID=${id}&status=${status}`);
+        Swal.fire({ icon: 'success', title: 'Status diperbarui', toast: true, timer: 2000, showConfirmButton: false });
+        loadPesanan(); // reload
+      }
     }
 
-    // === PEMBAYARAN ===
     let semuaPembayaran = [];
     async function loadPembayaran() {
+      document.getElementById("tabelPembayaran").innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
       try {
         const res = await fetch(`${BASE_URL}?action=getSemuaPembayaran`);
         const data = await res.json();
@@ -141,7 +161,8 @@
     }
 
     function tampilkanPembayaran(data) {
-      let html = `<table><tr><th>ID</th><th>NPM</th><th>Jumlah</th><th>Metode</th><th>Status</th><th>Aksi</th></tr>`;
+      let html = `<p>Menampilkan ${data.length} pembayaran</p>`;
+      html += `<table><tr><th>ID</th><th>NPM</th><th>Jumlah</th><th>Metode</th><th>Status</th><th>Aksi</th></tr>`;
       data.forEach(p => {
         html += `<tr>
           <td>${p.id}</td>
@@ -150,8 +171,8 @@
           <td>${p.metode}</td>
           <td>${p.status}</td>
           <td>
-            <button class="verif" onclick="verifikasi('${p.id}', 'Terverifikasi')">✔️</button>
-            <button class="tolak" onclick="verifikasi('${p.id}', 'Gagal')">❌</button>
+            <button class="verif" title="Verifikasi" onclick="verifikasi('${p.id}', 'Terverifikasi')">✔️</button>
+            <button class="tolak" title="Tolak" onclick="verifikasi('${p.id}', 'Gagal')">❌</button>
           </td>
         </tr>`;
       });
@@ -176,7 +197,6 @@
       loadPembayaran();
     }
 
-    // Auto load data saat pertama
     loadPesanan();
     loadPembayaran();
   </script>
