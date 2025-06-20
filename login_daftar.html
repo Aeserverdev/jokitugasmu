@@ -254,7 +254,7 @@
         submitBtn.disabled = false;
         if (data.success) {
           localStorage.setItem("user", JSON.stringify(data.user));
-          window.location.href = "fjoki.html";
+          window.location.href = "index.html";
         } else {
           showError(data.message);
         }
