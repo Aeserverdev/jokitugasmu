@@ -7,7 +7,7 @@
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" />
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+    html, body { margin: 0; padding: 0; height: 100%; overflow: auto; }
     body {
       background: linear-gradient(-45deg, #6e8efb, #a777e3, #f7797d, #8fd3f4);
       background-size: 400% 400%; animation: gradientBG 15s ease infinite;
@@ -72,7 +72,7 @@
     @media (max-width: 480px) { .container { padding: 1.5rem; margin: 1rem; } }
   </style>
 </head>
-<body>
+<body onload="setToLogin()">
   <video autoplay muted loop id="bgvid">
     <source src="https://cdn.pixabay.com/video/2023/03/23/156006-817271530_tiny.mp4" type="video/mp4">
   </video>
@@ -82,8 +82,8 @@
     <form id="form" autocomplete="off">
       <input type="text" id="npm" placeholder="Masukkan NPM" required />
       <input type="password" id="password" placeholder="Masukkan Password" required />
-      <input type="text" id="nama" placeholder="Nama Lengkap" />
-      <select id="prodi">
+      <input type="text" id="nama" placeholder="Nama Lengkap" style="display: none;" />
+      <select id="prodi" style="display: none;">
         <option value="">Pilih Prodi</option>
         <option value="Teknologi Informasi">Teknologi Informasi</option>
         <option value="Sistem Informasi">Sistem Informasi</option>
@@ -95,8 +95,8 @@
         <option value="Biologi">Biologi</option>
         <option value="Matematika">Matematika</option>
       </select>
-      <input type="text" id="nowa" placeholder="No WhatsApp (08xxxxx)" maxlength="12" />
-      <input type="text" id="captcha" placeholder="Ketik angka CAPTCHA" />
+      <input type="text" id="nowa" placeholder="No WhatsApp (08xxxxx)" maxlength="12" style="display: none;" />
+      <input type="text" id="captcha" placeholder="Ketik angka CAPTCHA" style="display: none;" />
       <button type="submit" id="submitBtn">Login</button>
       <div class="loader" id="loader">
         <svg width="40" height="40" viewBox="0 0 100 100">
@@ -104,6 +104,7 @@
             <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1s" repeatCount="indefinite"/>
           </circle>
         </svg>
+        <p style="margin-top: 8px; color: #fff; font-size: 14px;">Memproses...</p>
       </div>
       <div id="errorMsg"></div>
     </form>
@@ -124,8 +125,17 @@
       captcha.dataset.expected = rand;
     }
 
+    function setToLogin() {
+      isLogin = true;
+      updateForm();
+    }
+
     function toggleForm() {
       isLogin = !isLogin;
+      updateForm();
+    }
+
+    function updateForm() {
       document.getElementById("formTitle").innerText = isLogin ? "Login Mahasiswa" : "Daftar Mahasiswa";
       submitBtn.innerText = isLogin ? "Login" : "Daftar";
       document.querySelector(".switch").innerText = isLogin ? "Belum punya akun? Daftar" : "Sudah punya akun? Login";
@@ -135,8 +145,6 @@
       captcha.style.display = isLogin ? "none" : "block";
       if (!isLogin) generateCaptcha();
     }
-
-    toggleForm();
 
     form.addEventListener("submit", function(e) {
       e.preventDefault();
@@ -155,7 +163,7 @@
 
       if (!isLogin) {
         if (!nama || !prodi || !nowa) return showError("Lengkapi semua data.");
-        if (npm.length < 8 || nowa.length < 10 || nowa.length > 12) return showError("Format NPM/No WA salah.");
+        if (npm.length < 8 || nowa.length < 10 || nowa.length > 13) return showError("Format NPM/No WA salah.");
         if (captcha.value !== captcha.dataset.expected) return showError("CAPTCHA salah.");
 
         const msg = `📝 Pendaftaran Baru\n\n👤 Nama: ${nama}\n🆔 NPM: ${npm}\n📚 Prodi: ${prodi}\n📱 WA: ${nowa}`;
@@ -177,22 +185,25 @@
       .then(data => {
         loader.style.display = "none";
         submitBtn.disabled = false;
+        submitBtn.innerText = isLogin ? "Login" : "Daftar";
         if (data.success) {
           if (isLogin) {
             localStorage.setItem("user", JSON.stringify(data.user));
-            window.location.href = "index.html";
+            showSuccess("Login berhasil! Mengarahkan...");
+            setTimeout(() => window.location.href = "fjoki.html", 1500);
           } else {
-            alert("Pendaftaran berhasil! Silakan login.");
+            showSuccess("Pendaftaran berhasil! Silakan login.");
             toggleForm();
           }
         } else {
-          showError(data.message || "Gagal.");
+          showError(data.message || "Gagal memproses.");
         }
       })
       .catch(() => {
         loader.style.display = "none";
         submitBtn.disabled = false;
-        showError("Koneksi gagal.");
+        submitBtn.innerText = isLogin ? "Login" : "Daftar";
+        showError("Koneksi gagal. Coba lagi.");
       });
     });
 
@@ -200,7 +211,16 @@
       loader.style.display = "none";
       submitBtn.disabled = false;
       errorMsg.innerText = msg;
+      errorMsg.style.color = "yellow";
       errorMsg.style.display = "block";
+      setTimeout(() => { errorMsg.style.display = "none"; }, 4000);
+    }
+
+    function showSuccess(msg) {
+      errorMsg.innerText = msg;
+      errorMsg.style.color = "lightgreen";
+      errorMsg.style.display = "block";
+      setTimeout(() => { errorMsg.style.display = "none"; }, 3000);
     }
 
     const saved = JSON.parse(localStorage.getItem("user"));
