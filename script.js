@@ -159,8 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const jenis = document.getElementById("jenis").value.trim();
     const adminJoki = document.getElementById("adminJoki").value.trim();
-    const judul = document.getElementByid("judul").
-value.trim();
+    const judul = document.getElementById("judul").value.trim();
     const deskripsi = document.getElementById("deskripsi").value.trim();
     const dosen = document.getElementById("dosen").value.trim();
     const fakultas = document.getElementById("fakultas").value.trim();
@@ -269,28 +268,34 @@ value.trim();
   }
 
   function tampilkanPembayaran(data) {
-    let html = "<table><tr><th>ID</th><th>Tanggal</th><th>Metode</th><th>Jumlah</th><th>Status</th></tr>";
-    data.forEach(p => {
-      const s = (p.status || "Pending").toLowerCase();
-      let cls = "status-menunggu";
-      if (s.includes("terverifikasi")) cls = "status-selesai";
-      else if (s.includes("gagal")) cls = "status-batal";
-      html += `<tr><td>${p.id || '-'}</td><td>${p.tanggal || '-'}</td><td>${p.metode || '-'}</td><td>Rp ${parseInt(p.jumlah || 0).toLocaleString("id-ID")}</td><td><span class="status-badge ${cls}">${p.status || 'Pending'}</span></td></tr>`;
-    });
-    html += "</table>";
-    document.getElementById("tabelPembayaran").innerHTML = html;
-  }
+  let html = "<table><tr><th>ID</th><th>Metode</th><th>Harga</th><th>Status</th></tr>";
+  data.forEach(r => {
+    const status = (r.status || "Menunggu").toLowerCase();
+    let cls = "status-menunggu";
+    if (status.includes("proses")) cls = "status-proses";
+    else if (status.includes("selesai")) cls = "status-selesai";
+    else if (status.includes("batal")) cls = "status-batal";
+    html += `<tr>
+      <td>${r.trackingID || '-'}</td>
+      <td>${r.metode || '-'}</td>
+      <td>${r.harga || '-'}</td>
+      <td><span class="status-badge ${cls}">${r.status || 'Menunggu'}</span></td>
+    </tr>`;
+  });
+  html += "</table>";
+  document.getElementById("tabelPembayaran").innerHTML = html;
+}
 
-  function filterPembayaran() {
-    const q = document.getElementById("searchPembayaran").value.toLowerCase();
-    const f = semuaPembayaran.filter(p =>
-      p.id.toLowerCase().includes(q) ||
-      p.tanggal.toLowerCase().includes(q) ||
-      p.metode.toLowerCase().includes(q) ||
-      p.status.toLowerCase().includes(q)
-    );
-    tampilkanPembayaran(f);
-  }
+function filterPembayaran() {
+  const q = document.getElementById("searchPembayaran").value.toLowerCase();
+  const filtered = semuaPembayaran.filter(r =>
+    (r.trackingID || '').toLowerCase().includes(q) ||
+    (r.metode || '').toLowerCase().includes(q) ||
+    (r.harga || '').toLowerCase().includes(q) ||
+    (r.status || '').toLowerCase().includes(q)
+  );
+  tampilkanPembayaran(filtered);
+}
 
   const nomorDanaMap = {
     "RENALDI": "081348722325",
