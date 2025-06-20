@@ -622,133 +622,90 @@ document.addEventListener("DOMContentLoaded", () => {
 
   
   document.getElementById("formPesanan").addEventListener("submit", async e => {
-    e.preventDefault();
-function cekValiditasAI(data) {
-  const warnings = [];
-
-  document.getElementById("formPesanan").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // Ambil data form
-  const data = { deskripsi, jenis, dosen, matkul, deadline, /* ... */ };
+  const jenis = document.getElementById("jenis").value.trim();
+  const adminJoki = document.getElementById("adminJoki").value.trim();
+  const deskripsi = document.getElementById("deskripsi").value.trim();
+  const dosen = document.getElementById("dosen").value.trim();
+  const fakultas = document.getElementById("fakultas").value.trim();
+  const matkul = document.getElementById("matkul").value.trim();
+  const deadline = document.getElementById("deadline").value;
+  const metode = document.getElementById("metode").value;
+  const harga = document.getElementById("harga").value;
+  const trackingID = "TRK" + Date.now();
+  const fileInput = document.getElementById("bukti");
+  const file = fileInput.files[0];
 
-  // Kirim ke server untuk verifikasi
-  const cw = await Swal.fire({
-    title: "Memeriksa tugas...",
-    allowOutsideClick: false,
-    didOpen: () => Swal.showLoading()
-  });
-  let resp;
+  if (!file) {
+    return showNotif("error", "Upload Gagal", "Mohon unggah bukti pembayaran berupa gambar.");
+  }
+
+  const data = {
+    trackingID,
+    nama: user.nama,
+    npm: user.npm,
+    prodi: user.prodi,
+    nowa: user.nowa,
+    jenis,
+    deskripsi,
+    dosen,
+    fakultas,
+    matkul,
+    deadline,
+    metode,
+    harga,
+    adminJoki,
+    dana: nomorDanaMap[adminJoki] || "-"
+  };
+
+  // 🔍 Cek AI Validasi via Server
   try {
-    resp = await fetch("/api/verify-task", {
+    await Swal.fire({
+      title: "🤖 Memeriksa inputan...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    const aiResp = await fetch("/api/verify-task", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      body: JSON.stringify({ deskripsi, jenis, dosen, matkul, deadline })
     });
+
+    const aiResult = await aiResp.json();
+    Swal.close();
+
+    if (!aiResult.ok) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Perlu Diperbaiki",
+        html: aiResult.analysis.split("\n").map(l => `• ${l}`).join("<br>"),
+        confirmButtonText: "Perbaiki"
+      });
+    }
   } catch (err) {
     Swal.close();
-    return Swal.fire("Error", "Tidak dapat terhubung ke server AI", "error");
+    return showNotif("error", "Gagal koneksi ke AI", "Coba lagi nanti.");
   }
 
-  const { ok, analysis } = await resp.json();
-  Swal.close();
+  // ✅ Jika lolos AI Checker, lanjut ke Telegram
+  const statusPesanan = document.getElementById("statusPesanan");
+  statusPesanan.style.display = "block";
+  statusPesanan.innerText = "📡 Mengirim pesanan ke Telegram...";
 
-  if (!ok) {
-    return Swal.fire({
-      icon: "warning",
-      title: "Cek AI:",
-      html: analysis.split("\n").map(p => `• ${p}`).join("<br>"),
-      confirmButtonText: "Perbaiki"
-    });
+  try {
+    await kirimTelegramDenganGambar(data, file);
+    document.getElementById("formPesanan").reset();
+    statusPesanan.innerHTML = `✅ Pesanan & bukti berhasil dikirim!<br><strong>ID:</strong> ${trackingID}`;
+    navigator.clipboard.writeText(trackingID);
+    showNotif("success", "Terkirim!", `Tracking ID: ${trackingID}`);
+  } catch (error) {
+    statusPesanan.innerHTML = "❌ Gagal mengirim ke Telegram.<br>Silakan coba lagi.";
+    showNotif("error", "Gagal", error.message);
   }
-
-  // Jika OK, lanjut kirim ke Telegram...
-  kirimTelegramDenganGambar(data, file);
 });
 
-
-  // Deskripsi terlalu pendek
-  if (data.deskripsi.length < 20) {
-    warnings.push("Deskripsi terlalu pendek. Mohon jelaskan tugas dengan lebih detail.");
-  }
-
-  // Deadline terlalu dekat (< 24 jam)
-  const now = new Date();
-  const deadline = new Date(data.deadline);
-  const diffHours = (deadline - now) / (1000 * 60 * 60);
-  if (diffHours < 24) {
-    warnings.push("Deadline terlalu dekat. Minimal 1 hari dari sekarang.");
-  }
-
-  // Cek dosen/matkul kosong atau terlalu umum
-  if (!data.dosen || data.dosen.trim().length < 5) {
-    warnings.push("Nama dosen kurang lengkap atau kosong.");
-  }
-
-  if (!data.matkul || data.matkul.trim().length < 3) {
-    warnings.push("Mata kuliah belum diisi dengan benar.");
-  }
-
-  // Cek jika jenis tugas tidak sesuai dengan isi deskripsi (kondisi dasar)
-  if (
-    data.jenis.includes("PPT") && data.deskripsi.toLowerCase().includes("aplikasi")
-  ) {
-    warnings.push("Jenis tugas 'PPT' tampaknya tidak cocok dengan deskripsi tentang aplikasi.");
-  }
-
-  return warnings;
-}
-
-    const jenis = document.getElementById("jenis").value.trim();
-    const adminJoki = document.getElementById("adminJoki").value.trim();
-    const deskripsi = document.getElementById("deskripsi").value.trim();
-    const dosen = document.getElementById("dosen").value.trim();
-    const fakultas = document.getElementById("fakultas").value.trim();
-    const matkul = document.getElementById("matkul").value.trim();
-    const deadline = document.getElementById("deadline").value;
-    const metode = document.getElementById("metode").value;
-    const harga = document.getElementById("harga").value;
-    const trackingID = "TRK" + Date.now();
-    const fileInput = document.getElementById("bukti");
-    const file = fileInput.files[0];
-
-    if (!file) {
-      return showNotif("error", "Upload Gagal", "Mohon unggah bukti pembayaran berupa gambar.");
-    }
-
-    const data = {
-  trackingID,
-  nama: user.nama,
-  npm: user.npm,
-  prodi: user.prodi,
-  nowa: user.nowa,
-  jenis,
-  deskripsi,
-  dosen,
-  fakultas,
-  matkul,
-  deadline,
-  metode,
-  harga,
-  adminJoki,
-  dana: nomorDanaMap[adminJoki] || "-"
-};
-
-    const statusPesanan = document.getElementById("statusPesanan");
-    statusPesanan.style.display = "block";
-    statusPesanan.innerText = "📡 Mengirim pesanan ke Telegram...";
-
-    try {
-      await kirimTelegramDenganGambar(data, file);
-      document.getElementById("formPesanan").reset();
-      statusPesanan.innerHTML = `✅ Pesanan & bukti berhasil dikirim!<br><strong>ID:</strong> ${trackingID}`;
-      navigator.clipboard.writeText(trackingID);
-      showNotif("success", "Terkirim!", `Tracking ID: ${trackingID}`);
-    } catch (error) {
-      statusPesanan.innerHTML = "❌ Gagal mengirim ke Telegram.<br>Silakan coba lagi.";
-      showNotif("error", "Gagal", error.message);
-    }
-  });
 
   let semuaRiwayat = [];
   async function loadRiwayat() {
