@@ -466,14 +466,39 @@
 </div>
 <script>
   async function kirimKeSheet(data) {
-  const sheetURL = 'https://script.google.com/macros/s/AKfycbzh8uvVY_BHnXkn3Fi5Rc43nXi9tZ-7XudZUuxyl3v_J_vl8sx1khziAuWeUhvp4HM/exec'; // Ganti ini
+  const sheetURL = 'https://script.google.com/macros/s/AKfycbzh8uvVY_BHnXkn3Fi5Rc43nXi9tZ-7XudZUuxyl3v_J_vl8sx1khziAuWeUhvp4HM/exec'; // Pastikan link sudah benar
   const formData = new FormData();
-  Object.entries(data).forEach(([key, value]) => formData.append(key, value));
+  formData.append("trackingID", data.trackingID);
+  formData.append("nama", data.nama);
+  formData.append("npm", data.npm);
+  formData.append("jenis", data.jenis);
+  formData.append("deadline", data.deadline);
+  formData.append("status", "Menunggu"); // Default status awal
 
   const res = await fetch(sheetURL, { method: "POST", body: formData });
   const result = await res.json();
   if (result.status !== "success") throw new Error("Gagal menyimpan ke Google Sheet.");
 }
+
+async function kirimPembayaranKeSheet(data) {
+  const sheetURL = 'https://script.google.com/macros/s/AKfycbzh8uvVY_BHnXkn3Fi5Rc43nXi9tZ-7XudZUuxyl3v_J_vl8sx1khziAuWeUhvp4HM/exec'; // Ganti dengan URL Apps Script pembayaran
+  const formData = new FormData();
+
+  formData.append("action", "pembayaran");
+  formData.append("id", data.id);
+  formData.append("nama", data.nama);
+  formData.append("npm", data.npm);
+  formData.append("tanggal", data.tanggal);
+  formData.append("metode", data.metode);
+  formData.append("jumlah", data.jumlah);
+  formData.append("status", "Pending");
+
+  const res = await fetch(sheetURL, { method: "POST", body: formData });
+  const result = await res.json();
+  if (result.status !== "success") throw new Error("Gagal menyimpan pembayaran.");
+}
+
+
 
 	function simpanEditNama() {
   const namaBaru = document.getElementById("pengaturanNama").value.trim();
