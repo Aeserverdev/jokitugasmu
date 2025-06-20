@@ -212,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const box = document.getElementById("tabelRiwayat");
     box.textContent = "Memuat data...";
     try {
-      const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getRiwayat&npm=${user.npm}`);
+      const res = await fetch(`https://script.google.com/macros/s/AKfycbxdSm0_zFOGC_H3VFimK74xROLE3cTJg84uL-ViuVDKJKgvUG3Zf33-rP2l1_4Rm4tk/exec?action=getRiwayat&npm=${user.npm}`);
       const data = await res.json();
       semuaRiwayat = data;
       if (!Array.isArray(data) || data.length === 0) return box.innerHTML = "<i>Belum ada data.</i>";
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const box = document.getElementById("tabelPembayaran");
     box.textContent = "Memuat data...";
     try {
-      const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getPembayaran&npm=${user.npm}`);
+      const res = await fetch(`https://script.google.com/macros/s/AKfycbxdSm0_zFOGC_H3VFimK74xROLE3cTJg84uL-ViuVDKJKgvUG3Zf33-rP2l1_4Rm4tk/exec?action=getPembayaran&npm=${user.npm}`);
       const data = await res.json();
       semuaPembayaran = data;
       if (!Array.isArray(data) || data.length === 0) return box.innerHTML = "<i>Belum ada data pembayaran.</i>";
