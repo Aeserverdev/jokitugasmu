@@ -509,7 +509,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Inisialisasi
   const user = JSON.parse(localStorage.getItem("user"));
-  if (!user) location.href = "login_daftar.html";
+  if (!user) location.href = "##";
   document.getElementById("nama").textContent = user.nama;
   document.getElementById("npm").textContent = user.npm;
   document.getElementById("prodi").textContent = user.prodi;
@@ -620,8 +620,84 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  
   document.getElementById("formPesanan").addEventListener("submit", async e => {
     e.preventDefault();
+function cekValiditasAI(data) {
+  const warnings = [];
+
+  document.getElementById("formPesanan").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  // Ambil data form
+  const data = { deskripsi, jenis, dosen, matkul, deadline, /* ... */ };
+
+  // Kirim ke server untuk verifikasi
+  const cw = await Swal.fire({
+    title: "Memeriksa tugas...",
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading()
+  });
+  let resp;
+  try {
+    resp = await fetch("/api/verify-task", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+  } catch (err) {
+    Swal.close();
+    return Swal.fire("Error", "Tidak dapat terhubung ke server AI", "error");
+  }
+
+  const { ok, analysis } = await resp.json();
+  Swal.close();
+
+  if (!ok) {
+    return Swal.fire({
+      icon: "warning",
+      title: "Cek AI:",
+      html: analysis.split("\n").map(p => `• ${p}`).join("<br>"),
+      confirmButtonText: "Perbaiki"
+    });
+  }
+
+  // Jika OK, lanjut kirim ke Telegram...
+  kirimTelegramDenganGambar(data, file);
+});
+
+
+  // Deskripsi terlalu pendek
+  if (data.deskripsi.length < 20) {
+    warnings.push("Deskripsi terlalu pendek. Mohon jelaskan tugas dengan lebih detail.");
+  }
+
+  // Deadline terlalu dekat (< 24 jam)
+  const now = new Date();
+  const deadline = new Date(data.deadline);
+  const diffHours = (deadline - now) / (1000 * 60 * 60);
+  if (diffHours < 24) {
+    warnings.push("Deadline terlalu dekat. Minimal 1 hari dari sekarang.");
+  }
+
+  // Cek dosen/matkul kosong atau terlalu umum
+  if (!data.dosen || data.dosen.trim().length < 5) {
+    warnings.push("Nama dosen kurang lengkap atau kosong.");
+  }
+
+  if (!data.matkul || data.matkul.trim().length < 3) {
+    warnings.push("Mata kuliah belum diisi dengan benar.");
+  }
+
+  // Cek jika jenis tugas tidak sesuai dengan isi deskripsi (kondisi dasar)
+  if (
+    data.jenis.includes("PPT") && data.deskripsi.toLowerCase().includes("aplikasi")
+  ) {
+    warnings.push("Jenis tugas 'PPT' tampaknya tidak cocok dengan deskripsi tentang aplikasi.");
+  }
+
+  return warnings;
+}
 
     const jenis = document.getElementById("jenis").value.trim();
     const adminJoki = document.getElementById("adminJoki").value.trim();
