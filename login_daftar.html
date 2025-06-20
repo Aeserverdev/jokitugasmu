@@ -241,7 +241,7 @@
         });
       }
 
-      const url = "https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec";
+      const url = "https://script.google.com/macros/s/AKfycbxONOr_f5emqFnV-QF-D2u6Gjr_ysuBDJjxD7_7kD01W-AOznBsv-d1lr46oBVxVN8/exec";
       const action = isLogin ? "login" : "register";
 
       fetch(url, {
@@ -254,7 +254,7 @@
         submitBtn.disabled = false;
         if (data.success) {
           localStorage.setItem("user", JSON.stringify(data.user));
-          window.location.href = "index.html";
+          window.location.href = "fjoki.html";
         } else {
           showError(data.message);
         }
