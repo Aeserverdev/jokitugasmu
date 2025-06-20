@@ -292,32 +292,13 @@
     }
 
     async function verifikasi(id, status) {
-  const pesan = status === "Terverifikasi"
-    ? "Yakin ingin memverifikasi pembayaran ini?"
-    : "Yakin ingin menolak pembayaran ini?";
+      await fetch(`${BASE_URL}?action=verifikasiPembayaran&id=${id}&status=${status}`);
+      Swal.fire({ icon: 'success', title: 'Pembayaran diperbarui', toast: true, timer: 2000, showConfirmButton: false });
+      loadPembayaran();
+    }
 
-  const konfirmasi = await Swal.fire({
-    title: 'Konfirmasi Pembaruan',
-    text: pesan,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Ya, Lanjutkan',
-    cancelButtonText: 'Batal',
-  });
-
-  if (konfirmasi.isConfirmed) {
-    await fetch(`${BASE_URL}?action=verifikasiPembayaran&id=${id}&status=${status}`);
-    Swal.fire({
-      icon: 'success',
-      title: `Status pembayaran diperbarui ke "${status}"`,
-      toast: true,
-      timer: 2000,
-      showConfirmButton: false
-    });
-    loadPembayaran(); // Refresh tabel
-  }
-}
-
+    loadPesanan();
+    loadPembayaran();
   </script>
 </body>
 </html>
