@@ -74,11 +74,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const hargaMap = {
-    "MAKALAH": 20000,
-    "PPT": 20000,
-    "PPT PREMIUM": 45000,
-    "WEBSITE": 100000,
-    "KODING": 60000,
+    "MAKALAH": 25000,
+    "PPT": 25000,
+    "PPT PREMIUM": 50000,
+    "WEBSITE": 150000,
+    "KODING": 75000,
     "ANIMACY": 50000,
     "BIKIN APLIKASI": 500000
   };
