@@ -64,14 +64,20 @@ document.addEventListener("DOMContentLoaded", () => {
   if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark-mode");
 
   function logout() {
-    localStorage.removeItem("user");
-    Swal.fire({ icon: 'info', title: 'Logout berhasil', timer: 2000, showConfirmButton: false });
-    setTimeout(() => location.href = "login_daftar.html", 1500);
-  }
-
-  function showNotif(icon, title, text = '') {
-    Swal.fire({ icon, title, text, toast: true, position: 'top-end', timer: 4000, showConfirmButton: false });
-  }
+  Swal.fire({
+    icon: 'warning',
+    title: 'Yakin ingin logout?',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, logout',
+    cancelButtonText: 'Batal'
+  }).then(result => {
+    if (result.isConfirmed) {
+      localStorage.removeItem("user");
+      Swal.fire({ icon: 'success', title: 'Logout berhasil', timer: 2000, showConfirmButton: false });
+      setTimeout(() => location.href = "login_daftar.html", 1500);
+    }
+  });
+}
 
   const hargaMap = {
     "MAKALAH": 25000,
@@ -314,7 +320,7 @@ function filterRiwayat() {
 
   const nomorDanaMap = {
     "RENALDI": "081348722325",
-    "AFRIZAL": "085182489261",
+    "M. AFRIZAL": "085182489261",
     "ABDUL HAKIM": "085764534425",
     "AIDIL ANWAR": "082279458613"
   };
