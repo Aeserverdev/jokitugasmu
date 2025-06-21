@@ -319,11 +319,11 @@ function filterRiwayat() {
   }
 
   const nomorDanaMap = {
-    "RENALDI": "081348722325",
-    "M. AFRIZAL": "085182489261",
-    "ABDUL HAKIM": "085764534425",
-    "AIDIL ANWAR": "082279458613"
-  };
+  "RENALDI": "081348722325",
+  "AFRIZAL": "085182489261",
+  "ABDUL HAKIM": "085764534425",
+  "AIDIL ANWAR": "082279458613"
+};
 
   document.getElementById("adminJoki").addEventListener("change", function () {
     const admin = this.value;
