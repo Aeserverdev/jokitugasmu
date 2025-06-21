@@ -74,11 +74,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const hargaMap = {
-    "MAKALAH": 25000,
-    "PPT": 25000,
-    "PPT PREMIUM": 50000,
-    "WEBSITE": 150000,
-    "KODING": 75000,
+    "MAKALAH": 20000,
+    "PPT": 20000,
+    "PPT PREMIUM": 45000,
+    "WEBSITE": 100000,
+    "KODING": 60000,
     "ANIMACY": 50000,
     "BIKIN APLIKASI": 500000
   };
@@ -159,7 +159,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const jenis = document.getElementById("jenis").value.trim();
     const adminJoki = document.getElementById("adminJoki").value.trim();
-    const judul = document.getElementById("judul").value.trim();
+    const judul = document.getElementByid("judul").
+value.trim();
     const deskripsi = document.getElementById("deskripsi").value.trim();
     const dosen = document.getElementById("dosen").value.trim();
     const fakultas = document.getElementById("fakultas").value.trim();
@@ -196,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const statusPesanan = document.getElementById("statusPesanan");
     statusPesanan.style.display = "block";
-    statusPesanan.innerText = "📡 Mengirim pesanan...";
+    statusPesanan.innerText = "📡 Mengirim pesanan ke Telegram...";
 
     try {
       await kirimTelegramDenganGambar(data, file);
@@ -205,7 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
       navigator.clipboard.writeText(trackingID);
       showNotif("success", "Terkirim!", `Tracking ID: ${trackingID}`);
     } catch (error) {
-      statusPesanan.innerHTML = "❌ Gagal mengirim pesan.<br>Silakan coba lagi.";
+      statusPesanan.innerHTML = "❌ Gagal mengirim ke Telegram.<br>Silakan coba lagi.";
       showNotif("error", "Gagal", error.message);
     }
   });
@@ -268,34 +269,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function tampilkanPembayaran(data) {
-  let html = "<table><tr><th>ID</th><th>Metode</th><th>Harga</th><th>Status</th></tr>";
-  data.forEach(r => {
-    const status = (r.status || "Menunggu").toLowerCase();
-    let cls = "status-menunggu";
-    if (status.includes("proses")) cls = "status-proses";
-    else if (status.includes("selesai")) cls = "status-selesai";
-    else if (status.includes("batal")) cls = "status-batal";
-    html += `<tr>
-      <td>${r.trackingID || '-'}</td>
-      <td>${r.metode || '-'}</td>
-      <td>${r.harga || '-'}</td>
-      <td><span class="status-badge ${cls}">${r.status || 'Menunggu'}</span></td>
-    </tr>`;
-  });
-  html += "</table>";
-  document.getElementById("tabelPembayaran").innerHTML = html;
-}
+    let html = "<table><tr><th>ID</th><th>Tanggal</th><th>Metode</th><th>Jumlah</th><th>Status</th></tr>";
+    data.forEach(p => {
+      const s = (p.status || "Pending").toLowerCase();
+      let cls = "status-menunggu";
+      if (s.includes("terverifikasi")) cls = "status-selesai";
+      else if (s.includes("gagal")) cls = "status-batal";
+      html += `<tr><td>${p.id || '-'}</td><td>${p.tanggal || '-'}</td><td>${p.metode || '-'}</td><td>Rp ${parseInt(p.jumlah || 0).toLocaleString("id-ID")}</td><td><span class="status-badge ${cls}">${p.status || 'Pending'}</span></td></tr>`;
+    });
+    html += "</table>";
+    document.getElementById("tabelPembayaran").innerHTML = html;
+  }
 
-function filterPembayaran() {
-  const q = document.getElementById("searchPembayaran").value.toLowerCase();
-  const filtered = semuaPembayaran.filter(r =>
-    (r.trackingID || '').toLowerCase().includes(q) ||
-    (r.metode || '').toLowerCase().includes(q) ||
-    (r.harga || '').toLowerCase().includes(q) ||
-    (r.status || '').toLowerCase().includes(q)
-  );
-  tampilkanPembayaran(filtered);
-}
+  function filterPembayaran() {
+    const q = document.getElementById("searchPembayaran").value.toLowerCase();
+    const f = semuaPembayaran.filter(p =>
+      p.id.toLowerCase().includes(q) ||
+      p.tanggal.toLowerCase().includes(q) ||
+      p.metode.toLowerCase().includes(q) ||
+      p.status.toLowerCase().includes(q)
+    );
+    tampilkanPembayaran(f);
+  }
 
   const nomorDanaMap = {
     "RENALDI": "081348722325",
