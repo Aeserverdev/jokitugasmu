@@ -208,45 +208,69 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   let semuaRiwayat = [];
-  async function loadRiwayat() {
-    const box = document.getElementById("tabelRiwayat");
-    box.textContent = "Memuat data...";
-    try {
-      const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getRiwayat&npm=${user.npm}`);
-      const data = await res.json();
-      semuaRiwayat = data;
-      if (!Array.isArray(data) || data.length === 0) return box.innerHTML = "<i>Belum ada data.</i>";
-      tampilkanRiwayat(data);
-    } catch (e) {
-      box.innerHTML = "<i>Gagal memuat data.</i>";
-      showNotif("error", "Gagal Memuat Riwayat");
+
+async function loadRiwayat() {
+  const box = document.getElementById("tabelRiwayat");
+  box.textContent = "Memuat data...";
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user || !user.npm) {
+    box.innerHTML = "<i>Data pengguna tidak ditemukan.</i>";
+    return showNotif("error", "Gagal Memuat", "Data pengguna tidak lengkap.");
+  }
+
+  try {
+    const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getRiwayat&npm=${user.npm}`);
+    const data = await res.json();
+    semuaRiwayat = Array.isArray(data) ? data : [];
+
+    if (semuaRiwayat.length === 0) {
+      box.innerHTML = "<i>Belum ada data.</i>";
+      return;
     }
-  }
 
-  function tampilkanRiwayat(data) {
-    let html = "<table><tr><th>ID</th><th>Jenis</th><th>Deadline</th><th>Status</th></tr>";
-    data.forEach(r => {
-      const s = (r.status || "Menunggu").toLowerCase();
-      let cls = "status-menunggu";
-      if (s.includes("proses")) cls = "status-proses";
-      else if (s.includes("selesai")) cls = "status-selesai";
-      else if (s.includes("batal")) cls = "status-batal";
-      html += `<tr><td>${r.trackingID || '-'}</td><td>${r.jenis || '-'}</td><td>${r.deadline || '-'}</td><td><span class="status-badge ${cls}">${r.status || 'Menunggu'}</span></td></tr>`;
-    });
-    html += "</table>";
-    document.getElementById("tabelRiwayat").innerHTML = html;
+    tampilkanRiwayat(semuaRiwayat);
+  } catch (e) {
+    console.error("loadRiwayat error:", e);
+    box.innerHTML = "<i>Gagal memuat data.</i>";
+    showNotif("error", "Gagal Memuat Riwayat", "Terjadi kesalahan saat mengambil data.");
   }
+}
 
-  function filterRiwayat() {
-    const q = document.getElementById("searchRiwayat").value.toLowerCase();
-    const f = semuaRiwayat.filter(r =>
-      r.trackingID.toLowerCase().includes(q) ||
-      r.jenis.toLowerCase().includes(q) ||
-      r.deadline.toLowerCase().includes(q) ||
-      r.status.toLowerCase().includes(q)
-    );
-    tampilkanRiwayat(f);
-  }
+function tampilkanRiwayat(data) {
+  let html = "<table><tr><th>ID</th><th>Jenis</th><th>Deadline</th><th>Status</th></tr>";
+
+  data.forEach(r => {
+    const status = (r.status || "Menunggu").toLowerCase();
+    let cls = "status-menunggu";
+    if (status.includes("proses")) cls = "status-proses";
+    else if (status.includes("selesai")) cls = "status-selesai";
+    else if (status.includes("batal")) cls = "status-batal";
+
+    html += `<tr>
+      <td>${r.trackingID || '-'}</td>
+      <td>${r.jenis || '-'}</td>
+      <td>${r.deadline || '-'}</td>
+      <td><span class="status-badge ${cls}">${r.status || 'Menunggu'}</span></td>
+    </tr>`;
+  });
+
+  html += "</table>";
+  document.getElementById("tabelRiwayat").innerHTML = html;
+}
+
+function filterRiwayat() {
+  const q = document.getElementById("searchRiwayat").value.toLowerCase();
+  const hasil = semuaRiwayat.filter(r => {
+    const id = (r.trackingID || "").toLowerCase();
+    const jenis = (r.jenis || "").toLowerCase();
+    const deadline = (r.deadline || "").toLowerCase();
+    const status = (r.status || "").toLowerCase();
+    return id.includes(q) || jenis.includes(q) || deadline.includes(q) || status.includes(q);
+  });
+  tampilkanRiwayat(hasil);
+}
+
 
   let semuaPembayaran = [];
   async function loadPembayaran() {
