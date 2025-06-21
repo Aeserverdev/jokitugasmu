@@ -1,4 +1,4 @@
- function simpanEditNama() {
+function simpanEditNama() {
   const namaBaru = document.getElementById("pengaturanNama").value.trim();
   if (!namaBaru) return showNotif("error", "Nama kosong", "Silakan masukkan nama baru.");
   
@@ -7,7 +7,7 @@
   localStorage.setItem("user", JSON.stringify(user));
 
   document.getElementById("namaDisplay").textContent = namaBaru;
-  document.getElementById("fotoProfil").src = https://ui-avatars.com/api/?name=${encodeURIComponent(namaBaru)}&background=0D8ABC&color=fff&size=128&rounded=true;
+  document.getElementById("fotoProfil").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(namaBaru)}&background=0D8ABC&color=fff&size=128&rounded=true`;
   showNotif("success", "Berhasil", "Nama berhasil diperbarui!");
 }
 
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
     document.getElementById(id).classList.add("active");
     document.querySelectorAll(".sidebar button").forEach(b => b.classList.remove("active"));
-    document.querySelector(.sidebar button[onclick*="${id}"]).classList.add("active");
+    document.querySelector(`.sidebar button[onclick*="${id}"]`).classList.add("active");
     if (id === "riwayat") loadRiwayat();
     if (id === "pembayaran") loadPembayaran();
   }
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateHarga() {
     const jenis = document.getElementById("jenis").value;
     const harga = hargaMap[jenis] || 0;
-    document.getElementById("harga").value = harga ? Rp ${harga.toLocaleString("id-ID")} : '';
+    document.getElementById("harga").value = harga ? `Rp ${harga.toLocaleString("id-ID")}` : '';
   }
 
   async function kirimTelegramDenganGambar(data, file) {
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
       throw new Error("File tidak valid. Harus berupa gambar.");
     }
 
-    const pesan = 
+    const pesan = `
     📥 *Pesanan Baru Masuk*
     👤 Nama: *${data.nama}*
     🎓 NPM: *${data.npm}*
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     📱 Nomor Dana: *${data.dana}*
     💰 Harga: *${data.harga}*
     🆔 Tracking ID: *${data.trackingID}*
-    .trim();
+    `.trim();
 
     // 1. Kirim ke grup supergroup (dengan gambar)
     const formData = new FormData();
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("photo", file);
     formData.append("parse_mode", "Markdown");
 
-    const urlPhoto = https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto;
+    const urlPhoto = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
     const responsePhoto = await fetch(urlPhoto, {
       method: "POST",
       body: formData
@@ -132,11 +132,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!responsePhoto.ok) {
       const errText = await responsePhoto.text();
-      throw new Error(Telegram Group Error: ${errText});
+      throw new Error(`Telegram Group Error: ${errText}`);
     }
 
     // 2. Kirim ke admin pribadi (teks saja)
-    const urlText = https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage;
+    const urlText = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
     const responseText = await fetch(urlText, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!responseText.ok) {
       const errText = await responseText.text();
-      throw new Error(Telegram Admin Error: ${errText});
+      throw new Error(`Telegram Admin Error: ${errText}`);
     }
   }
 
@@ -198,9 +198,9 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       await kirimTelegramDenganGambar(data, file);
       document.getElementById("formPesanan").reset();
-      statusPesanan.innerHTML = ✅ Pesanan & bukti berhasil dikirim!<br><strong>ID:</strong> ${trackingID};
+      statusPesanan.innerHTML = `✅ Pesanan & bukti berhasil dikirim!<br><strong>ID:</strong> ${trackingID}`;
       navigator.clipboard.writeText(trackingID);
-      showNotif("success", "Terkirim!", Tracking ID: ${trackingID});
+      showNotif("success", "Terkirim!", `Tracking ID: ${trackingID}`);
     } catch (error) {
       statusPesanan.innerHTML = "❌ Gagal mengirim ke Telegram.<br>Silakan coba lagi.";
       showNotif("error", "Gagal", error.message);
@@ -220,7 +220,7 @@ async function loadRiwayat() {
   }
 
   try {
-    const res = await fetch(https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getRiwayat&npm=${user.npm});
+    const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getRiwayat&npm=${user.npm}`);
     const data = await res.json();
     semuaRiwayat = Array.isArray(data) ? data : [];
 
@@ -247,12 +247,12 @@ function tampilkanRiwayat(data) {
     else if (status.includes("selesai")) cls = "status-selesai";
     else if (status.includes("batal")) cls = "status-batal";
 
-    html += <tr>
+    html += `<tr>
       <td>${r.trackingID || '-'}</td>
       <td>${r.jenis || '-'}</td>
       <td>${r.deadline || '-'}</td>
       <td><span class="status-badge ${cls}">${r.status || 'Menunggu'}</span></td>
-    </tr>;
+    </tr>`;
   });
 
   html += "</table>";
@@ -277,7 +277,7 @@ function filterRiwayat() {
     const box = document.getElementById("tabelPembayaran");
     box.textContent = "Memuat data...";
     try {
-      const res = await fetch(https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getPembayaran&npm=${user.npm});
+      const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getPembayaran&npm=${user.npm}`);
       const data = await res.json();
       semuaPembayaran = data;
       if (!Array.isArray(data) || data.length === 0) return box.innerHTML = "<i>Belum ada data pembayaran.</i>";
@@ -295,7 +295,7 @@ function filterRiwayat() {
       let cls = "status-menunggu";
       if (s.includes("terverifikasi")) cls = "status-selesai";
       else if (s.includes("gagal")) cls = "status-batal";
-      html += <tr><td>${p.id || '-'}</td><td>${p.tanggal || '-'}</td><td>${p.metode || '-'}</td><td>Rp ${parseInt(p.jumlah || 0).toLocaleString("id-ID")}</td><td><span class="status-badge ${cls}">${p.status || 'Pending'}</span></td></tr>;
+      html += `<tr><td>${p.id || '-'}</td><td>${p.tanggal || '-'}</td><td>${p.metode || '-'}</td><td>Rp ${parseInt(p.jumlah || 0).toLocaleString("id-ID")}</td><td><span class="status-badge ${cls}">${p.status || 'Pending'}</span></td></tr>`;
     });
     html += "</table>";
     document.getElementById("tabelPembayaran").innerHTML = html;
