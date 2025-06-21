@@ -105,7 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
     🏫 Prodi: *${data.prodi}*
     📱 WhatsApp: *${data.nowa}*
     📝 Jenis Tugas: *${data.jenis}*
-    🗒️ Judul: *${data.judul}*
     📄 Deskripsi: *${data.deskripsi}*
     👨‍🏫 Dosen Pengampu: *${data.dosen}*
     📚 Fakultas: *${data.fakultas}*
@@ -159,8 +158,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const jenis = document.getElementById("jenis").value.trim();
     const adminJoki = document.getElementById("adminJoki").value.trim();
-    const judul = document.getElementByid("judul").
-value.trim();
     const deskripsi = document.getElementById("deskripsi").value.trim();
     const dosen = document.getElementById("dosen").value.trim();
     const fakultas = document.getElementById("fakultas").value.trim();
@@ -183,7 +180,6 @@ value.trim();
   prodi: user.prodi,
   nowa: user.nowa,
   jenis,
-  judul,
   deskripsi,
   dosen,
   fakultas,
