@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
   metode,
   harga,
   adminJoki,
-  dana: nomorDanaMap[adminJoki] || "-"
+  dana: adminPembayaranMap[adminJoki]?.dana || "-"
 };
 
     const statusPesanan = document.getElementById("statusPesanan");
@@ -318,26 +318,44 @@ function filterRiwayat() {
     tampilkanPembayaran(f);
   }
 
-  const nomorDanaMap = {
-  "RENALDI": "081348722325",
-  "AFRIZAL": "085182489261",
-  "ABDUL HAKIM": "085764534425",
-  "AIDIL ANWAR": "082279458613"
+  const adminPembayaranMap = {
+  "RENALDI": {
+    dana: "081348722325",
+    qris: "https://i.imgur.com/RENALDI_QRIS.png"
+  },
+  "AFRIZAL": {
+    dana: "085182489261"
+  },
+  "ABDUL HAKIM": {
+    dana: "085764534425"
+  },
+  "AIDIL ANWAR": {
+    dana: "082279458613"
+  }
 };
 
   document.getElementById("adminJoki").addEventListener("change", function () {
-    const admin = this.value;
-    const nomor = nomorDanaMap[admin];
-    const metodeInput = document.getElementById("metode");
-    const danaBox = document.getElementById("infoDana");
+  const admin = this.value;
+  const info = adminPembayaranMap[admin] || {};
+  const metodeInput = document.getElementById("metode");
+  const danaBox = document.getElementById("infoDana");
+  const qrisBox = document.getElementById("infoQRIS");
 
-    if (nomor) {
-      metodeInput.value = "Dana";
-      danaBox.style.display = "block";
-      document.getElementById("nomorDana").textContent = nomor;
-    } else {
-      metodeInput.value = "";
-      danaBox.style.display = "none";
-      document.getElementById("nomorDana").textContent = "";
-    }
-  });
+  if (info.dana) {
+    document.getElementById("nomorDana").textContent = info.dana;
+    danaBox.style.display = "block";
+  } else {
+    danaBox.style.display = "none";
+    document.getElementById("nomorDana").textContent = "";
+  }
+
+  if (info.qris) {
+    document.getElementById("gambarQRIS").src = info.qris;
+    qrisBox.style.display = "block";
+  } else {
+    qrisBox.style.display = "none";
+    document.getElementById("gambarQRIS").src = "";
+  }
+
+  metodeInput.value = info.dana ? "Dana" : (info.qris ? "QRIS" : "");
+});
