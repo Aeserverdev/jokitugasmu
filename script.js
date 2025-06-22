@@ -321,7 +321,7 @@ function filterRiwayat() {
   const adminPembayaranMap = {
   "RENALDI": {
     dana: "081348722325",
-    qris: "https://i.imgur.com/RENALDI_QRIS.png"
+    qris: "https://iili.io/FzPHjff.png"
   },
   "AFRIZAL": {
     dana: "085182489261"
@@ -341,21 +341,38 @@ function filterRiwayat() {
   const danaBox = document.getElementById("infoDana");
   const qrisBox = document.getElementById("infoQRIS");
 
-  if (info.dana) {
-    document.getElementById("nomorDana").textContent = info.dana;
-    danaBox.style.display = "block";
-  } else {
-    danaBox.style.display = "none";
-    document.getElementById("nomorDana").textContent = "";
-  }
+  // Reset tampilan
+  metodeInput.innerHTML = "";
+  danaBox.style.display = "none";
+  qrisBox.style.display = "none";
+  document.getElementById("nomorDana").textContent = "";
+  document.getElementById("gambarQRIS").src = "";
 
-  if (info.qris) {
-    document.getElementById("gambarQRIS").src = info.qris;
-    qrisBox.style.display = "block";
+  if (admin === "RENALDI") {
+    metodeInput.innerHTML = `
+      <option value="">-- Pilih Metode --</option>
+      <option value="Dana">Dana</option>
+      <option value="QRIS">QRIS</option>
+    `;
+    if (info.dana) {
+      danaBox.style.display = "block";
+      document.getElementById("nomorDana").textContent = info.dana;
+    }
+    if (info.qris) {
+      qrisBox.style.display = "block";
+      document.getElementById("gambarQRIS").src = info.qris;
+    }
   } else {
+    if (info.dana) {
+      danaBox.style.display = "block";
+      document.getElementById("nomorDana").textContent = info.dana;
+      metodeInput.innerHTML = `<option value="Dana">Dana</option>`;
+    } else {
+      metodeInput.innerHTML = `<option value="">-</option>`;
+    }
+
+    // Pastikan QRIS disembunyikan untuk admin selain Renaldi
     qrisBox.style.display = "none";
     document.getElementById("gambarQRIS").src = "";
   }
-
-  metodeInput.value = info.dana ? "Dana" : (info.qris ? "QRIS" : "");
 });
