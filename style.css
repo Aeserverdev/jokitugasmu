@@ -309,26 +309,5 @@
         text-align: center;
         padding: 1rem;
       }
-      :root {
-  --warna-primer: #0d6efd;
-}
-body.tema-biru {
-  --warna-primer: #0d6efd;
-}
-body.tema-ungu {
-  --warna-primer: #6f42c1;
-}
-body.tema-hijau {
-  --warna-primer: #198754;
-}
-body.tema-merah {
-  --warna-primer: #dc3545;
-}
-
-/* Contoh penerapan */
-button, .sidebar, .status-badge {
-  background-color: var(--warna-primer) !important;
-}
-
       
     }
