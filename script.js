@@ -1,7 +1,22 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user) return location.href = "login_daftar.html";
+
+  document.getElementById("nama").textContent = user.nama;
+  document.getElementById("npm").textContent = user.npm;
+  document.getElementById("prodi").textContent = user.prodi;
+  document.getElementById("nowa").textContent = user.nowa;
+
+  const savedLang = localStorage.getItem("bahasa");
+  if (savedLang) document.getElementById("pilihBahasa").value = savedLang;
+  if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark-mode");
+});
+
+// ================= Pengaturan =================
 function simpanEditNama() {
   const namaBaru = document.getElementById("pengaturanNama").value.trim();
   if (!namaBaru) return showNotif("error", "Nama kosong", "Silakan masukkan nama baru.");
-  
+
   const user = JSON.parse(localStorage.getItem("user"));
   user.nama = namaBaru;
   localStorage.setItem("user", JSON.stringify(user));
@@ -14,8 +29,8 @@ function simpanEditNama() {
 function gantiPassword() {
   const lama = document.getElementById("passLama").value;
   const baru = document.getElementById("passBaru").value;
-
   const user = JSON.parse(localStorage.getItem("user"));
+
   if (!lama || !baru) return showNotif("error", "Lengkapi semua kolom");
   if (lama !== user.password) return showNotif("error", "Password lama salah!");
 
@@ -30,349 +45,243 @@ function ubahBahasa() {
   const lang = document.getElementById("pilihBahasa").value;
   localStorage.setItem("bahasa", lang);
   showNotif("success", "Bahasa disimpan", lang === "id" ? "Bahasa Indonesia" : "English");
-  // Reload halaman jika ingin langsung pakai multi-bahasa real-time
-  // location.reload();
 }
 
-// Saat pertama kali buka pengaturan, isi bahasa
-document.addEventListener("DOMContentLoaded", () => {
-  const simpananBahasa = localStorage.getItem("bahasa");
-  if (simpananBahasa) document.getElementById("pilihBahasa").value = simpananBahasa;
-});
-
-  // Inisialisasi
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user) location.href = "login_daftar.html";
-  document.getElementById("nama").textContent = user.nama;
-  document.getElementById("npm").textContent = user.npm;
-  document.getElementById("prodi").textContent = user.prodi;
-  document.getElementById("nowa").textContent = user.nowa;
-
-  function showSection(id) {
-    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-    document.querySelectorAll(".sidebar button").forEach(b => b.classList.remove("active"));
-    document.querySelector(`.sidebar button[onclick*="${id}"]`).classList.add("active");
-    if (id === "riwayat") loadRiwayat();
-    if (id === "pembayaran") loadPembayaran();
-  }
-
-  function toggleTheme() {
-    const isDark = document.body.classList.toggle("dark-mode");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-  }
-  if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark-mode");
-
-  function logout() {
-  Swal.fire({
-    icon: 'warning',
-    title: 'Yakin ingin logout?',
-    showCancelButton: true,
-    confirmButtonText: 'Ya, logout',
-    cancelButtonText: 'Batal'
-  }).then(result => {
-    if (result.isConfirmed) {
-      localStorage.removeItem("user");
-      Swal.fire({ icon: 'success', title: 'Logout berhasil', timer: 2000, showConfirmButton: false });
-      setTimeout(() => location.href = "login_daftar.html", 1500);
-    }
-  });
+// =============== Navigasi & Tema ===============
+function showSection(id) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".sidebar button").forEach(b => b.classList.remove("active"));
+  document.querySelector(`.sidebar button[onclick*="${id}"]`).classList.add("active");
+  if (id === "riwayat") loadRiwayat();
+  if (id === "pembayaran") loadPembayaran();
 }
 
-  const hargaMap = {
-    "MAKALAH": 25000,
-    "PPT": 25000,
-    "PPT PREMIUM": 50000,
-    "WEBSITE": 150000,
-    "KODING": 75000,
-    "ANIMACY": 50000,
-    "BIKIN APLIKASI": 500000
-  };
+function toggleTheme() {
+  const isDark = document.body.classList.toggle("dark-mode");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+}
 
-  function updateHarga() {
-    const jenis = document.getElementById("jenis").value;
-    const harga = hargaMap[jenis] || 0;
-    document.getElementById("harga").value = harga ? `Rp ${harga.toLocaleString("id-ID")}` : '';
-  }
+function logout() {
+  localStorage.removeItem("user");
+  Swal.fire({ icon: 'info', title: 'Logout berhasil', timer: 2000, showConfirmButton: false });
+  setTimeout(() => location.href = "login_daftar.html", 1500);
+}
 
-  async function kirimTelegramDenganGambar(data, file) {
-    const TELEGRAM_BOT_TOKEN = "7686312873:AAFgoSgH-5A8RyB8tJRzjevPlXI0iQMi8uI";
-    const GROUP_CHAT_ID = "-1002853719892"; // Supergroup
-    const ADMIN_CHAT_ID = "8087861371"; // Chat ID pribadi (misal: RENALDI)
+// =============== Notifikasi & Harga ===============
+function showNotif(icon, title, text = '') {
+  Swal.fire({ icon, title, text, toast: true, position: 'top-end', timer: 4000, showConfirmButton: false });
+}
 
-    if (!file || !file.type.startsWith("image/")) {
-      throw new Error("File tidak valid. Harus berupa gambar.");
-    }
-
-    const pesan = `
-    📥 *Pesanan Baru Masuk*
-    👤 Nama: *${data.nama}*
-    🎓 NPM: *${data.npm}*
-    🏫 Prodi: *${data.prodi}*
-    📱 WhatsApp: *${data.nowa}*
-    📝 Jenis Tugas: *${data.jenis}*
-    📄 Deskripsi: *${data.deskripsi}*
-    👨‍🏫 Dosen Pengampu: *${data.dosen}*
-    📚 Fakultas: *${data.fakultas}*
-    📘 Mata Kuliah: *${data.matkul}*
-    🗓 Deadline: *${data.deadline}*
-    👨‍🏫 Admin Joki: *${data.adminJoki}*
-    💳 Metode Pembayaran: *${data.metode}*
-    📱 Nomor Dana: *${data.dana}*
-    💰 Harga: *${data.harga}*
-    🆔 Tracking ID: *${data.trackingID}*
-    `.trim();
-
-    // 1. Kirim ke grup supergroup (dengan gambar)
-    const formData = new FormData();
-    formData.append("chat_id", GROUP_CHAT_ID);
-    formData.append("caption", pesan);
-    formData.append("photo", file);
-    formData.append("parse_mode", "Markdown");
-
-    const urlPhoto = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
-    const responsePhoto = await fetch(urlPhoto, {
-      method: "POST",
-      body: formData
-    });
-
-    if (!responsePhoto.ok) {
-      const errText = await responsePhoto.text();
-      throw new Error(`Telegram Group Error: ${errText}`);
-    }
-
-    // 2. Kirim ke admin pribadi (teks saja)
-    const urlText = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-    const responseText = await fetch(urlText, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: ADMIN_CHAT_ID,
-        text: pesan,
-        parse_mode: "Markdown"
-      })
-    });
-
-    if (!responseText.ok) {
-      const errText = await responseText.text();
-      throw new Error(`Telegram Admin Error: ${errText}`);
-    }
-  }
-
-  document.getElementById("formPesanan").addEventListener("submit", async e => {
-    e.preventDefault();
-
-    const jenis = document.getElementById("jenis").value.trim();
-    const adminJoki = document.getElementById("adminJoki").value.trim();
-    const deskripsi = document.getElementById("deskripsi").value.trim();
-    const dosen = document.getElementById("dosen").value.trim();
-    const fakultas = document.getElementById("fakultas").value.trim();
-    const matkul = document.getElementById("matkul").value.trim();
-    const deadline = document.getElementById("deadline").value;
-    const metode = document.getElementById("metode").value;
-    const harga = document.getElementById("harga").value;
-    const trackingID = "TRK" + Date.now();
-    const fileInput = document.getElementById("bukti");
-    const file = fileInput.files[0];
-
-    if (!file) {
-      return showNotif("error", "Upload Gagal", "Mohon unggah bukti pembayaran berupa gambar.");
-    }
-
-    const data = {
-  trackingID,
-  nama: user.nama,
-  npm: user.npm,
-  prodi: user.prodi,
-  nowa: user.nowa,
-  jenis,
-  deskripsi,
-  dosen,
-  fakultas,
-  matkul,
-  deadline,
-  metode,
-  harga,
-  adminJoki,
-  dana: adminPembayaranMap[adminJoki]?.dana || "-"
+const hargaMap = {
+  "MAKALAH": 25000,
+  "PPT": 25000,
+  "PPT PREMIUM": 50000,
+  "WEBSITE": 150000,
+  "KODING": 750000,
+  "ANIMACY": 50000,
+  "BIKIN APLIKASI": 500000
 };
 
-    const statusPesanan = document.getElementById("statusPesanan");
-    statusPesanan.style.display = "block";
-    statusPesanan.innerText = "📡 Mengirim pesanan ke Telegram...";
+function updateHarga() {
+  const jenis = document.getElementById("jenis").value;
+  const harga = hargaMap[jenis] || 0;
+  document.getElementById("harga").value = harga ? `Rp ${harga.toLocaleString("id-ID")}` : '';
+}
 
-    try {
-      await kirimTelegramDenganGambar(data, file);
-      document.getElementById("formPesanan").reset();
-      statusPesanan.innerHTML = `✅ Pesanan & bukti berhasil dikirim!<br><strong>ID:</strong> ${trackingID}`;
-      navigator.clipboard.writeText(trackingID);
-      showNotif("success", "Terkirim!", `Tracking ID: ${trackingID}`);
-    } catch (error) {
-      statusPesanan.innerHTML = "❌ Gagal mengirim ke Telegram.<br>Silakan coba lagi.";
-      showNotif("error", "Gagal", error.message);
-    }
+// =============== Pesanan & Telegram ===============
+const nomorDanaMap = {
+  "RENALDI": "081348722325",
+  "AFRIZAL": "085182489261",
+  "ABDUL HAKIM": "085764534425",
+  "AIDIL ANWAR": "082279458613"
+};
+
+document.getElementById("adminJoki").addEventListener("change", function () {
+  const admin = this.value;
+  const metode = document.getElementById("metode");
+  const nomor = nomorDanaMap[admin];
+  const infoDana = document.getElementById("infoDana");
+
+  if (admin === "RENALDI") {
+    metode.innerHTML = `<option value="Dana">Dana</option><option value="QRIS">QRIS</option>`;
+  } else {
+    metode.innerHTML = `<option value="Dana">Dana</option>`;
+  }
+
+  if (nomor) {
+    infoDana.style.display = "block";
+    document.getElementById("nomorDana").textContent = nomor;
+  } else {
+    infoDana.style.display = "none";
+    document.getElementById("nomorDana").textContent = "";
+  }
+});
+
+async function kirimTelegramDenganGambar(data, file) {
+  const TOKEN = "7686312873:AAFgoSgH-5A8RyB8tJRzjevPlXI0iQMi8uI";
+  const GROUP = "-1002853719892";
+  const ADMIN = "8087861371";
+
+  const pesan = `
+📥 *Pesanan Baru Masuk*
+👤 Nama: *${data.nama}*
+🎓 NPM: *${data.npm}*
+📚 Prodi: *${data.prodi}*
+📱 WhatsApp: *${data.nowa}*
+📝 Jenis Tugas: *${data.jenis}*
+📄 Deskripsi: *${data.deskripsi}*
+👨‍🏫 Dosen: *${data.dosen}*
+🏛 Fakultas: *${data.fakultas}*
+📘 Matkul: *${data.matkul}*
+🗓 Deadline: *${data.deadline}*
+🧑‍💻 Admin: *${data.adminJoki}*
+💳 Metode: *${data.metode}*
+💰 Harga: *${data.harga}*
+📱 Dana: *${data.dana}*
+🆔 Tracking ID: *${data.trackingID}*
+  `.trim();
+
+  const formData = new FormData();
+  formData.append("chat_id", GROUP);
+  formData.append("caption", pesan);
+  formData.append("photo", file);
+  formData.append("parse_mode", "Markdown");
+
+  const url = `https://api.telegram.org/bot${TOKEN}/sendPhoto`;
+  const sendPhoto = await fetch(url, { method: "POST", body: formData });
+  if (!sendPhoto.ok) throw new Error(await sendPhoto.text());
+
+  await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: ADMIN, text: pesan, parse_mode: "Markdown" })
   });
+}
 
-  let semuaRiwayat = [];
+document.getElementById("formPesanan").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const jenis = document.getElementById("jenis").value.trim();
+  const adminJoki = document.getElementById("adminJoki").value.trim();
+  const deskripsi = document.getElementById("deskripsi").value.trim();
+  const dosen = document.getElementById("dosen").value.trim();
+  const fakultas = document.getElementById("fakultas").value.trim();
+  const matkul = document.getElementById("matkul").value.trim();
+  const deadline = document.getElementById("deadline").value;
+  const metode = document.getElementById("metode").value;
+  const harga = document.getElementById("harga").value;
+  const file = document.getElementById("bukti").files[0];
+  const trackingID = "TRK" + Date.now();
+
+  if (!jenis || !adminJoki || !deskripsi || !dosen || !fakultas || !matkul || !deadline || !metode || !harga)
+    return showNotif("error", "Form belum lengkap", "Isi semua kolom.");
+
+  if (!file) return showNotif("error", "Gagal", "Upload bukti pembayaran.");
+  if (!file.type.startsWith("image/")) return showNotif("error", "File harus gambar.");
+  if (file.size > 5 * 1024 * 1024) return showNotif("error", "Ukuran maksimal 5MB.");
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const data = { trackingID, nama: user.nama, npm: user.npm, prodi: user.prodi, nowa: user.nowa, jenis, deskripsi, dosen, fakultas, matkul, deadline, metode, harga, adminJoki, dana: nomorDanaMap[adminJoki] || "-" };
+
+  const statusPesanan = document.getElementById("statusPesanan");
+  statusPesanan.style.display = "block";
+  statusPesanan.innerText = "📡 Mengirim ke Telegram...";
+  const submitBtn = document.querySelector('#formPesanan button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Mengirim...";
+
+  try {
+    await kirimTelegramDenganGambar(data, file);
+    document.getElementById("formPesanan").reset();
+    statusPesanan.innerHTML = `✅ Berhasil dikirim!<br><strong>ID:</strong> ${trackingID}`;
+    navigator.clipboard.writeText(trackingID);
+    showNotif("success", "Terkirim!", `Tracking ID: ${trackingID}`);
+  } catch (err) {
+    statusPesanan.innerHTML = "❌ Gagal mengirim ke Telegram.";
+    showNotif("error", "Gagal", err.message);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Kirim";
+  }
+});
+
+// =============== Riwayat & Pembayaran ===============
+let semuaRiwayat = [], semuaPembayaran = [];
 
 async function loadRiwayat() {
   const box = document.getElementById("tabelRiwayat");
   box.textContent = "Memuat data...";
-
   const user = JSON.parse(localStorage.getItem("user"));
-  if (!user || !user.npm) {
-    box.innerHTML = "<i>Data pengguna tidak ditemukan.</i>";
-    return showNotif("error", "Gagal Memuat", "Data pengguna tidak lengkap.");
-  }
+  if (!user?.npm) return box.innerHTML = "<i>Data pengguna tidak lengkap.</i>";
 
   try {
     const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getRiwayat&npm=${user.npm}`);
     const data = await res.json();
     semuaRiwayat = Array.isArray(data) ? data : [];
-
-    if (semuaRiwayat.length === 0) {
-      box.innerHTML = "<i>Belum ada data.</i>";
-      return;
-    }
-
     tampilkanRiwayat(semuaRiwayat);
-  } catch (e) {
-    console.error("loadRiwayat error:", e);
+  } catch {
     box.innerHTML = "<i>Gagal memuat data.</i>";
-    showNotif("error", "Gagal Memuat Riwayat", "Terjadi kesalahan saat mengambil data.");
+    showNotif("error", "Riwayat gagal dimuat");
   }
 }
 
 function tampilkanRiwayat(data) {
   let html = "<table><tr><th>ID</th><th>Jenis</th><th>Deadline</th><th>Status</th></tr>";
-
   data.forEach(r => {
-    const status = (r.status || "Menunggu").toLowerCase();
-    let cls = "status-menunggu";
-    if (status.includes("proses")) cls = "status-proses";
-    else if (status.includes("selesai")) cls = "status-selesai";
-    else if (status.includes("batal")) cls = "status-batal";
-
-    html += `<tr>
-      <td>${r.trackingID || '-'}</td>
-      <td>${r.jenis || '-'}</td>
-      <td>${r.deadline || '-'}</td>
-      <td><span class="status-badge ${cls}">${r.status || 'Menunggu'}</span></td>
-    </tr>`;
+    const s = (r.status || "Menunggu").toLowerCase();
+    const cls = s.includes("proses") ? "status-proses" : s.includes("selesai") ? "status-selesai" : s.includes("batal") ? "status-batal" : "status-menunggu";
+    html += `<tr><td>${r.trackingID || "-"}</td><td>${r.jenis || "-"}</td><td>${r.deadline || "-"}</td><td><span class="status-badge ${cls}">${r.status || "Menunggu"}</span></td></tr>`;
   });
-
   html += "</table>";
   document.getElementById("tabelRiwayat").innerHTML = html;
 }
 
 function filterRiwayat() {
   const q = document.getElementById("searchRiwayat").value.toLowerCase();
-  const hasil = semuaRiwayat.filter(r => {
-    const id = (r.trackingID || "").toLowerCase();
-    const jenis = (r.jenis || "").toLowerCase();
-    const deadline = (r.deadline || "").toLowerCase();
-    const status = (r.status || "").toLowerCase();
-    return id.includes(q) || jenis.includes(q) || deadline.includes(q) || status.includes(q);
-  });
+  const hasil = semuaRiwayat.filter(r =>
+    (r.trackingID || "").toLowerCase().includes(q) ||
+    (r.jenis || "").toLowerCase().includes(q) ||
+    (r.deadline || "").toLowerCase().includes(q) ||
+    (r.status || "").toLowerCase().includes(q)
+  );
   tampilkanRiwayat(hasil);
 }
 
+async function loadPembayaran() {
+  const box = document.getElementById("tabelPembayaran");
+  box.textContent = "Memuat data...";
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  let semuaPembayaran = [];
-  async function loadPembayaran() {
-    const box = document.getElementById("tabelPembayaran");
-    box.textContent = "Memuat data...";
-    try {
-      const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getPembayaran&npm=${user.npm}`);
-      const data = await res.json();
-      semuaPembayaran = data;
-      if (!Array.isArray(data) || data.length === 0) return box.innerHTML = "<i>Belum ada data pembayaran.</i>";
-      tampilkanPembayaran(data);
-    } catch (e) {
-      box.innerHTML = "<i>Gagal memuat data pembayaran.</i>";
-      showNotif("error", "Gagal Memuat Pembayaran");
-    }
+  try {
+    const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getPembayaran&npm=${user.npm}`);
+    const data = await res.json();
+    semuaPembayaran = Array.isArray(data) ? data : [];
+    tampilkanPembayaran(semuaPembayaran);
+  } catch {
+    box.innerHTML = "<i>Gagal memuat data pembayaran.</i>";
+    showNotif("error", "Gagal memuat pembayaran");
   }
+}
 
-  function tampilkanPembayaran(data) {
-    let html = "<table><tr><th>ID</th><th>Tanggal</th><th>Metode</th><th>Jumlah</th><th>Status</th></tr>";
-    data.forEach(p => {
-      const s = (p.status || "Pending").toLowerCase();
-      let cls = "status-menunggu";
-      if (s.includes("terverifikasi")) cls = "status-selesai";
-      else if (s.includes("gagal")) cls = "status-batal";
-      html += `<tr><td>${p.id || '-'}</td><td>${p.tanggal || '-'}</td><td>${p.metode || '-'}</td><td>Rp ${parseInt(p.jumlah || 0).toLocaleString("id-ID")}</td><td><span class="status-badge ${cls}">${p.status || 'Pending'}</span></td></tr>`;
-    });
-    html += "</table>";
-    document.getElementById("tabelPembayaran").innerHTML = html;
-  }
+function tampilkanPembayaran(data) {
+  let html = "<table><tr><th>ID</th><th>Tanggal</th><th>Metode</th><th>Jumlah</th><th>Status</th></tr>";
+  data.forEach(p => {
+    const s = (p.status || "Pending").toLowerCase();
+    const cls = s.includes("terverifikasi") ? "status-selesai" : s.includes("gagal") ? "status-batal" : "status-menunggu";
+    html += `<tr><td>${p.id || '-'}</td><td>${p.tanggal || '-'}</td><td>${p.metode || '-'}</td><td>Rp ${parseInt(p.jumlah || 0).toLocaleString("id-ID")}</td><td><span class="status-badge ${cls}">${p.status || 'Pending'}</span></td></tr>`;
+  });
+  html += "</table>";
+  document.getElementById("tabelPembayaran").innerHTML = html;
+}
 
-  function filterPembayaran() {
-    const q = document.getElementById("searchPembayaran").value.toLowerCase();
-    const f = semuaPembayaran.filter(p =>
-      p.id.toLowerCase().includes(q) ||
-      p.tanggal.toLowerCase().includes(q) ||
-      p.metode.toLowerCase().includes(q) ||
-      p.status.toLowerCase().includes(q)
-    );
-    tampilkanPembayaran(f);
-  }
-
-  const adminPembayaranMap = {
-  "RENALDI": {
-    dana: "081348722325",
-    qris: "https://iili.io/FzPHjff.png"
-  },
-  "AFRIZAL": {
-    dana: "085182489261"
-  },
-  "ABDUL HAKIM": {
-    dana: "085764534425"
-  },
-  "AIDIL ANWAR": {
-    dana: "082279458613"
-  }
-};
-
-  document.getElementById("adminJoki").addEventListener("change", function () {
-  const admin = this.value;
-  const info = adminPembayaranMap[admin] || {};
-  const metodeInput = document.getElementById("metode");
-  const danaBox = document.getElementById("infoDana");
-  const qrisBox = document.getElementById("infoQRIS");
-
-  // Reset tampilan
-  metodeInput.innerHTML = "";
-  danaBox.style.display = "none";
-  qrisBox.style.display = "none";
-  document.getElementById("nomorDana").textContent = "";
-  document.getElementById("gambarQRIS").src = "";
-
-  if (admin === "RENALDI") {
-    metodeInput.innerHTML = `
-      <option value="">-- Pilih Metode --</option>
-      <option value="Dana">Dana</option>
-      <option value="QRIS">QRIS</option>
-    `;
-    if (info.dana) {
-      danaBox.style.display = "block";
-      document.getElementById("nomorDana").textContent = info.dana;
-    }
-    if (info.qris) {
-      qrisBox.style.display = "block";
-      document.getElementById("gambarQRIS").src = info.qris;
-    }
-  } else {
-    if (info.dana) {
-      danaBox.style.display = "block";
-      document.getElementById("nomorDana").textContent = info.dana;
-      metodeInput.innerHTML = `<option value="Dana">Dana</option>`;
-    } else {
-      metodeInput.innerHTML = `<option value="">-</option>`;
-    }
-
-    // Pastikan QRIS disembunyikan untuk admin selain Renaldi
-    qrisBox.style.display = "none";
-    document.getElementById("gambarQRIS").src = "";
-  }
-});
+function filterPembayaran() {
+  const q = document.getElementById("searchPembayaran").value.toLowerCase();
+  const hasil = semuaPembayaran.filter(p =>
+    (p.id || "").toLowerCase().includes(q) ||
+    (p.tanggal || "").toLowerCase().includes(q) ||
+    (p.metode || "").toLowerCase().includes(q) ||
+    (p.status || "").toLowerCase().includes(q)
+  );
+  tampilkanPembayaran(hasil);
+}
