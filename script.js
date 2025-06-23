@@ -80,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "WEBSITE": 150000,
     "KODING": 750000,
     "ANIMACY": 50000,
+    "ANIMACY VIDEO": 75000,
     "BIKIN APLIKASI": 500000
   };
 
