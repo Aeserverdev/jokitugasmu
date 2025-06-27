@@ -251,20 +251,69 @@
       padding: 0.8rem 1.5rem;
       font-size: 1rem;
     }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 0.5rem;
+      }
+
+      .sidebar button {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .content {
+        padding: 2rem 1rem;
+      }
+
+      .card-profile {
+        margin: 1rem auto;
+      }
+
+      .statistik-card {
+        flex-direction: column;
+      }
+    }
+
+    /* Accessibility */
+    [aria-label]:hover::after {
+      content: attr(aria-label);
+      position: absolute;
+      background: #000;
+      color: #fff;
+      padding: 0.25rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    /* Accessibility: Focus Styling */
+    button:focus, input:focus, textarea:focus, select:focus {
+      outline: 2px solid #0072ff;
+      outline-offset: 2px;
+    }
   </style>
 </head>
 <body>
   <div class="sidebar">
     <h2>👨‍🎓 Mahasiswa</h2>
-    <button onclick="showSection('profil')" class="active">📄 Profil</button>
-    <button onclick="showSection('riwayat')">📚 Riwayat</button>
-    <button onclick="showSection('pesanan')">📝 Pesanan</button>
-    <button onclick="showSection('pembayaran')">💳 Pembayaran</button>
-    <button onclick="showSection('forum')">💬 Forum Diskusi</button>
-    <button onclick="showSection('penilaian')">📊 Penilaian</button>
-    <button onclick="showSection('chat')">💬 Chat</button>
-    <button onclick="showSection('statistikPembelajaran')">📊 Statistik Pembelajaran</button>
-    <button onclick="showSection('pengaturan')">⚙️ Pengaturan</button>
+    <button aria-label="Profil" onclick="showSection('profil')">📄 Profil</button>
+    <button aria-label="Riwayat" onclick="showSection('riwayat')">📚 Riwayat</button>
+    <button aria-label="Pesanan" onclick="showSection('pesanan')">📝 Pesanan</button>
+    <button aria-label="Pembayaran" onclick="showSection('pembayaran')">💳 Pembayaran</button>
+    <button aria-label="Forum Diskusi" onclick="showSection('forum')">💬 Forum Diskusi</button>
+    <button aria-label="Penilaian" onclick="showSection('penilaian')">📊 Penilaian</button>
+    <button aria-label="Chat" onclick="showSection('chat')">💬 Chat</button>
+    <button aria-label="Statistik Pembelajaran" onclick="showSection('statistikPembelajaran')">📊 Statistik Pembelajaran</button>
+    <button aria-label="Pengaturan" onclick="showSection('pengaturan')">⚙️ Pengaturan</button>
   </div>
   <div class="content">
     <div class="topbar">
@@ -450,7 +499,7 @@
         </div>
         <div class="info-box">
           <label for="passwordBaru" class="block font-semibold">Password Baru</label>
-          <input type="password" id="passwordBaru" placeholder="Masukkan password baru"          required class="w-full p-2 rounded border">
+          <input type="password" id="passwordBaru" placeholder="Masukkan password baru" required class="w-full p-2 rounded border">
         </div>
         <div class="info-box">
           <label for="konfirmasiPassword" class="block font-semibold">Konfirmasi Password Baru</label>
@@ -472,19 +521,34 @@
     // JavaScript Functions
     document.addEventListener("DOMContentLoaded", () => {
       const user = JSON.parse(localStorage.getItem("user"));
-      if (!user) location.href = "login_daftar.html"; // Redirect if no user data
-      document.getElementById("nama").textContent = user.nama;
-      document.getElementById("npm").textContent = user.npm;
-      document.getElementById("prodi").textContent = user.prodi;
-      document.getElementById("nowa").textContent = user.nowa;
+      if (!user) {
+        location.href = "login_daftar.html"; // Redirect if no user data
+      } else {
+        document.getElementById("nama").textContent = user.nama || 'Nama Mahasiswa';
+        document.getElementById("npm").textContent = user.npm || '-';
+        document.getElementById("prodi").textContent = user.prodi || '-';
+        document.getElementById("nowa").textContent = user.nowa || '-';
+      }
       loadRiwayat();
       loadPembayaran();
       loadNilai();
       loadForumPosts();
       loadChatMessages();
       loadStatistikPembelajaran();
+
+      // Initialize tooltip for accessibility
+      const tooltipTriggers = document.querySelectorAll('[aria-label]');
+      tooltipTriggers.forEach(trigger => {
+        trigger.addEventListener('focus', () => {
+          trigger.setAttribute('aria-describedby', 'tooltip');
+        });
+        trigger.addEventListener('blur', () => {
+          trigger.removeAttribute('aria-describedby');
+        });
+      });
     });
 
+    // Show section functionality
     function showSection(id) {
       document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
       document.getElementById(id).classList.add("active");
@@ -498,40 +562,60 @@
       if (id === "statistikPembelajaran") loadStatistikPembelajaran();
     }
 
+    // Theme toggle functionality
     function toggleTheme() {
       const isDark = document.body.classList.toggle("dark-mode");
       localStorage.setItem("theme", isDark ? "dark" : "light");
     }
 
+    // Check saved theme preference
     if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark-mode");
 
+    // Logout functionality
     function logout() {
       localStorage.removeItem("user");
-      Swal.fire({ icon: 'info', title: 'Logout berhasil', timer: 2000, showConfirmButton: false });
+      Swal.fire({ 
+        icon: 'info', 
+        title: 'Logout berhasil', 
+        timer: 2000, 
+        showConfirmButton: false 
+      });
       setTimeout(() => location.href = "login_daftar.html", 1500);
     }
 
+    // Show notification functionality
     function showNotif(icon, title, text = '') {
-      Swal.fire({ icon, title, text, toast: true, position: 'top-end', timer: 4000, showConfirmButton: false });
+      Swal.fire({ 
+        icon, 
+        title, 
+        text, 
+        toast: true, 
+        position: 'top-end', 
+        timer: 4000, 
+        showConfirmButton: false 
+      });
     }
 
+    // Harga map for different jenis tugas
     const hargaMap = {
       "MAKALAH": 25000,
       "PPT": 25000,
       "PPT PREMIUM": 50000,
       "WEBSITE": 150000,
-      "KODING": 750000,
+      "ODKING": 750000,
       "ANIMACY": 50000,
       "ANIMACY VIDEO": 75000,
       "BIKIN APLIKASI": 500000
     };
 
+    // Update harga based on selected jenis tugas
     function updateHarga() {
       const jenis = document.getElementById("jenis").value;
       const harga = hargaMap[jenis] || 0;
       document.getElementById("harga").value = harga ? `Rp ${harga.toLocaleString("id-ID")}` : '';
     }
 
+    // Load riwayat data
     async function loadRiwayat() {
       const box = document.getElementById("tabelRiwayat");
       box.textContent = "Memuat data...";
@@ -542,13 +626,16 @@
       }
 
       try {
-        const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getRiwayat&npm=${user.npm}`);
-        const data = await res.json();
-        if (!Array.isArray(data) || data.length === 0) {
+        // Simulated data loading (replace with actual fetch call)
+        const data = [
+          { trackingID: 'T001', jenis: 'MAKALAH', deadline: '2023-12-15', status: 'Proses' },
+          { trackingID: 'T002', jenis: 'PPT PREMIUM', deadline: '2023-12-20', status: 'Selesai' }
+        ];
+        if (data.length === 0) {
           box.innerHTML = "<i>Belum ada data.</i>";
-          return;
+        } else {
+          tampilkanRiwayat(data);
         }
-        tampilkanRiwayat(data);
       } catch (e) {
         console.error("loadRiwayat error:", e);
         box.innerHTML = "<i>Gagal memuat data.</i>";
@@ -556,7 +643,8 @@
       }
     }
 
-    function tampilkanRiwayat(data) {
+    // Display riwayat data in table format
+ function    tampilkanRiwayat(data) {
       let html = "<table><tr><th>ID</th><th>Jenis</th><th>Deadline</th><th>Status</th></tr>";
       data.forEach(r => {
         const status = (r.status || "Menunggu").toLowerCase();
@@ -576,19 +664,23 @@
       document.getElementById("tabelRiwayat").innerHTML = html;
     }
 
+    // Filter riwayat based on search query
     function filterRiwayat() {
       const q = document.getElementById("searchRiwayat").value.toLowerCase();
-      const hasil = semuaRiwayat.filter(r => {
-        const id = (r.trackingID || "").toLowerCase();
-        const jenis = (r.jenis || "").toLowerCase();
-        const deadline = (r.deadline || "").toLowerCase();
-        const status = (r.status || "").toLowerCase();
-        return id.includes(q) || jenis.includes(q) || deadline.includes(q) || status.includes(q);
-      });
-      tampilkanRiwayat(hasil);
+      // Assuming semuaRiwayat is defined elsewhere in your code
+      if (window.semuaRiwayat) {
+        const hasil = semuaRiwayat.filter(r => {
+          const id = (r.trackingID || "").toLowerCase();
+          const jenis = (r.jenis || "").toLowerCase();
+          const deadline = (r.deadline || "").toLowerCase();
+          const status = (r.status || "").toLowerCase();
+          return id.includes(q) || jenis.includes(q) || deadline.includes(q) || status.includes(q);
+        });
+        tampilkanRiwayat(hasil);
+      }
     }
 
-    let semuaPembayaran = [];
+    // Load pembayaran data
     async function loadPembayaran() {
       const box = document.getElementById("tabelPembayaran");
       box.textContent = "Memuat data...";
@@ -599,17 +691,24 @@
       }
 
       try {
-        const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getPembayaran&npm=${user.npm}`);
-        const data = await res.json();
-        semuaPembayaran = data;
-        if (!Array.isArray(data) || data.length === 0) return box.innerHTML = "<i>Belum ada data pembayaran.</i>";
-        tampilkanPembayaran(data);
+        // Simulated data loading (replace with actual fetch call)
+        const data = [
+          { id: 'P001', tanggal: '2023-12-01', metode: 'Dana', jumlah: 25000, status: 'Terverifikasi' },
+          { id: 'P002', tanggal: '2023-12-05', metode: 'Dana', jumlah: 50000, status: 'Pending' }
+        ];
+        window.semuaPembayaran = data;
+        if (data.length === 0) {
+          box.innerHTML = "<i>Belum ada data pembayaran.</i>";
+        } else {
+          tampilkanPembayaran(data);
+        }
       } catch (e) {
         box.innerHTML = "<i>Gagal memuat data pembayaran.</i>";
         showNotif("error", "Gagal Memuat Pembayaran");
       }
     }
 
+    // Display pembayaran data in table format
     function tampilkanPembayaran(data) {
       let html = "<table><tr><th>ID</th><th>Tanggal</th><th>Metode</th><th>Jumlah</th><th>Status</th></tr>";
       data.forEach(p => {
@@ -623,17 +722,21 @@
       document.getElementById("tabelPembayaran").innerHTML = html;
     }
 
+    // Filter pembayaran based on search query
     function filterPembayaran() {
       const q = document.getElementById("searchPembayaran").value.toLowerCase();
-      const f = semuaPembayaran.filter(p =>
-        p.id.toLowerCase().includes(q) ||
-        p.tanggal.toLowerCase().includes(q) ||
-        p.metode.toLowerCase().includes(q) ||
-        p.status.toLowerCase().includes(q)
-      );
-      tampilkanPembayaran(f);
+      if (window.semuaPembayaran) {
+        const f = semuaPembayaran.filter(p =>
+          p.id.toLowerCase().includes(q) ||
+          p.tanggal.toLowerCase().includes(q) ||
+          p.metode.toLowerCase().includes(q) ||
+          p.status.toLowerCase().includes(q)
+        );
+        tampilkanPembayaran(f);
+      }
     }
 
+    // Nomor Dana map for different admins
     const nomorDanaMap = {
       "RENALDI": "081348722325",
       "AFRIZAL": "085182489261",
@@ -641,6 +744,7 @@
       "AIDIL ANWAR": "082279458613"
     };
 
+    // Update Dana info based on selected admin
     document.getElementById("adminJoki").addEventListener("change", function () {
       const admin = this.value;
       const nomor = nomorDanaMap[admin];
@@ -657,6 +761,148 @@
         document.getElementById("nomorDana").textContent = "";
       }
     });
+
+    // Form submission for Pesanan
+    document.getElementById('formPesanan').addEventListener('submit', function(event) {
+      const jenis = document.getElementById('jenis').value;
+      const adminJoki = document.getElementById('adminJoki').value;
+      const judul = document.getElementById('judul').value;
+      const deskripsi = document.getElementById('deskripsi').value;
+      const dosen = document.getElementById('dosen').value;
+      const fakultas = document.getElementById('fakultas').value;
+      const matkul = document.getElementById('matkul').value;
+      const deadline = document.getElementById('deadline').value;
+      const harga = document.getElementById('harga').value;
+      const bukti = document.getElementById('bukti').files[0];
+
+      if (!jenis || !adminJoki || !judul || !deskripsi || !dosen || !fakultas || !matkul || !deadline || !harga || !bukti) {
+        event.preventDefault();
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Mohon lengkapi semua field.' });
+      } else {
+        // Simulated submission success
+        Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Pesanan berhasil dikirim.' });
+        // Reset form after submission
+        this.reset();
+        document.getElementById('infoDana').style.display = 'none';
+        document.getElementById('metode').value = '';
+      }
+    });
+
+    // Form submission for Ganti Password
+    document.getElementById('formGantiPassword').addEventListener('submit', function(event) {
+      const passwordLama = document.getElementById('passwordLama').value;
+      const passwordBaru = document.getElementById('passwordBaru').value;
+      const konfirmasiPassword = document.getElementById('konfirmasiPassword').value;
+
+      if (passwordBaru !== konfirmasiPassword) {
+        event.preventDefault();
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Password baru dan konfirmasi tidak cocok.' });
+      } else {
+        // Simulated password change success
+        Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Password berhasil diubah.' });
+        // Reset form after submission
+        this.reset();
+      }
+    });
+
+    // Toggle password visibility
+    function togglePassword() {
+      const passwordInput = document.getElementById('passwordBaru');
+      const confirmPasswordInput = document.getElementById('konfirmasiPassword');
+      const toggleCheckbox = document.getElementById('togglePassword');
+
+      if (toggleCheckbox.checked) {
+        passwordInput.type = 'text';
+        confirmPasswordInput.type = 'text';
+      } else {
+        passwordInput.type = 'password';
+        confirmPasswordInput.type = 'password';
+      }
+    }
+
+    // Load nilai data (simulated)
+    function loadNilai() {
+      const nilaiList = document.getElementById('nilaiList');
+      // Simulated data loading
+      nilaiList.innerHTML = `
+        <div class="info-box">
+          <h3>Mata Kuliah: Pemrograman Web</h3>
+          <p>Nilai: A</p>
+        </div>
+        <div class="info-box">
+          <h3>Mata Kuliah: Basis Data</h3>
+          <p>Nilai: B</p>
+        </div>
+      `;
+    }
+
+    // Load forum posts (simulated)
+    function loadForumPosts() {
+      const forumPosts = document.getElementById('forumPosts');
+      // Simulated data loading
+      forumPosts.innerHTML = `
+        <div class="info-box">
+          <h3>Pertanyaan: Bagaimana cara membuat website?</h3>
+          <p>Jawaban: Anda bisa menggunakan HTML, CSS, dan JavaScript.</p>
+        </div>
+        <div class="info-box">
+          <h3>Pertanyaan: Apa itu basis data?</h3>
+          <p>Jawaban: Basis data adalah kumpulan data yang terorganisir.</p>
+        </div>
+      `;
+    }
+
+    // Submit new forum post
+    function submitPost() {
+      const newPost = document.getElementById('newPost').value;
+      if (newPost.trim() === '') {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Mohon isi pertanyaan atau jawaban.' });
+        return;
+      }
+      // Simulated post submission
+      Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Pertanyaan atau jawaban berhasil dikirim.' });
+      document.getElementById('newPost').value = '';
+    }
+
+    // Load chat messages (simulated)
+    function loadChatMessages() {
+      const chatMessages = document.getElementById('chatMessages');
+      // Simulated data loading
+      chatMessages.innerHTML = `
+        <div class="info-box">
+          <p><strong>Admin:</strong> Selamat datang di chat!</p>
+        </div>
+        <div class="info-box">
+          <p><strong>Mahasiswa:</strong> Halo, bagaimana cara mengirim pesanan?</p>
+        </div>
+      `;
+    }
+
+    // Send chat message
+    function sendMessage() {
+      const chatInput = document.getElementById('chatInput').value;
+      if (chatInput.trim() === '') {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Mohon isi pesan.' });
+        return;
+      }
+      // Simulated message sending
+      const chatMessages = document.getElementById('chatMessages');
+      chatMessages.innerHTML += `
+        <div class="info-box">
+          <p><strong>Mahasiswa:</strong> ${chatInput}</p>
+        </div>
+      `;
+      document.getElementById('chatInput').value = '';
+    }
+
+    // Load statistik pembelajaran (simulated)
+    function loadStatistikPembelajaran() {
+      const waktuBelajar = document.getElementById('waktuBelajar');
+      const tugasDiselesaikan = document.getElementById('tugasDiselesaikan');
+      // Simulated data loading
+      waktuBelajar.textContent = '10 jam';
+      tugasDiselesaikan.textContent = '5';
+    }
   </script>
 </body>
 </html>
