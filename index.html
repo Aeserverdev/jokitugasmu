@@ -5,338 +5,65 @@
   <title>Dashboard Mahasiswa</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    /* CSS Styles */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Roboto', sans-serif;
-      display: flex;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #e0f7fa, #ffffff);
-      color: #333;
-      transition: background 0.5s ease;
-    }
-
-    .sidebar {
-      width: 250px;
-      background: linear-gradient(135deg, #1e293b, #3a4a6a);
-      color: #fff;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
-      transition: background 0.3s;
-      border-radius: 15px;
-    }
-
-    .sidebar h2 {
-      text-align: center;
-      color: #7fffd4;
-      margin-bottom: 2rem;
-      font-size: 1.8rem;
-    }
-
-    .sidebar button {
-      background: none;
-      border: none;
-      color: #ccc;
-      padding: 1rem 1.5rem;
-      text-align: left;
-      cursor: pointer;
-      border-radius: 10px;
-      font-weight: 500;
-      font-size: 1.1rem;
-      transition: background 0.3s, transform 0.3s, color 0.3s;
-    }
-
-    .sidebar button:hover {
-      background: linear-gradient(45deg, #00c6ff, #0072ff);
-      color: #fff;
-      transform: scale(1.05);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .content {
-      flex: 1;
-      padding: 2rem;
-      overflow-y: auto;
-      background: #f9f9f9;
-      animation: fadeIn 0.5s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-
-    .toggle-dark {
-      padding: 0.6rem 1.2rem;
-      background: #0072ff;
-      color: #fff;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: bold;
-      border: none;
-      transition: all 0.3s;
-    }
-
-    .toggle-dark:hover {
-      background: #0052cc;
-      transform: scale(1.05);
-    }
-
-    .section {
-      display: none;
-      animation: fadeIn 0.6s ease;
-    }
-
-    .section.active {
-      display: block;
-    }
-
-    .info-box, input, textarea, select {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 12px;
-      border: 1px solid #0072ff;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      transition: 0.3s;
-      width: 100%;
-    }
-
-    .btn {
-      background: linear-gradient(45deg, #0072ff, #00c6ff);
-      color: #fff;
-      padding: 0.8rem 2rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 12px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .btn:hover {
-      filter: brightness(1.1);
-      transform: scale(1.05);
-    }
-
-    /* Dark Mode */
-    .dark-mode {
-      background: #121212;
-      color: #f0f0f0;
-    }
-
-    .dark-mode .sidebar {
-      background: #0d1b2a;
-    }
-
-    .dark-mode .content {
-      background: #1e1e2e;
-    }
-
-    .dark-mode .info-box,
-    .dark-mode input,
-    .dark-mode textarea,
-    .dark-mode select {
-      background: #222;
-      color: #eee;
-      border-color: #444;
-    }
-
-    .dark-mode .btn {
-      background: linear-gradient(45deg, #00c6ff, #0072ff);
-    }
-
-    /* Profile Card Styles */
-    .card-profile {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 2rem;
-      border-radius: 15px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      transition: transform 0.3s;
-    }
-
-    .card-profile:hover {
-      transform: scale(1.02);
-    }
-
-    .profile-image {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      margin-bottom: 1rem;
-    }
-
-    .profile-name {
-      font-size: 1.5rem;
-      color: #0072ff;
-    }
-
-    /* Statistics Card Styles */
-    .statistik-card {
-      display: flex;
-      justify-content: space-around;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 2rem;
-      border-radius: 15px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      margin-top: 1rem;
-    }
-
-    .statistik-item {
-      text-align: center;
-    }
-
-    .statistik-item h3 {
-      font-size: 2rem;
-      color: #0072ff;
-    }
-
-    @keyframes growBar {
-      0% { width: 0; }
-      100% { width: 70%; }
-    }
-
-    .animate-grow {
-      animation: growBar 2s ease-out forwards;
-    }
-
-    /* Settings Styles */
-    .settings-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1rem;
-    }
-
-    .setting-item {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .setting-item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    .setting-item i {
-      font-size: 2.5rem;
-      color: #0072ff;
-      margin-bottom: 0.5rem;
-    }
-
-    .setting-item button {
-      padding: 0.8rem 1.5rem;
-      font-size: 1rem;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .sidebar {
-        width: 100%;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        padding: 0.5rem;
-      }
-
-      .sidebar button {
-        padding: 0.5rem;
-        font-size: 0.9rem;
-      }
-
-      .content {
-        padding: 2rem 1rem;
-      }
-
-      .card-profile {
-        margin: 1rem auto;
-      }
-
-      .statistik-card {
-        flex-direction: column;
-      }
-    }
-
-    /* Accessibility */
-    [aria-label]:hover::after {
-      content: attr(aria-label);
-      position: absolute;
-      background: #000;
-      color: #fff;
-      padding: 0.25rem;
-      border-radius: 4px;
-      font-size: 0.9rem;
-    }
-
-    /* Accessibility: Focus Styling */
-    button:focus, input:focus, textarea:focus, select:focus {
-      outline: 2px solid #0072ff;
-      outline-offset: 2px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="sidebar">
     <h2>👨‍🎓 Mahasiswa</h2>
-    <button aria-label="Profil" onclick="showSection('profil')">📄 Profil</button>
-    <button aria-label="Riwayat" onclick="showSection('riwayat')">📚 Riwayat</button>
-    <button aria-label="Pesanan" onclick="showSection('pesanan')">📝 Pesanan</button>
-    <button aria-label="Pembayaran" onclick="showSection('pembayaran')">💳 Pembayaran</button>
-    <button aria-label="Forum Diskusi" onclick="showSection('forum')">💬 Forum Diskusi</button>
-    <button aria-label="Penilaian" onclick="showSection('penilaian')">📊 Penilaian</button>
-    <button aria-label="Chat" onclick="showSection('chat')">💬 Chat</button>
-    <button aria-label="Statistik Pembelajaran" onclick="showSection('statistikPembelajaran')">📊 Statistik Pembelajaran</button>
-    <button aria-label="Pengaturan" onclick="showSection('pengaturan')">⚙️ Pengaturan</button>
+    <button onclick="showSection('profil')" class="active">📄 Profil</button>
+    <button onclick="showSection('riwayat')">📚 Riwayat</button>
+    <button onclick="showSection('pesanan')">📝 Pesanan</button>
+    <button onclick="showSection('pembayaran')">💳 Pembayaran</button>
+    <button onclick="showSection('pengaturan')">⚙️ Pengaturan</button>
+    <button onclick="logout()">🚪 Logout</button>
   </div>
   <div class="content">
+  	<div id="pengaturan" class="section">
+  <h2>⚙️ Pengaturan</h2>
+  <label for="temaWarna">Warna Tema</label>
+<select id="temaWarna" onchange="gantiWarnaTema()">
+  <option value="biru">Biru</option>
+  <option value="ungu">Ungu</option>
+  <option value="hijau">Hijau</option>
+  <option value="merah">Merah</option>
+</select>
+
+  <!-- Edit Profil -->
+  <div class="info-box">
+    <label>✏️ Edit Nama</label>
+    <input type="text" id="pengaturanNama" placeholder="Masukkan nama baru">
+    <button class="btn" onclick="simpanEditNama()">💾 Simpan Nama</button>
+  </div>
+
+  <!-- Ganti Password -->
+  <div class="info-box">
+    <label>🔐 Ganti Password</label>
+    <input type="password" id="passLama" placeholder="Password Lama">
+    <input type="password" id="passBaru" placeholder="Password Baru">
+    <button class="btn" onclick="gantiPassword()">🔁 Update Password</button>
+  </div>
+
+  <!-- Bahasa -->
+  <div class="info-box">
+    <label>🌐 Bahasa</label>
+    <select id="pilihBahasa" onchange="ubahBahasa()">
+      <option value="id">🇮🇩 Indonesia</option>
+      <option value="en">🇬🇧 English</option>
+    </select>
+  </div>
+</div>
     <div class="topbar">
       <h1>Dashboard</h1>
       <div class="toggle-dark" onclick="toggleTheme()">🌙 Mode</div>
     </div>
-
     <div id="profil" class="section active">
-      <div class="card-profile" style="max-width: 500px; margin: auto;">
-        <img id="profileImage" src="https://ui-avatars.com/api/?name=Mahasiswa" alt="Foto Mahasiswa" class="profile-image" />
-        <h3 id="nama" class="profile-name">Nama Mahasiswa</h3>
-        <span class="inline-block bg-green-200 text-green-800 text-sm px-3 py-1 rounded-full mt-2 animate-pulse">🟢 Aktif</span>
-        <div class="mt-4 text-left text-gray-700">
-          <p><strong>NPM:</strong> <span id="npm">-</span></p>
-          <p><strong>Prodi:</strong> <span id="prodi">-</span></p>
-          <p><strong>No. WhatsApp:</strong> <span id="nowa">-</span></p>
-        </div>
-        <div class="mt-6 text-left w-full">
-          <p class="text-sm mb-1 text-gray-600">📈 Progress Semester</p>
-          <div class="w-full bg-gray-300 rounded-full h-4 overflow-hidden">
-            <div class="bg-blue-500 h-full rounded-full animate-grow" style="width: 70%;"></div>
-          </div>
-        </div>
+      <div class="card-profile">
+        <img src="https://ui-avatars.com/api/?name=Mahasiswa" alt="Foto Mahasiswa">
+        <h3 id="nama"></h3>
+        <p><strong>NPM:</strong> <span id="npm"></span></p>
+        <p><strong>Prodi:</strong> <span id="prodi"></span></p>
+        <p><strong>No WA:</strong> <span id="nowa"></span></p>
       </div>
     </div>
 
@@ -351,558 +78,94 @@
       <form id="formPesanan">
         <div class="info-box">
           <label>Jenis Tugas</label>
-          <select id="jenis" onchange="updateHarga()">
-            <option value="">Pilih Jenis Tugas</option>
-            <option value="MAKALAH">MAKALAH</option>
-            <option value="PPT">PPT</option>
-            <option value="PPT PREMIUM">PPT PREMIUM</option>
-            <option value="WEBSITE">WEBSITE</option>
-            <option value="KODING">KODING</option>
-            <option value="ANIMACY">ANIMACY</option>
-            <option value="ANIMACY VIDEO">ANIMACY VIDEO</option>
-            <option value="BIKIN APLIKASI">BIKIN APLIKASI</option>
-          </select>
+         <select id="jenis" onchange="updateHarga()">
+  <option value="">Pilih Jenis Tugas</option>
+  <option value="MAKALAH">MAKALAH</option>
+  <option value="PPT">PPT</option>
+  <option value="PPT PREMIUM">PPT PREMIUM</option>
+  <option value="WEBSITE">WEBSITE</option>
+  <option value="KODING">KODING</option>
+  <option value="ANIMACY">ANIMACY</option>
+  <option value="ANIMACY VIDEO">ANIMACY VIDEO</option>
+  <option value="BIKIN APLIKASI">BIKIN APLIKASI</option>
+</select>
+
         </div>
 
         <div class="info-box">
           <label>Pilih Admin Joki</label>
           <select id="adminJoki">
-            <option value="">Pilih Admin</option>
-            <option value="RENALDI">Renaldi</option>
-            <option value="AFRIZAL">Afrizal</option>
-            <option value="ABDUL HAKIM">Abdul Hakim</option>
-            <option value="AIDIL ANWAR">Aidil Anwar</option>
-          </select>
-        </div>
-
-        <div class="info-box">
-          <label>Metode Pembayaran</label>
-          <input id="metode" readonly>
-        </div>
-
-        <div class="info-box" id="infoDana" style="display:none;">
-          <strong>Nomor Dana:</strong> <span id="nomorDana"></span>
-        </div>
-
-        <div class="info-box">
-          <label>Judul</label>
-          <input type="text" id="judul" placeholder="Contoh: Sistem Informasi Akademik" required>
-        </div>
-
-        <div class="info-box">
-          <label>Deskripsi</label>
-          <textarea id="deskripsi" placeholder="Penjelasan tentang tugas yang akan dibuat" required></textarea>
-        </div>
-
-        <div class="info-box">
-          <label>Nama Lengkap Dosen</label>
-          <input type="text" id="dosen" placeholder="Contoh: Dr. Bambang S.Kom., M.T." required>
-        </div>
-
-        <div class="info-box">
-          <label>Fakultas</label>
-          <input type="text" id="fakultas" placeholder="Contoh: Fakultas Ilmu Komputer" required>
-        </div>
-
-        <div class="info-box">
-          <label>Mata Kuliah</label>
-          <input type="text" id="matkul" placeholder="Contoh: Pemrograman Web" required>
-        </div>
-
-        <div class="info-box">
-          <label>Deadline wajib lewat dari 1 Hari</label>
-          <input type="date" id="deadline" required>
-        </div>
-
-        <div class="info-box">
-          <label>Harga</label>
-          <input id="harga" readonly>
-        </div>
-
-        <div class="info-box">
-          <label>Upload Bukti Pembayaran (gambar)</label>
-          <input type="file" id="bukti" accept="image/*" required>
-        </div>
-
-        <div class="info-box">
-          <button type="submit" class="btn">🚀 Kirim Pesanan</button>
-        </div>
-      </form>
-
-      <div class="info-box" id="statusPesanan" style="display:none"></div>
-    </div>
-
-    <div id="pembayaran" class="section">
-      <h2>💳 Riwayat Pembayaran</h2>
-      <input type="text" placeholder="🔍 Cari pembayaran..." class="info-box" oninput="filterPembayaran()" id="searchPembayaran">
-      <div class="info-box" id="tabelPembayaran">Memuat data...</div>
-    </div>
-
-    <div id="forum" class="section">
-      <h2>💬 Forum Diskusi</h2>
-      <input type="text" id="forumSearch" placeholder="🔍 Cari diskusi..." class="info-box" oninput="filterForum()">
-      <div id="forumPosts">Memuat data...</div>
-      <textarea id="newPost" placeholder="Tulis pertanyaan atau jawaban..." class="info-box"></textarea>
-      <button onclick="submitPost()" class="btn">📝 Kirim</button>
-    </div>
-
-    <div id="penilaian" class="section">
-      <h2>📊 Sistem Penilaian</h2>
-      <div id="nilaiList">Memuat data...</div>
-    </div>
-
-    <div id="chat" class="section">
-      <h2>💬 Chat</h2>
-      <div id="chatMessages">Memuat pesan...</div>
-      <input type="text" id="chatInput" placeholder="Tulis pesan..." class="info-box">
-      <button onclick="sendMessage()" class="btn">Kirim</button>
-    </div>
-
-    <div id="statistikPembelajaran" class="section">
-      <h2>📊 Statistik Pembelajaran</h2>
-      <div class="statistik-card">
-        <div class="statistik-item">
-          <p><strong>Waktu Belajar:</strong></p>
-          <h3 id="waktuBelajar">0 jam</h3>
-        </div>
-        <div class="statistik-item">
-          <p><strong>Tugas Diselesaikan:</strong></p>
-          <h3 id="tugasDiselesaikan">0</h3>
-        </div>
+  <option value="">Pilih Admin</option>
+  <option value="RENALDI">Renaldi</option>
+  <option value="AFRIZAL">Afrizal</option>
+  <option value="ABDUL HAKIM">Abdul Hakim</option>
+  <option value="AIDIL ANWAR">Aidil Anwar</option>
+</select>
       </div>
-    </div>
 
-    <div id="pengaturan" class="section">
-      <h2>⚙️ Pengaturan</h2>
-      <div class="settings-grid">
-        <div class="setting-item">
-          <i class="fas fa-user-edit"></i>
-          <button onclick="showSection('editProfil')" class="btn">✏️ Edit Profil</button>
-        </div>
-        <div class="setting-item">
-          <i class="fas fa-lock"></i>
-          <button onclick="showSection('gantiPassword')" class="btn">🔒 Ganti Password</button>
-        </div>
-        <div class="setting-item">
-          <i class="fas fa-sign-out-alt"></i>
-          <button onclick="logout()" class="btn">🚪 Logout</button>
-        </div>
+      <div class="info-box">
+        <label>Metode Pembayaran</label>
+        <input id="metode" readonly>
       </div>
-    </div>
 
-    <div id="gantiPassword" class="section">
-      <h2>🔒 Ganti Password</h2>
-      <form id="formGantiPassword" class="space-y-4">
-        <div class="info-box">
-          <label for="passwordLama" class="block font-semibold">Password Lama</label>
-          <input type="password" id="passwordLama" placeholder="Masukkan password lama" required class="w-full p-2 rounded border">
-        </div>
-        <div class="info-box">
-          <label for="passwordBaru" class="block font-semibold">Password Baru</label>
-          <input type="password" id="passwordBaru" placeholder="Masukkan password baru" required class="w-full p-2 rounded border">
-        </div>
-        <div class="info-box">
-          <label for="konfirmasiPassword" class="block font-semibold">Konfirmasi Password Baru</label>
-          <input type="password" id="konfirmasiPassword" placeholder="Konfirmasi password baru" required class="w-full p-2 rounded border">
-        </div>
-        <div class="info-box flex items-center gap-2">
-          <input type="checkbox" id="togglePassword" onclick="togglePassword()" class="cursor-pointer">
-          <label for="togglePassword" class="cursor-pointer text-sm">Tampilkan Password</label>
-        </div>
-        <div class="info-box">
-          <button type="submit" class="btn">💾 Simpan Perubahan</button>
-        </div>
-        <div id="statusGantiPassword" class="info-box text-sm text-green-600 hidden"></div>
-      </form>
-    </div>
+       <div class="info-box" id="infoDana" style="display:none;">
+        <strong>Nomor Dana:</strong> <span id="nomorDana"></span>
+      </div>
+
+      <div class="info-box">
+  <label>Judul</label>
+  <input type="text" id="judul" placeholder="Contoh: Sistem Informasi Akademik" required>
+</div>
+
+<div class="info-box">
+  <label>Deskripsi</label>
+  <textarea id="deskripsi" placeholder="Penjelasan tentang tugas yang akan dibuat" required></textarea>
+</div>
+
+<div class="info-box">
+  <label>Nama Lengkap Dosen</label>
+  <input type="text" id="dosen" placeholder="Contoh: Dr. Bambang S.Kom., M.T." required>
+</div>
+
+<div class="info-box">
+  <label>Fakultas</label>
+  <input type="text" id="fakultas" placeholder="Contoh: Fakultas Ilmu Komputer" required>
+</div>
+
+<div class="info-box">
+  <label>Mata Kuliah</label>
+  <input type="text" id="matkul" placeholder="Contoh: Pemrograman Web" required>
+</div>
+
+      <div class="info-box">
+        <label>Deadline wajib lewat dari 1 Hari</label>
+        <input type="date" id="deadline" required>
+      </div>
+
+      <div class="info-box">
+        <label>Harga</label>
+        <input id="harga" readonly>
+      </div>
+
+      <div class="info-box">
+        <label>Upload Bukti Pembayaran (gambar)</label>
+        <input type="file" id="bukti" accept="image/*" required>
+      </div>
+
+      <div class="info-box">
+        <button type="submit" class="btn">🚀 Kirim Pesanan</button>
+      </div>
+    </form>
+
+    <div class="info-box" id="statusPesanan" style="display:none"></div>
   </div>
 
-  <script>
-    // JavaScript Functions
-    document.addEventListener("DOMContentLoaded", () => {
-      const user = JSON.parse(localStorage.getItem("user"));
-      if (!user) {
-        location.href = "login_daftar.html"; // Redirect if no user data
-      } else {
-        document.getElementById("nama").textContent = user.nama || 'Nama Mahasiswa';
-        document.getElementById("npm").textContent = user.npm || '-';
-        document.getElementById("prodi").textContent = user.prodi || '-';
-        document.getElementById("nowa").textContent = user.nowa || '-';
-      }
-      loadRiwayat();
-      loadPembayaran();
-      loadNilai();
-      loadForumPosts();
-      loadChatMessages();
-      loadStatistikPembelajaran();
-
-      // Initialize tooltip for accessibility
-      const tooltipTriggers = document.querySelectorAll('[aria-label]');
-      tooltipTriggers.forEach(trigger => {
-        trigger.addEventListener('focus', () => {
-          trigger.setAttribute('aria-describedby', 'tooltip');
-        });
-        trigger.addEventListener('blur', () => {
-          trigger.removeAttribute('aria-describedby');
-        });
-      });
-    });
-
-    // Show section functionality
-    function showSection(id) {
-      document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-      document.querySelectorAll(".sidebar button").forEach(b => b.classList.remove("active"));
-      document.querySelector(`.sidebar button[onclick*="${id}"]`).classList.add("active");
-      if (id === "riwayat") loadRiwayat();
-      if (id === "pembayaran") loadPembayaran();
-      if (id === "penilaian") loadNilai();
-      if (id === "forum") loadForumPosts();
-      if (id === "chat") loadChatMessages();
-      if (id === "statistikPembelajaran") loadStatistikPembelajaran();
-    }
-
-    // Theme toggle functionality
-    function toggleTheme() {
-      const isDark = document.body.classList.toggle("dark-mode");
-      localStorage.setItem("theme", isDark ? "dark" : "light");
-    }
-
-    // Check saved theme preference
-    if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark-mode");
-
-    // Logout functionality
-    function logout() {
-      localStorage.removeItem("user");
-      Swal.fire({ 
-        icon: 'info', 
-        title: 'Logout berhasil', 
-        timer: 2000, 
-        showConfirmButton: false 
-      });
-      setTimeout(() => location.href = "login_daftar.html", 1500);
-    }
-
-    // Show notification functionality
-    function showNotif(icon, title, text = '') {
-      Swal.fire({ 
-        icon, 
-        title, 
-        text, 
-        toast: true, 
-        position: 'top-end', 
-        timer: 4000, 
-        showConfirmButton: false 
-      });
-    }
-
-    // Harga map for different jenis tugas
-    const hargaMap = {
-      "MAKALAH": 25000,
-      "PPT": 25000,
-      "PPT PREMIUM": 50000,
-      "WEBSITE": 150000,
-      "ODKING": 750000,
-      "ANIMACY": 50000,
-      "ANIMACY VIDEO": 75000,
-      "BIKIN APLIKASI": 500000
-    };
-
-    // Update harga based on selected jenis tugas
-    function updateHarga() {
-      const jenis = document.getElementById("jenis").value;
-      const harga = hargaMap[jenis] || 0;
-      document.getElementById("harga").value = harga ? `Rp ${harga.toLocaleString("id-ID")}` : '';
-    }
-
-    // Load riwayat data
-    async function loadRiwayat() {
-      const box = document.getElementById("tabelRiwayat");
-      box.textContent = "Memuat data...";
-      const user = JSON.parse(localStorage.getItem("user"));
-      if (!user || !user.npm) {
-        box.innerHTML = "<i>Data pengguna tidak ditemukan.</i>";
-        return showNotif("error", "Gagal Memuat", "Data pengguna tidak lengkap.");
-      }
-
-      try {
-        // Simulated data loading (replace with actual fetch call)
-        const data = [
-          { trackingID: 'T001', jenis: 'MAKALAH', deadline: '2023-12-15', status: 'Proses' },
-          { trackingID: 'T002', jenis: 'PPT PREMIUM', deadline: '2023-12-20', status: 'Selesai' }
-        ];
-        if (data.length === 0) {
-          box.innerHTML = "<i>Belum ada data.</i>";
-        } else {
-          tampilkanRiwayat(data);
-        }
-      } catch (e) {
-        console.error("loadRiwayat error:", e);
-        box.innerHTML = "<i>Gagal memuat data.</i>";
-        showNotif("error", "Gagal Memuat Riwayat", "Terjadi kesalahan saat mengambil data.");
-      }
-    }
-
-    // Display riwayat data in table format
- function    tampilkanRiwayat(data) {
-      let html = "<table><tr><th>ID</th><th>Jenis</th><th>Deadline</th><th>Status</th></tr>";
-      data.forEach(r => {
-        const status = (r.status || "Menunggu").toLowerCase();
-        let cls = "status-menunggu";
-        if (status.includes("proses")) cls = "status-proses";
-        else if (status.includes("selesai")) cls = "status-selesai";
-        else if (status.includes("batal")) cls = "status-batal";
-
-        html += `<tr>
-          <td>${r.trackingID || '-'}</td>
-          <td>${r.jenis || '-'}</td>
-          <td>${r.deadline || '-'}</td>
-          <td><span class="status-badge ${cls}">${r.status || 'Menunggu'}</span></td>
-        </tr>`;
-      });
-      html += "</table>";
-      document.getElementById("tabelRiwayat").innerHTML = html;
-    }
-
-    // Filter riwayat based on search query
-    function filterRiwayat() {
-      const q = document.getElementById("searchRiwayat").value.toLowerCase();
-      // Assuming semuaRiwayat is defined elsewhere in your code
-      if (window.semuaRiwayat) {
-        const hasil = semuaRiwayat.filter(r => {
-          const id = (r.trackingID || "").toLowerCase();
-          const jenis = (r.jenis || "").toLowerCase();
-          const deadline = (r.deadline || "").toLowerCase();
-          const status = (r.status || "").toLowerCase();
-          return id.includes(q) || jenis.includes(q) || deadline.includes(q) || status.includes(q);
-        });
-        tampilkanRiwayat(hasil);
-      }
-    }
-
-    // Load pembayaran data
-    async function loadPembayaran() {
-      const box = document.getElementById("tabelPembayaran");
-      box.textContent = "Memuat data...";
-      const user = JSON.parse(localStorage.getItem("user"));
-      if (!user || !user.npm) {
-        box.innerHTML = "<i>Data pengguna tidak ditemukan.</i>";
-        return showNotif("error", "Gagal Memuat", "Data pengguna tidak lengkap.");
-      }
-
-      try {
-        // Simulated data loading (replace with actual fetch call)
-        const data = [
-          { id: 'P001', tanggal: '2023-12-01', metode: 'Dana', jumlah: 25000, status: 'Terverifikasi' },
-          { id: 'P002', tanggal: '2023-12-05', metode: 'Dana', jumlah: 50000, status: 'Pending' }
-        ];
-        window.semuaPembayaran = data;
-        if (data.length === 0) {
-          box.innerHTML = "<i>Belum ada data pembayaran.</i>";
-        } else {
-          tampilkanPembayaran(data);
-        }
-      } catch (e) {
-        box.innerHTML = "<i>Gagal memuat data pembayaran.</i>";
-        showNotif("error", "Gagal Memuat Pembayaran");
-      }
-    }
-
-    // Display pembayaran data in table format
-    function tampilkanPembayaran(data) {
-      let html = "<table><tr><th>ID</th><th>Tanggal</th><th>Metode</th><th>Jumlah</th><th>Status</th></tr>";
-      data.forEach(p => {
-        const s = (p.status || "Pending").toLowerCase();
-        let cls = "status-menunggu";
-        if (s.includes("terverifikasi")) cls = "status-selesai";
-        else if (s.includes("gagal")) cls = "status-batal";
-        html += `<tr><td>${p.id || '-'}</td><td>${p.tanggal || '-'}</td><td>${p.metode || '-'}</td><td>Rp ${parseInt(p.jumlah || 0).toLocaleString("id-ID")}</td><td><span class="status-badge ${cls}">${p.status || 'Pending'}</span></td></tr>`;
-      });
-      html += "</table>";
-      document.getElementById("tabelPembayaran").innerHTML = html;
-    }
-
-    // Filter pembayaran based on search query
-    function filterPembayaran() {
-      const q = document.getElementById("searchPembayaran").value.toLowerCase();
-      if (window.semuaPembayaran) {
-        const f = semuaPembayaran.filter(p =>
-          p.id.toLowerCase().includes(q) ||
-          p.tanggal.toLowerCase().includes(q) ||
-          p.metode.toLowerCase().includes(q) ||
-          p.status.toLowerCase().includes(q)
-        );
-        tampilkanPembayaran(f);
-      }
-    }
-
-    // Nomor Dana map for different admins
-    const nomorDanaMap = {
-      "RENALDI": "081348722325",
-      "AFRIZAL": "085182489261",
-      "ABDUL HAKIM": "085764534425",
-      "AIDIL ANWAR": "082279458613"
-    };
-
-    // Update Dana info based on selected admin
-    document.getElementById("adminJoki").addEventListener("change", function () {
-      const admin = this.value;
-      const nomor = nomorDanaMap[admin];
-      const metodeInput = document.getElementById("metode");
-      const danaBox = document.getElementById("infoDana");
-
-      if (nomor) {
-        metodeInput.value = "Dana";
-        danaBox.style.display = "block";
-        document.getElementById("nomorDana").textContent = nomor;
-      } else {
-        metodeInput.value = "";
-        danaBox.style.display = "none";
-        document.getElementById("nomorDana").textContent = "";
-      }
-    });
-
-    // Form submission for Pesanan
-    document.getElementById('formPesanan').addEventListener('submit', function(event) {
-      const jenis = document.getElementById('jenis').value;
-      const adminJoki = document.getElementById('adminJoki').value;
-      const judul = document.getElementById('judul').value;
-      const deskripsi = document.getElementById('deskripsi').value;
-      const dosen = document.getElementById('dosen').value;
-      const fakultas = document.getElementById('fakultas').value;
-      const matkul = document.getElementById('matkul').value;
-      const deadline = document.getElementById('deadline').value;
-      const harga = document.getElementById('harga').value;
-      const bukti = document.getElementById('bukti').files[0];
-
-      if (!jenis || !adminJoki || !judul || !deskripsi || !dosen || !fakultas || !matkul || !deadline || !harga || !bukti) {
-        event.preventDefault();
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Mohon lengkapi semua field.' });
-      } else {
-        // Simulated submission success
-        Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Pesanan berhasil dikirim.' });
-        // Reset form after submission
-        this.reset();
-        document.getElementById('infoDana').style.display = 'none';
-        document.getElementById('metode').value = '';
-      }
-    });
-
-    // Form submission for Ganti Password
-    document.getElementById('formGantiPassword').addEventListener('submit', function(event) {
-      const passwordLama = document.getElementById('passwordLama').value;
-      const passwordBaru = document.getElementById('passwordBaru').value;
-      const konfirmasiPassword = document.getElementById('konfirmasiPassword').value;
-
-      if (passwordBaru !== konfirmasiPassword) {
-        event.preventDefault();
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Password baru dan konfirmasi tidak cocok.' });
-      } else {
-        // Simulated password change success
-        Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Password berhasil diubah.' });
-        // Reset form after submission
-        this.reset();
-      }
-    });
-
-    // Toggle password visibility
-    function togglePassword() {
-      const passwordInput = document.getElementById('passwordBaru');
-      const confirmPasswordInput = document.getElementById('konfirmasiPassword');
-      const toggleCheckbox = document.getElementById('togglePassword');
-
-      if (toggleCheckbox.checked) {
-        passwordInput.type = 'text';
-        confirmPasswordInput.type = 'text';
-      } else {
-        passwordInput.type = 'password';
-        confirmPasswordInput.type = 'password';
-      }
-    }
-
-    // Load nilai data (simulated)
-    function loadNilai() {
-      const nilaiList = document.getElementById('nilaiList');
-      // Simulated data loading
-      nilaiList.innerHTML = `
-        <div class="info-box">
-          <h3>Mata Kuliah: Pemrograman Web</h3>
-          <p>Nilai: A</p>
-        </div>
-        <div class="info-box">
-          <h3>Mata Kuliah: Basis Data</h3>
-          <p>Nilai: B</p>
-        </div>
-      `;
-    }
-
-    // Load forum posts (simulated)
-    function loadForumPosts() {
-      const forumPosts = document.getElementById('forumPosts');
-      // Simulated data loading
-      forumPosts.innerHTML = `
-        <div class="info-box">
-          <h3>Pertanyaan: Bagaimana cara membuat website?</h3>
-          <p>Jawaban: Anda bisa menggunakan HTML, CSS, dan JavaScript.</p>
-        </div>
-        <div class="info-box">
-          <h3>Pertanyaan: Apa itu basis data?</h3>
-          <p>Jawaban: Basis data adalah kumpulan data yang terorganisir.</p>
-        </div>
-      `;
-    }
-
-    // Submit new forum post
-    function submitPost() {
-      const newPost = document.getElementById('newPost').value;
-      if (newPost.trim() === '') {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Mohon isi pertanyaan atau jawaban.' });
-        return;
-      }
-      // Simulated post submission
-      Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Pertanyaan atau jawaban berhasil dikirim.' });
-      document.getElementById('newPost').value = '';
-    }
-
-    // Load chat messages (simulated)
-    function loadChatMessages() {
-      const chatMessages = document.getElementById('chatMessages');
-      // Simulated data loading
-      chatMessages.innerHTML = `
-        <div class="info-box">
-          <p><strong>Admin:</strong> Selamat datang di chat!</p>
-        </div>
-        <div class="info-box">
-          <p><strong>Mahasiswa:</strong> Halo, bagaimana cara mengirim pesanan?</p>
-        </div>
-      `;
-    }
-
-    // Send chat message
-    function sendMessage() {
-      const chatInput = document.getElementById('chatInput').value;
-      if (chatInput.trim() === '') {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Mohon isi pesan.' });
-        return;
-      }
-      // Simulated message sending
-      const chatMessages = document.getElementById('chatMessages');
-      chatMessages.innerHTML += `
-        <div class="info-box">
-          <p><strong>Mahasiswa:</strong> ${chatInput}</p>
-        </div>
-      `;
-      document.getElementById('chatInput').value = '';
-    }
-
-    // Load statistik pembelajaran (simulated)
-    function loadStatistikPembelajaran() {
-      const waktuBelajar = document.getElementById('waktuBelajar');
-      const tugasDiselesaikan = document.getElementById('tugasDiselesaikan');
-      // Simulated data loading
-      waktuBelajar.textContent = '10 jam';
-      tugasDiselesaikan.textContent = '5';
-    }
-  </script>
+  <div id="pembayaran" class="section">
+    <h2>💳 Riwayat Pembayaran</h2>
+    <input type="text" placeholder="🔍 Cari pembayaran..." class="info-box" oninput="filterPembayaran()" id="searchPembayaran">
+    <div class="info-box" id="tabelPembayaran">Memuat data...</div>
+  </div>
+</div>
+  <script src="script.js"></script>
 </body>
 </html>
