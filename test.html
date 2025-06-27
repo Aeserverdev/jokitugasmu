@@ -5,8 +5,10 @@
   <title>Dashboard Mahasiswa</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
+    /* CSS Styles */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -22,7 +24,6 @@
       transition: background 0.5s ease;
     }
 
-    /* Sidebar */
     .sidebar {
       width: 250px;
       background: linear-gradient(135deg, #1e293b, #3a4a6a);
@@ -33,43 +34,36 @@
       gap: 1rem;
       box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
       transition: background 0.3s;
-      border-radius: 15px; /* Rounded corners */
+      border-radius: 15px;
     }
 
     .sidebar h2 {
       text-align: center;
       color: #7fffd4;
       margin-bottom: 2rem;
-      font-size: 1.8rem; /* Increased font size */
+      font-size: 1.8rem;
     }
 
     .sidebar button {
       background: none;
       border: none;
       color: #ccc;
-      padding: 1rem 1.5rem; /* Increased padding */
+      padding: 1rem 1.5rem;
       text-align: left;
       cursor: pointer;
       border-radius: 10px;
       font-weight: 500;
-      font-size: 1.1rem; /* Increased font size */
-      transition: background 0.3s, transform 0.3s, color 0.3s; /* Added color transition */
+      font-size: 1.1rem;
+      transition: background 0.3s, transform 0.3s, color 0.3s;
     }
 
     .sidebar button:hover {
       background: linear-gradient(45deg, #00c6ff, #0072ff);
       color: #fff;
       transform: scale(1.05);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Added shadow on hover */
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
-    /* Active button style */
-    .sidebar button.active {
-      background: #0072ff; /* Active button background */
-      color: #fff; /* Active button text color */
-    }
-
-    /* Konten */
     .content {
       flex: 1;
       padding: 2rem;
@@ -106,7 +100,6 @@
       transform: scale(1.05);
     }
 
-    /* Section */
     .section {
       display: none;
       animation: fadeIn 0.6s ease;
@@ -116,32 +109,6 @@
       display: block;
     }
 
-    /* Kartu Profil */
-    .card-profile {
-      max-width: 420px;
-      background: rgba(255,255,255,0.9);
-      border: 1px solid #0072ff;
-      border-radius: 20px;
-      margin: auto;
-      padding: 2rem;
-      text-align: center;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-      transition: all 0.4s ease;
-    }
-
-    .card-profile:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
-    }
-
-    .card-profile img {
-      width: 100px;
-      border-radius: 50%;
-      margin-bottom: 1rem;
-      border: 3px solid #7fffd4;
-    }
-
-    /* Form & Box */
     .info-box, input, textarea, select {
       background: rgba(255,255,255,0.95);
       padding: 1rem;
@@ -170,77 +137,6 @@
       transform: scale(1.05);
     }
 
-    /* Tabel Umum */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      border-radius: 12px;
-      overflow: hidden;
-      margin-top: 1rem;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-    }
-
-    th, td {
-      padding: 12px 16px;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-    }
-
-    th {
-      background: #0072ff;
-      color: #fff;
-    }
-
-    /* Badge Status */
-    .status-badge {
-      padding: 5px 12px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #fff;
-    }
-    .status-menunggu { background: #ff9800; }
-    .status-proses { background: #2196f3; }
-    .status-selesai { background: #4caf50; }
-    .status-batal { background: #f44336; }
-
-    /* Statistik Pengguna */
-    #statistik {
-      margin-top: 2rem;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Responsive Tabel HP */
-    @media (max-width: 600px) {
-      table, thead, tbody, th, td, tr {
-        display: block;
-      }
-
-      tr {
-        margin-bottom: 1rem;
-      }
-
-      td {
-        text-align: right;
-        position: relative;
-        padding-left: 50%;
-      }
-
-      td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 0;
-        width: 45%;
-        padding-left: 15px;
-        font-weight: bold;
-        text-align: left;
-      }
-    }
-
     /* Dark Mode */
     .dark-mode {
       background: #121212;
@@ -258,46 +154,102 @@
     .dark-mode .info-box,
     .dark-mode input,
     .dark-mode textarea,
-    .dark-mode select,
-    .dark-mode table {
+    .dark-mode select {
       background: #222;
       color: #eee;
       border-color: #444;
-    }
-
-    .dark-mode .card-profile {
-      background: rgba(255,255,255,0.05);
-      color: #fff;
-    }
-
-    .dark-mode th {
-      background: #263159;
-      color: #7fffd4;
     }
 
     .dark-mode .btn {
       background: linear-gradient(45deg, #00c6ff, #0072ff);
     }
 
-    /* Responsive Layout */
-    @media(max-width:768px) {
-      body {
-        flex-direction: column;
-      }
+    /* Profile Card Styles */
+    .card-profile {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: transform 0.3s;
+    }
 
-      .sidebar {
-        width: 100%;
-        flex-direction: row;
-        gap: 0;
-        overflow-x: auto;
-        justify-content: space-around;
-      }
+    .card-profile:hover {
+      transform: scale(1.02);
+    }
 
-      .sidebar button {
-        flex: 1;
-        text-align: center;
-        padding: 1rem;
-      }
+    .profile-image {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 1rem;
+    }
+
+    .profile-name {
+      font-size: 1.5rem;
+      color: #0072ff;
+    }
+
+    /* Statistics Card Styles */
+    .statistik-card {
+      display: flex;
+      justify-content: space-around;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      margin-top: 1rem;
+    }
+
+    .statistik-item {
+      text-align: center;
+    }
+
+    .statistik-item h3 {
+      font-size: 2rem;
+      color: #0072ff;
+    }
+
+    @keyframes growBar {
+      0% { width: 0; }
+      100% { width: 70%; }
+    }
+
+    .animate-grow {
+      animation: growBar 2s ease-out forwards;
+    }
+
+    /* Settings Styles */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .setting-item {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2rem; /* Meningkatkan padding */
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .setting-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .setting-item i {
+      font-size: 2.5rem; /* Meningkatkan ukuran ikon */
+      color: #0072ff;
+      margin-bottom: 0.5rem;
+    }
+
+    .setting-item button {
+      padding: 0.8rem 1.5rem; /* Meningkatkan padding tombol */
+      font-size: 1rem; /* Ukuran font tombol */
     }
   </style>
 </head>
@@ -308,8 +260,11 @@
     <button onclick="showSection('riwayat')">📚 Riwayat</button>
     <button onclick="showSection('pesanan')">📝 Pesanan</button>
     <button onclick="showSection('pembayaran')">💳 Pembayaran</button>
+    <button onclick="showSection('forum')">💬 Forum Diskusi</button>
+    <button onclick="showSection('penilaian')">📊 Penilaian</button>
+    <button onclick="showSection('chat')">💬 Chat</button>
+    <button onclick="showSection('statistikPembelajaran')">📊 Statistik Pembelajaran</button>
     <button onclick="showSection('pengaturan')">⚙️ Pengaturan</button>
-    <button onclick="logout()">🚪 Logout</button>
   </div>
   <div class="content">
     <div class="topbar">
@@ -318,12 +273,21 @@
     </div>
 
     <div id="profil" class="section active">
-      <div class="card-profile">
-        <img id="profileImage" src="https://ui-avatars.com/api/?name=Mahasiswa" alt="Foto Mahasiswa">
-        <h3 id="nama"></h3>
-        <p><strong>NPM:</strong> <span id="npm"></span></p>
-        <p><strong>Prodi:</strong> <span id="prodi"></span></p>
-        <p><strong>No WA:</strong> <span id="nowa"></span></p>
+      <div class="card-profile" style="max-width: 500px; margin: auto;">
+        <img id="profileImage" src="https://ui-avatars.com/api/?name=Mahasiswa" alt="Foto Mahasiswa" class="profile-image shadow-xl border-4 border-blue-500" />
+        <h3 id="nama" class="profile-name font-bold mt-2 text-2xl">Nama Mahasiswa</h3>
+        <span class="inline-block bg-green-200 text-green-800 text-sm px-3 py-1 rounded-full mt-2 animate-pulse">🟢 Aktif</span>
+        <div class="mt-4 text-left text-gray-700">
+          <p><strong>NPM:</strong> <span id="npm">-</span></p>
+          <p><strong>Prodi:</strong> <span id="prodi">-</span></p>
+          <p><strong>No. WhatsApp:</strong> <span id="nowa">-</span></p>
+        </div>
+        <div class="mt-6 text-left w-full">
+          <p class="text-sm mb-1 text-gray-600">📈 Progress Semester</p>
+          <div class="w-full bg-gray-300 rounded-full h-4 overflow-hidden">
+            <div class="bg-blue-500 h-full rounded-full animate-grow" style="width: 70%;"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -425,131 +389,91 @@
       <div class="info-box" id="tabelPembayaran">Memuat data...</div>
     </div>
 
+    <div id="forum" class="section">
+      <h2>💬 Forum Diskusi</h2>
+      <input type="text" id="forumSearch" placeholder="🔍 Cari diskusi..." class="info-box" oninput="filterForum()">
+      <div id="forumPosts">Memuat data...</div>
+      <textarea id="newPost" placeholder="Tulis pertanyaan atau jawaban..." class="info-box"></textarea>
+      <button onclick="submitPost()" class="btn">📝 Kirim</button>
+    </div>
+
+    <div id="penilaian" class="section">
+      <h2>📊 Sistem Penilaian</h2>
+      <div id="nilaiList">Memuat data...</div>
+    </div>
+
+    <div id="chat" class="section">
+      <h2>💬 Chat</h2>
+      <div id="chatMessages">Memuat pesan...</div>
+      <input type="text" id="chatInput" placeholder="Tulis pesan..." class="info-box">
+      <button onclick="sendMessage()" class="btn">Kirim</button>
+    </div>
+
+    <div id="statistikPembelajaran" class="section">
+      <h2>📊 Statistik Pembelajaran</h2>
+      <div class="statistik-card">
+        <div class="statistik-item">
+          <p><strong>Waktu Belajar:</strong></p>
+          <h3 id="waktuBelajar">0 jam</h3>
+        </div>
+        <div class="statistik-item">
+          <p><strong>Tugas Diselesaikan:</strong></p>
+          <h3 id="tugasDiselesaikan">0</h3>
+        </div>
+      </div>
+    </div>
+
     <div id="pengaturan" class="section">
       <h2>⚙️ Pengaturan</h2>
-      <label for="temaWarna">Warna Tema</label>
-      <select id="temaWarna" onchange="gantiWarnaTema()">
-        <option value="biru">Biru</option>
-        <option value="ungu">Ungu</option>
-        <option value="hijau">Hijau</option>
-        <option value="merah">Merah</option>
-      </select>
-
-      <!-- Ganti Foto Profil -->
-      <div class="info-box">
-        <label>Ganti Foto Profil</label>
-        <input type="file" id="uploadProfile" accept="image/*">
-        <button class="btn" onclick="gantiFotoProfil()">💾 Simpan Foto</button>
-      </div>
-
-      <!-- Edit Profil -->
-      <div class="info-box">
-        <label>✏️ Edit Nama</label>
-        <input type="text" id="pengaturanNama" placeholder="Masukkan nama baru" required>
-        <button class="btn" onclick="simpanEditNama()">💾 Simpan Nama</button>
-      </div>
-
-      <!-- Ganti Password -->
-      <div class="info-box">
-        <label>🔐 Ganti Password</label>
-        <input type="password" id="passLama" placeholder="Password Lama" required>
-        <input type="password" id="passBaru" placeholder="Password Baru" required>
-        <button class="btn" onclick="gantiPassword()">🔁 Update Password</button>
-      </div>
-
-      <!-- Bahasa -->
-      <div class="info-box">
-        <label>🌐 Bahasa</label>
-        <select id="pilihBahasa" onchange="ubahBahasa()">
-          <option value="id">🇮🇩 Indonesia</option>
-          <option value="en">🇬🇧 English</option>
-        </select>
+      <div class="settings-grid">
+        <div class="setting-item">
+          <i class="fas fa-user-edit"></i>
+          <button onclick="showSection('editProfil')" class="btn">✏️ Edit Profil</button>
+        </div>
+        <div class="setting-item">
+          <i class="fas fa-lock"></i>
+          <button onclick="showSection('gantiPassword')" class="btn">🔒 Ganti Password</button>
+        </div>
+        <div class="setting-item">
+          <i class="fas fa-sign-out-alt"></i>
+          <button onclick="logout()" class="btn">🚪 Logout</button>
+        </div>
       </div>
     </div>
 
-    <!-- Statistik Pengguna -->
-    <div id="statistik" class="section">
-      <h2>📊 Statistik Pengguna</h2>
-      <p><strong>Tugas Selesai:</strong> <span id="tugasSelesai">0</span></p>
-      <p><strong>Total Pembayaran:</strong> <span id="totalPembayaran">0</span></p>
+    <div id="gantiPassword" class="section">
+      <h2>🔒 Ganti Password</h2>
+      <form id="formGantiPassword" class="space-y-4">
+  <div class="info-box">
+    <label for="passwordLama" class="block font-semibold">Password Lama</label>
+    <input type="password" id="passwordLama" placeholder="Masukkan password lama" required class="w-full p-2 rounded border">
+  </div>
+  <div class="info-box">
+    <label for="passwordBaru" class="block font-semibold">Password Baru</label>
+    <input type="password" id="passwordBaru" placeholder="Masukkan password baru" required class="w-full p-2 rounded border">
+  </div>
+  <div class="info-box">
+    <label for="konfirmasiPassword" class="block font-semibold">Konfirmasi Password Baru</label>
+    <input type="password" id="konfirmasiPassword" placeholder="Konfirmasi password baru" required class="w-full p-2 rounded border">
+  </div>
+  <div class="info-box flex items-center gap-2">
+    <input type="checkbox" id="togglePassword" onclick="togglePassword()" class="cursor-pointer">
+    <label for="togglePassword" class="cursor-pointer text-sm">Tampilkan Password</label>
+  </div>
+  <div class="info-box">
+    <button type="submit" class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded" id="btnGantiPassword">
+      💾 Simpan Perubahan
+    </button>
+  </div>
+  <div id="statusGantiPassword" class="info-box text-sm text-green-600 hidden"></div>
+</form>
+      <div id="statusGantiPassword" class="info-box" style="display:none;"></div>
     </div>
+
   </div>
 
   <script>
-    function gantiFotoProfil() {
-      const fileInput = document.getElementById("uploadProfile");
-      const file = fileInput.files[0];
-
-      if (!file) {
-        return showNotif("error", "Gagal", "Silakan unggah gambar.");
-      }
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById("profileImage").src = e.target.result; // Update gambar profil
-        showNotif("success", "Berhasil", "Foto profil berhasil diperbarui!");
-        
-        // Simpan foto ke localStorage
-        localStorage.setItem("profileImage", e.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function simpanEditNama() {
-      const namaBaru = document.getElementById("pengaturanNama").value.trim();
-      if (!namaBaru) return showNotif("error", "Nama kosong", "Silakan masukkan nama baru.");
-      
-      const user = JSON.parse(localStorage.getItem("user"));
-      user.nama = namaBaru;
-      localStorage.setItem("user", JSON.stringify(user));
-
-      document.getElementById("nama").textContent = namaBaru; // Update nama di profil
-      showNotif("success", "Berhasil", "Nama berhasil diperbarui!");
-    }
-
-    function gantiPassword() {
-      const lama = document.getElementById("passLama").value;
-      const baru = document.getElementById("passBaru").value;
-
-      const user = JSON.parse(localStorage.getItem("user"));
-      if (!lama || !baru) return showNotif("error", "Lengkapi semua kolom");
-      if (lama !== user.password) return showNotif("error", "Password lama salah!");
-
-      user.password = baru;
-      localStorage.setItem("user", JSON.stringify(user));
-      showNotif("success", "Password diperbarui!");
-      document.getElementById("passLama").value = "";
-      document.getElementById("passBaru").value = "";
-    }
-
-    function ubahBahasa() {
-      const lang = document.getElementById("pilihBahasa").value;
-      localStorage.setItem("bahasa", lang);
-      showNotif("success", "Bahasa disimpan", lang === "id" ? "Bahasa Indonesia" : "English");
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const simpananBahasa = localStorage.getItem("bahasa");
-      if (simpananBahasa) document.getElementById("pilihBahasa").value = simpananBahasa;
-
-      // Memuat statistik pengguna saat halaman dimuat
-      loadStatistik();
-
-      // Memuat foto profil dari localStorage (jika ada)
-      const savedProfileImage = localStorage.getItem("profileImage");
-      if (savedProfileImage) {
-        document.getElementById("profileImage").src = savedProfileImage;
-      }
-    });
-
-    // Inisialisasi
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) location.href = "login_daftar.html";
-    document.getElementById("nama").textContent = user.nama;
-    document.getElementById("npm").textContent = user.npm;
-    document.getElementById("prodi").textContent = user.prodi;
-    document.getElementById("nowa").textContent = user.nowa;
-
+    // JavaScript Functions
     function showSection(id) {
       document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
       document.getElementById(id).classList.add("active");
@@ -557,7 +481,10 @@
       document.querySelector(`.sidebar button[onclick*="${id}"]`).classList.add("active");
       if (id === "riwayat") loadRiwayat();
       if (id === "pembayaran") loadPembayaran();
-      if (id === "statistik") loadStatistik(); // Memuat statistik saat bagian statistik dibuka
+      if (id === "penilaian") loadNilai();
+      if (id === "forum") loadForumPosts();
+      if (id === "chat") loadChatMessages();
+      if (id === "statistikPembelajaran") loadStatistikPembelajaran();
     }
 
     function toggleTheme() {
@@ -593,276 +520,162 @@
       document.getElementById("harga").value = harga ? `Rp ${harga.toLocaleString("id-ID")}` : '';
     }
 
-    async function kirimTelegramDenganGambar(data, file) {
-      const TELEGRAM_BOT_TOKEN = "7686312873:AAFgoSgH-5A8RyB8tJRzjevPlXI0iQMi8uI";
-      const GROUP_CHAT_ID = "-1002853719892"; // Supergroup
-      const ADMIN_CHAT_ID = "8087861371"; // Chat ID pribadi (misal: RENALDI)
-
-      if (!file || !file.type.startsWith("image/")) {
-        throw new Error("File tidak valid. Harus berupa gambar.");
-      }
-
-      const pesan = `
-      📥 *Pesanan Baru Masuk*
-      👤 Nama: *${data.nama}*
-      🎓 NPM: *${data.npm}*
-      🏫 Prodi: *${data.prodi}*
-      📱 WhatsApp: *${data.nowa}*
-      📝 Jenis Tugas: *${data.jenis}*
-      📄 Deskripsi: *${data.deskripsi}*
-      👨‍🏫 Dosen Pengampu: *${data.dosen}*
-      📚 Fakultas: *${data.fakultas}*
-      📘 Mata Kuliah: *${data.matkul}*
-      🗓 Deadline: *${data.deadline}*
-      👨‍🏫 Admin Joki: *${data.adminJoki}*
-      💳 Metode Pembayaran: *${data.metode}*
-      📱 Nomor Dana: *${data.dana}*
-      💰 Harga: *${data.harga}*
-      🆔 Tracking ID: *${data.trackingID}*
-      `.trim();
-
-      // 1. Kirim ke grup supergroup (dengan gambar)
-      const formData = new FormData();
-      formData.append("chat_id", GROUP_CHAT_ID);
-      formData.append("caption", pesan);
-      formData.append("photo", file);
-      formData.append("parse_mode", "Markdown");
-
-      const urlPhoto = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
-      const responsePhoto = await fetch(urlPhoto, {
-        method: "POST",
-        body: formData
-      });
-
-      if (!responsePhoto.ok) {
-        const errText = await responsePhoto.text();
-        throw new Error(`Telegram Group Error: ${errText}`);
-      }
-
-      // 2. Kirim ke admin pribadi (teks saja)
-      const urlText = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-      const responseText = await fetch(urlText, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: ADMIN_CHAT_ID,
-          text: pesan,
-          parse_mode: "Markdown"
-        })
-      });
-
-      if (!responseText.ok) {
-        const errText = await responseText.text();
-        throw new Error(`Telegram Admin Error: ${errText}`);
-      }
+    async function loadNilai() {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const res = await fetch(`/getNilai?npm=${user.npm}`);
+      const data = await res.json();
+      displayNilai(data);
     }
 
-    document.getElementById("formPesanan").addEventListener("submit", async e => {
-      e.preventDefault();
+    function displayNilai(data) {
+      let html = "<table><tr><th>Mata Kuliah</th><th>Nilai</th><th>Umpan Balik</th></tr>";
+      data.forEach(item => {
+        html += `<tr><td>${item.matkul}</td><td>${item.nilai}</td><td>${item.umpanBalik}</td></tr>`;
+      });
+      html += "</table>";
+      document.getElementById("nilaiList").innerHTML = html;
+    }
 
-      const jenis = document.getElementById("jenis").value.trim();
-      const adminJoki = document.getElementById("adminJoki").value.trim();
-      const deskripsi = document.getElementById("deskripsi").value.trim();
-      const dosen = document.getElementById("dosen").value.trim();
-      const fakultas = document.getElementById("fakultas").value.trim();
-      const matkul = document.getElementById("matkul").value.trim();
-      const deadline = document.getElementById("deadline").value;
-      const metode = document.getElementById("metode").value;
-      const harga = document.getElementById("harga").value;
-      const trackingID = "TRK" + Date.now();
-      const fileInput = document.getElementById("bukti");
-      const file = fileInput.files[0];
+    async function loadForumPosts() {
+      const res = await fetch('/getForumPosts');
+      const posts = await res.json();
+      displayForumPosts(posts);
+    }
 
-      if (!file) {
-        return showNotif("error", "Upload Gagal", "Mohon unggah bukti pembayaran berupa gambar.");
+    function displayForumPosts(posts) {
+      const forumPostsDiv = document.getElementById("forumPosts");
+      forumPostsDiv.innerHTML = posts.map(post => `<div>${post.content}</div>`).join('');
+    }
+
+    async function submitPost() {
+      const content = document.getElementById("newPost").value;
+      const res = await fetch('/submitPost', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content })
+      });
+      const result = await res.json();
+      showNotif("success", "Berhasil", result.message);
+      loadForumPosts(); // Refresh daftar postingan
+    }
+
+    async function loadChatMessages() {
+      const res = await fetch('/getChatMessages');
+      const messages = await res.json();
+      displayChatMessages(messages);
+    }
+
+    function displayChatMessages(messages) {
+      const chatMessagesDiv = document.getElementById("chatMessages");
+      chatMessagesDiv.innerHTML = messages.map(msg => `<div><strong>${msg.user}:</strong> ${msg.message}</div>`).join('');
+    }
+
+    async function sendMessage() {
+      const message = document.getElementById("chatInput").value;
+      const res = await fetch('/sendMessage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      });
+      const result = await res.json();
+      showNotif("success", "Berhasil", result.message);
+      loadChatMessages(); // Refresh daftar pesan
+    }
+
+    async function loadStatistikPembelajaran() {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const res = await fetch(`/getStatistikPembelajaran?npm=${user.npm}`);
+      const statistik = await res.json();
+      document.getElementById("waktuBelajar").textContent = statistik.waktuBelajar || "0 jam";
+      document.getElementById("tugasDiselesaikan").textContent = statistik.tugasDiselesaikan || 0;
+
+      // Ambil deadline tugas
+      const resDeadline = await fetch(`/getDeadlines?npm=${user.npm}`);
+      const deadlines = await resDeadline.json();
+      deadlines.forEach(deadline => {
+        if (new Date(deadline.date) < new Date(Date.now() + 86400000)) { // 1 hari ke depan
+          showNotif("warning", "Deadline Mendekat", `Tugas: ${deadline.tugas} akan jatuh tempo dalam 1 hari.`);
+        }
+      });
+    }
+
+    document.getElementById("formEditProfil").addEventListener("submit", async function(event) {
+      event.preventDefault(); // Mencegah reload halaman
+
+      const nama = document.getElementById("editNama").value;
+      const noWa = document.getElementById("editNoWa").value;
+      const profileImage = document.getElementById("editProfileImage").files[0];
+
+      const formData = new FormData();
+      formData.append("nama", nama);
+      formData.append("noWa", noWa);
+      if (profileImage) {
+        formData.append("profileImage", profileImage);
       }
 
-      const data = {
-        trackingID,
-        nama: user.nama,
-        npm: user.npm,
-        prodi: user.prodi,
-        nowa: user.nowa,
-        jenis,
-        deskripsi,
-        dosen,
-        fakultas,
-        matkul,
-        deadline,
-        metode,
-        harga,
-        adminJoki,
-        dana: nomorDanaMap[adminJoki] || "-"
-      };
+      try {
+        const response = await fetch('/updateProfile', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await response.json();
+        showNotif("success", "Profil berhasil diperbarui", result.message);
+        // Update tampilan profil jika perlu
+        document.getElementById("nama").textContent = nama; // Update nama di tampilan profil
+        document.getElementById("nowa").textContent = noWa; // Update no WhatsApp di tampilan profil
+        if (profileImage) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            document.getElementById("profileImage").src = e.target.result; // Update gambar profil
+          }
+          reader.readAsDataURL(profileImage);
+        }
+      } catch (error) {
+        showNotif("error", "Gagal memperbarui profil", error.message);
+      }
+    });
 
-      const statusPesanan = document.getElementById("statusPesanan");
-      statusPesanan.style.display = "block";
-      statusPesanan.innerText = "📡 Mengirim pesanan ke Telegram...";
+    document.getElementById("formGantiPassword").addEventListener("submit", async function(event) {
+      event.preventDefault(); // Mencegah reload halaman
+
+      const passwordLama = document.getElementById("passwordLama").value;
+      const passwordBaru = document.getElementById("passwordBaru").value;
+      const konfirmasiPassword = document.getElementById("konfirmasiPassword").value;
+
+      if (passwordBaru !== konfirmasiPassword) {
+        showNotif("error", "Gagal", "Password baru dan konfirmasi tidak cocok.");
+        return;
+      }
 
       try {
-        await kirimTelegramDenganGambar(data, file);
-        document.getElementById("formPesanan").reset();
-        statusPesanan.innerHTML = `✅ Pesanan & bukti berhasil dikirim!<br><strong>ID:</strong> ${trackingID}`;
-        navigator.clipboard.writeText(trackingID);
-        showNotif("success", "Terkirim!", `Tracking ID: ${trackingID}`);
+        const user = JSON.parse(localStorage.getItem("user"));
+        const response = await fetch('/gantiPassword', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ npm: user.npm, passwordLama, passwordBaru })
+        });
+        const result = await response.json();
+        showNotif("success", "Berhasil", result.message);
+        document.getElementById("formGantiPassword").reset(); // Reset form setelah berhasil
       } catch (error) {
-        statusPesanan.innerHTML = "❌ Gagal mengirim ke Telegram.<br>Silakan coba lagi.";
         showNotif("error", "Gagal", error.message);
       }
     });
 
-    let semuaRiwayat = [];
-
-    async function loadRiwayat() {
-      const box = document.getElementById("tabelRiwayat");
-      box.textContent = "Memuat data...";
-
+    document.addEventListener("DOMContentLoaded", () => {
       const user = JSON.parse(localStorage.getItem("user"));
-      if (!user || !user.npm) {
-        box.innerHTML = "<i>Data pengguna tidak ditemukan.</i>";
-        return showNotif("error", "Gagal Memuat", "Data pengguna tidak lengkap.");
-      }
-
-      try {
-        const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getRiwayat&npm=${user.npm}`);
-        const data = await res.json();
-        semuaRiwayat = Array.isArray(data) ? data : [];
-
-        if (semuaRiwayat.length === 0) {
-          box.innerHTML = "<i>Belum ada data.</i>";
-          return;
-        }
-
-        tampilkanRiwayat(semuaRiwayat);
-      } catch (e) {
-        console.error("loadRiwayat error:", e);
-        box.innerHTML = "<i>Gagal memuat data.</i>";
-        showNotif("error", "Gagal Memuat Riwayat", "Terjadi kesalahan saat mengambil data.");
-      }
-    }
-
-    function tampilkanRiwayat(data) {
-      let html = "<table><tr><th>ID</th><th>Jenis</th><th>Deadline</th><th>Status</th></tr>";
-
-      data.forEach(r => {
-        const status = (r.status || "Menunggu").toLowerCase();
-        let cls = "status-menunggu";
-        if (status.includes("proses")) cls = "status-proses";
-        else if (status.includes("selesai")) cls = "status-selesai";
-        else if (status.includes("batal")) cls = "status-batal";
-
-        html += `<tr>
-          <td>${r.trackingID || '-'}</td>
-          <td>${r.jenis || '-'}</td>
-          <td>${r.deadline || '-'}</td>
-          <td><span class="status-badge ${cls}">${r.status || 'Menunggu'}</span></td>
-        </tr>`;
-      });
-
-      html += "</table>";
-      document.getElementById("tabelRiwayat").innerHTML = html;
-    }
-
-    function filterRiwayat() {
-      const q = document.getElementById("searchRiwayat").value.toLowerCase();
-      const hasil = semuaRiwayat.filter(r => {
-        const id = (r.trackingID || "").toLowerCase();
-        const jenis = (r.jenis || "").toLowerCase();
-        const deadline = (r.deadline || "").toLowerCase();
-        const status = (r.status || "").toLowerCase();
-        return id.includes(q) || jenis.includes(q) || deadline.includes(q) || status.includes(q);
-      });
-      tampilkanRiwayat(hasil);
-    }
-
-    let semuaPembayaran = [];
-    async function loadPembayaran() {
-      const box = document.getElementById("tabelPembayaran");
-      box.textContent = "Memuat data...";
-      try {
-        const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getPembayaran&npm=${user.npm}`);
-        const data = await res.json();
-        semuaPembayaran = data;
-        if (!Array.isArray(data) || data.length === 0) return box.innerHTML = "<i>Belum ada data pembayaran.</i>";
-        tampilkanPembayaran(data);
-      } catch (e) {
-        box.innerHTML = "<i>Gagal memuat data pembayaran.</i>";
-        showNotif("error", "Gagal Memuat Pembayaran");
-      }
-    }
-
-    function tampilkanPembayaran(data) {
-      let html = "<table><tr><th>ID</th><th>Tanggal</th><th>Metode</th><th>Jumlah</th><th>Status</th></tr>";
-      data.forEach(p => {
-        const s = (p.status || "Pending").toLowerCase();
-        let cls = "status-menunggu";
-        if (s.includes("terverifikasi")) cls = "status-selesai";
-        else if (s.includes("gagal")) cls = "status-batal";
-        html += `<tr><td>${p.id || '-'}</td><td>${p.tanggal || '-'}</td><td>${p.metode || '-'}</td><td>Rp ${parseInt(p.jumlah || 0).toLocaleString("id-ID")}</td><td><span class="status-badge ${cls}">${p.status || 'Pending'}</span></td></tr>`;
-      });
-      html += "</table>";
-      document.getElementById("tabelPembayaran").innerHTML = html;
-    }
-
-    function filterPembayaran() {
-      const q = document.getElementById("searchPembayaran").value.toLowerCase();
-      const f = semuaPembayaran.filter(p =>
-        p.id.toLowerCase().includes(q) ||
-        p.tanggal.toLowerCase().includes(q) ||
-        p.metode.toLowerCase().includes(q) ||
-        p.status.toLowerCase().includes(q)
-      );
-      tampilkanPembayaran(f);
-    }
-
-    const nomorDanaMap = {
-      "RENALDI": "081348722325",
-      "AFRIZAL": "085182489261",
-      "ABDUL HAKIM": "085764534425",
-      "AIDIL ANWAR": "082279458613"
-    };
-
-    document.getElementById("adminJoki").addEventListener("change", function () {
-      const admin = this.value;
-      const nomor = nomorDanaMap[admin];
-      const metodeInput = document.getElementById("metode");
-      const danaBox = document.getElementById("infoDana");
-
-      if (nomor) {
-        metodeInput.value = "Dana";
-        danaBox.style.display = "block";
-        document.getElementById("nomorDana").textContent = nomor;
-      } else {
-        metodeInput.value = "";
-        danaBox.style.display = "none";
-        document.getElementById("nomorDana").textContent = "";
-      }
+      if (!user) location.href = "login_daftar.html"; // Redirect if no user data
+      document.getElementById("nama").textContent = user.nama;
+      document.getElementById("npm").textContent = user.npm;
+      document.getElementById("prodi").textContent = user.prodi;
+      document.getElementById("nowa").textContent = user.nowa;
+      loadRiwayat();
+      loadPembayaran();
+      loadNilai();
+      loadForumPosts();
+      loadChatMessages();
+      loadStatistikPembelajaran();
     });
-
-    async function loadStatistik() {
-      const user = JSON.parse(localStorage.getItem("user"));
-      if (!user) return;
-
-      const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getStatistik&npm=${user.npm}`);
-      const statistik = await res.json();
-      
-      document.getElementById("tugasSelesai").textContent = statistik.tugasSelesai || 0;
-      document.getElementById("totalPembayaran").textContent = `Rp ${statistik.totalPembayaran.toLocaleString("id-ID") || 0}`;
-    }
-
-    // Notifikasi real-time
-    setInterval(async () => {
-      const user = JSON.parse(localStorage.getItem("user"));
-      if (user) {
-        const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getLatestUpdates&npm=${user.npm}`);
-        const updates = await res.json();
-        if (updates.length > 0) {
-          updates.forEach(update => {
-            showNotif("info", "Update Terkini", update.message);
-          });
-        }
-      }
-    }, 30000); // Cek setiap 30 detik
   </script>
 </body>
 </html>
