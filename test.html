@@ -17,7 +17,7 @@
       font-family: 'Roboto', sans-serif;
       display: flex;
       min-height: 100vh;
-      background: linear-gradient(135deg, #f0f0f0, #ffffff);
+      background: linear-gradient(135deg, #e0f7fa, #ffffff);
       color: #333;
       transition: background 0.5s ease;
     }
@@ -25,42 +25,48 @@
     /* Sidebar */
     .sidebar {
       width: 250px;
-      background: #1e293b;
+      background: linear-gradient(135deg, #1e293b, #3a4a6a);
       color: #fff;
       padding: 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      box-shadow: 2px 0 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
       transition: background 0.3s;
+      border-radius: 15px; /* Rounded corners */
     }
 
     .sidebar h2 {
       text-align: center;
       color: #7fffd4;
       margin-bottom: 2rem;
-      font-size: 1.6rem;
+      font-size: 1.8rem; /* Increased font size */
     }
 
     .sidebar button {
       background: none;
       border: none;
       color: #ccc;
-      padding: 0.8rem 1rem;
+      padding: 1rem 1.5rem; /* Increased padding */
       text-align: left;
       cursor: pointer;
-      border-radius: 8px;
+      border-radius: 10px;
       font-weight: 500;
-      font-size: 1rem;
-      transition: all 0.3s ease;
+      font-size: 1.1rem; /* Increased font size */
+      transition: background 0.3s, transform 0.3s, color 0.3s; /* Added color transition */
     }
 
-    .sidebar button:hover,
-    .sidebar button.active {
+    .sidebar button:hover {
       background: linear-gradient(45deg, #00c6ff, #0072ff);
       color: #fff;
-      transform: translateX(5px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Added shadow on hover */
+    }
+
+    /* Active button style */
+    .sidebar button.active {
+      background: #0072ff; /* Active button background */
+      color: #fff; /* Active button text color */
     }
 
     /* Konten */
@@ -113,13 +119,13 @@
     /* Kartu Profil */
     .card-profile {
       max-width: 420px;
-      background: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.9);
+      border: 1px solid #0072ff;
       border-radius: 20px;
       margin: auto;
       padding: 2rem;
       text-align: center;
       box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-      backdrop-filter: blur(12px);
       transition: all 0.4s ease;
     }
 
@@ -141,14 +147,14 @@
       padding: 1rem;
       margin: 1rem 0;
       border-radius: 12px;
-      border: 1px solid #ddd;
+      border: 1px solid #0072ff;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
       transition: 0.3s;
       width: 100%;
     }
 
     .btn {
-      background: linear-gradient(45deg, #00c6ff, #0072ff);
+      background: linear-gradient(45deg, #0072ff, #00c6ff);
       color: #fff;
       padding: 0.8rem 2rem;
       font-size: 1rem;
@@ -199,39 +205,13 @@
     .status-selesai { background: #4caf50; }
     .status-batal { background: #f44336; }
 
-    /* Riwayat Pembayaran - Styling */
-    #pembayaran h2 {
-      margin-bottom: 1rem;
-      color: #0072ff;
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
-
-    #tabelPembayaran table {
-      width: 100%;
-      border-collapse: collapse;
+    /* Statistik Pengguna */
+    #statistik {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.9);
       border-radius: 12px;
-      overflow: hidden;
-    }
-
-    #tabelPembayaran th, #tabelPembayaran td {
-      padding: 12px 14px;
-      border-bottom: 1px solid #eee;
-      font-size: 0.95rem;
-    }
-
-    #tabelPembayaran th {
-      background: #0072ff;
-      color: white;
-      font-weight: 600;
-    }
-
-    #tabelPembayaran tr:hover {
-      background-color: #f5f5f5;
-    }
-
-    .dark-mode #tabelPembayaran tr:hover {
-      background-color: #2a2a2a;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
     /* Responsive Tabel HP */
@@ -332,40 +312,14 @@
     <button onclick="logout()">🚪 Logout</button>
   </div>
   <div class="content">
-  	<div id="pengaturan" class="section">
-  <h2>⚙️ Pengaturan</h2>
-
-  <!-- Edit Profil -->
-  <div class="info-box">
-    <label>✏️ Edit Nama</label>
-    <input type="text" id="pengaturanNama" placeholder="Masukkan nama baru">
-    <button class="btn" onclick="simpanEditNama()">💾 Simpan Nama</button>
-  </div>
-
-  <!-- Ganti Password -->
-  <div class="info-box">
-    <label>🔐 Ganti Password</label>
-    <input type="password" id="passLama" placeholder="Password Lama">
-    <input type="password" id="passBaru" placeholder="Password Baru">
-    <button class="btn" onclick="gantiPassword()">🔁 Update Password</button>
-  </div>
-
-  <!-- Bahasa -->
-  <div class="info-box">
-    <label>🌐 Bahasa</label>
-    <select id="pilihBahasa" onchange="ubahBahasa()">
-      <option value="id">🇮🇩 Indonesia</option>
-      <option value="en">🇬🇧 English</option>
-    </select>
-  </div>
-</div>
     <div class="topbar">
       <h1>Dashboard</h1>
       <div class="toggle-dark" onclick="toggleTheme()">🌙 Mode</div>
     </div>
+
     <div id="profil" class="section active">
       <div class="card-profile">
-        <img src="https://ui-avatars.com/api/?name=Mahasiswa" alt="Foto Mahasiswa">
+        <img id="profileImage" src="https://ui-avatars.com/api/?name=Mahasiswa" alt="Foto Mahasiswa">
         <h3 id="nama"></h3>
         <p><strong>NPM:</strong> <span id="npm"></span></p>
         <p><strong>Prodi:</strong> <span id="prodi"></span></p>
@@ -384,245 +338,531 @@
       <form id="formPesanan">
         <div class="info-box">
           <label>Jenis Tugas</label>
-          <select id="jenis" required onchange="updateHarga()">
-            <option value="">-- Pilih Jenis Tugas --</option>
+          <select id="jenis" onchange="updateHarga()">
+            <option value="">Pilih Jenis Tugas</option>
             <option value="MAKALAH">MAKALAH</option>
             <option value="PPT">PPT</option>
             <option value="PPT PREMIUM">PPT PREMIUM</option>
             <option value="WEBSITE">WEBSITE</option>
             <option value="KODING">KODING</option>
             <option value="ANIMACY">ANIMACY</option>
+            <option value="ANIMACY VIDEO">ANIMACY VIDEO</option>
             <option value="BIKIN APLIKASI">BIKIN APLIKASI</option>
           </select>
         </div>
 
         <div class="info-box">
           <label>Pilih Admin Joki</label>
-          <select id="adminJoki" required>
-            <option value="">-- Pilih Admin Joki --</option>
-            <option value="RENALDI">RENALDI</option>
-            <option value="ABDUL HAKIM">ABDUL HAKIM</option>
-            <option value="AIDIL ANWAR">AIDIL ANWAR</option>
+          <select id="adminJoki">
+            <option value="">Pilih Admin</option>
+            <option value="RENALDI">Renaldi</option>
+            <option value="AFRIZAL">Afrizal</option>
+            <option value="ABDUL HAKIM">Abdul Hakim</option>
+            <option value="AIDIL ANWAR">Aidil Anwar</option>
+          </select>
+        </div>
+
+        <div class="info-box">
+          <label>Metode Pembayaran</label>
+          <input id="metode" readonly>
+        </div>
+
+        <div class="info-box" id="infoDana" style="display:none;">
+          <strong>Nomor Dana:</strong> <span id="nomorDana"></span>
+        </div>
+
+        <div class="info-box">
+          <label>Judul</label>
+          <input type="text" id="judul" placeholder="Contoh: Sistem Informasi Akademik" required>
+        </div>
+
+        <div class="info-box">
+          <label>Deskripsi</label>
+          <textarea id="deskripsi" placeholder="Penjelasan tentang tugas yang akan dibuat" required></textarea>
+        </div>
+
+        <div class="info-box">
+          <label>Nama Lengkap Dosen</label>
+          <input type="text" id="dosen" placeholder="Contoh: Dr. Bambang S.Kom., M.T." required>
+        </div>
+
+        <div class="info-box">
+          <label>Fakultas</label>
+          <input type="text" id="fakultas" placeholder="Contoh: Fakultas Ilmu Komputer" required>
+        </div>
+
+        <div class="info-box">
+          <label>Mata Kuliah</label>
+          <input type="text" id="matkul" placeholder="Contoh: Pemrograman Web" required>
+        </div>
+
+        <div class="info-box">
+          <label>Deadline wajib lewat dari 1 Hari</label>
+          <input type="date" id="deadline" required>
+        </div>
+
+        <div class="info-box">
+          <label>Harga</label>
+          <input id="harga" readonly>
+        </div>
+
+        <div class="info-box">
+          <label>Upload Bukti Pembayaran (gambar)</label>
+          <input type="file" id="bukti" accept="image/*" required>
+        </div>
+
+        <div class="info-box">
+          <button type="submit" class="btn">🚀 Kirim Pesanan</button>
+        </div>
+      </form>
+
+      <div class="info-box" id="statusPesanan" style="display:none"></div>
+    </div>
+
+    <div id="pembayaran" class="section">
+      <h2>💳 Riwayat Pembayaran</h2>
+      <input type="text" placeholder="🔍 Cari pembayaran..." class="info-box" oninput="filterPembayaran()" id="searchPembayaran">
+      <div class="info-box" id="tabelPembayaran">Memuat data...</div>
+    </div>
+
+    <div id="pengaturan" class="section">
+      <h2>⚙️ Pengaturan</h2>
+      <label for="temaWarna">Warna Tema</label>
+      <select id="temaWarna" onchange="gantiWarnaTema()">
+        <option value="biru">Biru</option>
+        <option value="ungu">Ungu</option>
+        <option value="hijau">Hijau</option>
+        <option value="merah">Merah</option>
+      </select>
+
+      <!-- Ganti Foto Profil -->
+      <div class="info-box">
+        <label>Ganti Foto Profil</label>
+        <input type="file" id="uploadProfile" accept="image/*">
+        <button class="btn" onclick="gantiFotoProfil()">💾 Simpan Foto</button>
+      </div>
+
+      <!-- Edit Profil -->
+      <div class="info-box">
+        <label>✏️ Edit Nama</label>
+        <input type="text" id="pengaturanNama" placeholder="Masukkan nama baru" required>
+        <button class="btn" onclick="simpanEditNama()">💾 Simpan Nama</button>
+      </div>
+
+      <!-- Ganti Password -->
+      <div class="info-box">
+        <label>🔐 Ganti Password</label>
+        <input type="password" id="passLama" placeholder="Password Lama" required>
+        <input type="password" id="passBaru" placeholder="Password Baru" required>
+        <button class="btn" onclick="gantiPassword()">🔁 Update Password</button>
+      </div>
+
+      <!-- Bahasa -->
+      <div class="info-box">
+        <label>🌐 Bahasa</label>
+        <select id="pilihBahasa" onchange="ubahBahasa()">
+          <option value="id">🇮🇩 Indonesia</option>
+          <option value="en">🇬🇧 English</option>
         </select>
       </div>
+    </div>
 
-      <div class="info-box">
-        <label>Metode Pembayaran</label>
-        <input id="metode" readonly>
-      </div>
-
-      <div class="info-box" id="infoDana" style="display:none;">
-        <strong>Nomor Dana:</strong> <span id="nomorDana"></span>
-      </div>
-
-      <div class="info-box">
-  <label>Deskripsi</label>
-  <textarea id="deskripsi" placeholder="Penjelasan tentang tugas yang akan di buat" required></textarea>
-</div>
-
-<div class="info-box">
-  <label>Nama Lengkap Dosen</label>
-  <input type="text" id="dosen" placeholder="Contoh: Dr. Bambang S.Kom., M.T." required>
-</div>
-
-<div class="info-box">
-  <label>Fakultas</label>
-  <input type="text" id="fakultas" placeholder="Contoh: Fakultas Ilmu Komputer" required>
-</div>
-
-<div class="info-box">
-  <label>Mata Kuliah</label>
-  <input type="text" id="matkul" placeholder="Contoh: Pemrograman Web" required>
-</div>
-
-      <div class="info-box">
-        <label>Deadline wajib lewat dari 1 Hari</label>
-        <input type="date" id="deadline" required>
-      </div>
-
-      <div class="info-box">
-        <label>Harga</label>
-        <input id="harga" readonly>
-      </div>
-
-      <div class="info-box">
-        <label>Upload Bukti Pembayaran (gambar)</label>
-        <input type="file" id="bukti" accept="image/*" required>
-      </div>
-
-      <div class="info-box">
-        <button type="submit" class="btn">🚀 Kirim Pesanan</button>
-      </div>
-    </form>
-
-    <div class="info-box" id="statusPesanan" style="display:none"></div>
+    <!-- Statistik Pengguna -->
+    <div id="statistik" class="section">
+      <h2>📊 Statistik Pengguna</h2>
+      <p><strong>Tugas Selesai:</strong> <span id="tugasSelesai">0</span></p>
+      <p><strong>Total Pembayaran:</strong> <span id="totalPembayaran">0</span></p>
+    </div>
   </div>
 
-  <div id="pembayaran" class="section">
-    <h2>💳 Riwayat Pembayaran</h2>
-    <input type="text" placeholder="🔍 Cari pembayaran..." class="info-box" oninput="filterPembayaran()" id="searchPembayaran">
-    <div class="info-box" id="tabelPembayaran">Memuat data...</div>
-  </div>
-</div>
-<script>
-  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzh8uvVY_BHnXkn3Fi5Rc43nXi9tZ-7XudZUuxyl3v_J_vl8sx1khziAuWeUhvp4HM/exec';
+  <script>
+    function gantiFotoProfil() {
+      const fileInput = document.getElementById("uploadProfile");
+      const file = fileInput.files[0];
 
-const user = JSON.parse(localStorage.getItem("user")) || { nama: "-", npm: "-", prodi: "-", nowa: "-" };
-document.getElementById("nama").textContent = user.nama;
-document.getElementById("npm").textContent = user.npm;
-document.getElementById("prodi").textContent = user.prodi;
-document.getElementById("nowa").textContent = user.nowa;
+      if (!file) {
+        return showNotif("error", "Gagal", "Silakan unggah gambar.");
+      }
 
-const hargaMap = {
-  "MAKALAH": 20000, "PPT": 20000, "PPT PREMIUM": 45000,
-  "WEBSITE": 100000, "KODING": 60000, "ANIMACY": 50000, "BIKIN APLIKASI": 500000
-};
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById("profileImage").src = e.target.result; // Update gambar profil
+        showNotif("success", "Berhasil", "Foto profil berhasil diperbarui!");
+        
+        // Simpan foto ke localStorage
+        localStorage.setItem("profileImage", e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
 
-function updateHarga() {
-  const jenis = document.getElementById("jenis").value;
-  document.getElementById("harga").value = hargaMap[jenis] ? `Rp ${hargaMap[jenis].toLocaleString("id-ID")}` : "";
-}
+    function simpanEditNama() {
+      const namaBaru = document.getElementById("pengaturanNama").value.trim();
+      if (!namaBaru) return showNotif("error", "Nama kosong", "Silakan masukkan nama baru.");
+      
+      const user = JSON.parse(localStorage.getItem("user"));
+      user.nama = namaBaru;
+      localStorage.setItem("user", JSON.stringify(user));
 
-const angkaDana = {
-  "RENALDI": "081348722325",
-  "ABDUL HAKIM": "085764534425",
-  "AIDIL ANWAR": "082279458613"
-};
+      document.getElementById("nama").textContent = namaBaru; // Update nama di profil
+      showNotif("success", "Berhasil", "Nama berhasil diperbarui!");
+    }
 
-document.getElementById("adminJoki").addEventListener("change", function () {
-  const admin = this.value;
-  const nomor = angkaDana[admin];
-  document.getElementById("metode").value = nomor ? "Dana" : "";
-  document.getElementById("infoDana").style.display = nomor ? "block" : "none";
-  document.getElementById("nomorDana").textContent = nomor || "";
-});
+    function gantiPassword() {
+      const lama = document.getElementById("passLama").value;
+      const baru = document.getElementById("passBaru").value;
 
-async function sendToSheet(action, data) {
-  const form = new FormData();
-  form.append("action", action);
-  for (const [key, value] of Object.entries(data)) form.append(key, value);
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!lama || !baru) return showNotif("error", "Lengkapi semua kolom");
+      if (lama !== user.password) return showNotif("error", "Password lama salah!");
 
-  const res = await fetch(SHEET_URL, { method: "POST", body: form });
-  const json = await res.json();
-  if (json.status !== "success") throw new Error(json.message || "Gagal mengirim data.");
-}
+      user.password = baru;
+      localStorage.setItem("user", JSON.stringify(user));
+      showNotif("success", "Password diperbarui!");
+      document.getElementById("passLama").value = "";
+      document.getElementById("passBaru").value = "";
+    }
 
-document.getElementById("formPesanan").addEventListener("submit", async e => {
-  e.preventDefault();
-  const trackingID = "TRK" + Date.now();
-  const admin = document.getElementById("adminJoki").value;
-  const dana = angkaDana[admin] || "-";
+    function ubahBahasa() {
+      const lang = document.getElementById("pilihBahasa").value;
+      localStorage.setItem("bahasa", lang);
+      showNotif("success", "Bahasa disimpan", lang === "id" ? "Bahasa Indonesia" : "English");
+    }
 
-  const data = {
-    trackingID,
-    nama: user.nama,
-    npm: user.npm,
-    prodi: user.prodi,
-    nowa: user.nowa,
-    jenis: document.getElementById("jenis").value,
-    adminJoki: admin,
-    metode: document.getElementById("metode").value,
-    dana: dana,
-    deskripsi: document.getElementById("deskripsi").value,
-    dosen: document.getElementById("dosen").value,
-    fakultas: document.getElementById("fakultas").value,
-    matkul: document.getElementById("matkul").value,
-    deadline: document.getElementById("deadline").value,
-    harga: document.getElementById("harga").value
-  };
+    document.addEventListener("DOMContentLoaded", () => {
+      const simpananBahasa = localStorage.getItem("bahasa");
+      if (simpananBahasa) document.getElementById("pilihBahasa").value = simpananBahasa;
 
-  const status = document.getElementById("statusPesanan");
-  status.style.display = "block";
-  status.innerText = "📡 Mengirim ke Google Sheet...";
-  try {
-    await sendToSheet("pesanan", data);
-    status.innerHTML = `✅ Terkirim! ID: <strong>${trackingID}</strong>`;
-    Swal.fire({ icon: "success", title: "Berhasil dikirim", text: "ID: " + trackingID });
-    document.getElementById("formPesanan").reset();
-  } catch (err) {
-    status.innerHTML = "❌ Gagal kirim.";
-    Swal.fire({ icon: "error", title: "Gagal", text: err.message });
-  }
-});
+      // Memuat statistik pengguna saat halaman dimuat
+      loadStatistik();
 
-document.getElementById("formPembayaran").addEventListener("submit", async e => {
-  e.preventDefault();
-  const data = {
-    id: document.getElementById("payID").value,
-    nama: user.nama,
-    npm: user.npm,
-    tanggal: document.getElementById("tanggal").value,
-    metode: document.getElementById("met").value,
-    jumlah: document.getElementById("jumlah").value,
-    status: "Pending"
-  };
-  try {
-    await sendToSheet("pembayaran", data);
-    Swal.fire({ icon: "success", title: "Pembayaran berhasil!" });
-    loadPembayaran();
-    document.getElementById("formPembayaran").reset();
-  } catch (err) {
-    Swal.fire({ icon: "error", title: "Gagal kirim pembayaran", text: err.message });
-  }
-});
+      // Memuat foto profil dari localStorage (jika ada)
+      const savedProfileImage = localStorage.getItem("profileImage");
+      if (savedProfileImage) {
+        document.getElementById("profileImage").src = savedProfileImage;
+      }
+    });
 
-let semuaRiwayat = [], semuaPembayaran = [];
+    // Inisialisasi
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) location.href = "login_daftar.html";
+    document.getElementById("nama").textContent = user.nama;
+    document.getElementById("npm").textContent = user.npm;
+    document.getElementById("prodi").textContent = user.prodi;
+    document.getElementById("nowa").textContent = user.nowa;
 
-async function loadRiwayat() {
-  const res = await fetch(`${SHEET_URL}?action=getRiwayat&npm=${user.npm}`);
-  semuaRiwayat = await res.json();
-  tampilkanData(semuaRiwayat, "tabelRiwayat");
-}
+    function showSection(id) {
+      document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      document.querySelectorAll(".sidebar button").forEach(b => b.classList.remove("active"));
+      document.querySelector(`.sidebar button[onclick*="${id}"]`).classList.add("active");
+      if (id === "riwayat") loadRiwayat();
+      if (id === "pembayaran") loadPembayaran();
+      if (id === "statistik") loadStatistik(); // Memuat statistik saat bagian statistik dibuka
+    }
 
-async function loadPembayaran() {
-  const res = await fetch(`${SHEET_URL}?action=getPembayaran&npm=${user.npm}`);
-  semuaPembayaran = await res.json();
-  tampilkanData(semuaPembayaran, "tabelPembayaran", true);
-}
+    function toggleTheme() {
+      const isDark = document.body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    }
+    if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark-mode");
 
-function tampilkanData(data, elementId, pembayaran = false) {
-  if (!Array.isArray(data) || data.length === 0) return document.getElementById(elementId).innerHTML = "<i>Tidak ada data.</i>";
-  let html = "<table><tr>";
-  html += pembayaran ? "<th>ID</th><th>Tanggal</th><th>Metode</th><th>Jumlah</th><th>Status</th></tr>" :
-                        "<th>ID</th><th>Jenis</th><th>Deadline</th><th>Status</th></tr>";
-  for (const d of data) {
-    const status = (d.status || "Menunggu").toLowerCase();
-    let cls = "status-menunggu";
-    if (status.includes("proses")) cls = "status-proses";
-    else if (status.includes("selesai")) cls = "status-selesai";
-    else if (status.includes("batal") || status.includes("gagal")) cls = "status-batal";
-    html += pembayaran
-      ? `<tr><td>${d.id}</td><td>${d.tanggal}</td><td>${d.metode}</td><td>Rp ${parseInt(d.jumlah).toLocaleString()}</td><td><span class="status-badge ${cls}">${d.status}</span></td></tr>`
-      : `<tr><td>${d.trackingID}</td><td>${d.jenis}</td><td>${d.deadline}</td><td><span class="status-badge ${cls}">${d.status}</span></td></tr>`;
-  }
-  html += "</table>";
-  document.getElementById(elementId).innerHTML = html;
-}
+    function logout() {
+      localStorage.removeItem("user");
+      Swal.fire({ icon: 'info', title: 'Logout berhasil', timer: 2000, showConfirmButton: false });
+      setTimeout(() => location.href = "login_daftar.html", 1500);
+    }
 
-function filterRiwayat() {
-  const q = document.getElementById("searchRiwayat").value.toLowerCase();
-  const f = semuaRiwayat.filter(r => r.trackingID.toLowerCase().includes(q) || r.jenis.toLowerCase().includes(q));
-  tampilkanData(f, "tabelRiwayat");
-}
+    function showNotif(icon, title, text = '') {
+      Swal.fire({ icon, title, text, toast: true, position: 'top-end', timer: 4000, showConfirmButton: false });
+    }
 
-function toggleTheme() {
-  const dark = document.body.classList.toggle("dark-mode");
-  localStorage.setItem("theme", dark ? "dark" : "light");
-}
-if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark-mode");
+    const hargaMap = {
+      "MAKALAH": 25000,
+      "PPT": 25000,
+      "PPT PREMIUM": 50000,
+      "WEBSITE": 150000,
+      "KODING": 750000,
+      "ANIMACY": 50000,
+      "ANIMACY VIDEO": 75000,
+      "BIKIN APLIKASI": 500000
+    };
 
-function showSection(id) {
-  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  if (id === "riwayat") loadRiwayat();
-  if (id === "pembayaran") loadPembayaran();
-}
+    function updateHarga() {
+      const jenis = document.getElementById("jenis").value;
+      const harga = hargaMap[jenis] || 0;
+      document.getElementById("harga").value = harga ? `Rp ${harga.toLocaleString("id-ID")}` : '';
+    }
 
-function logout() {
-  localStorage.removeItem("user");
-  Swal.fire({ icon: "info", title: "Logout berhasil", timer: 2000, showConfirmButton: false });
-  setTimeout(() => location.href = "login_daftar.html", 1500);
-}
-</script>
+    async function kirimTelegramDenganGambar(data, file) {
+      const TELEGRAM_BOT_TOKEN = "7686312873:AAFgoSgH-5A8RyB8tJRzjevPlXI0iQMi8uI";
+      const GROUP_CHAT_ID = "-1002853719892"; // Supergroup
+      const ADMIN_CHAT_ID = "8087861371"; // Chat ID pribadi (misal: RENALDI)
+
+      if (!file || !file.type.startsWith("image/")) {
+        throw new Error("File tidak valid. Harus berupa gambar.");
+      }
+
+      const pesan = `
+      📥 *Pesanan Baru Masuk*
+      👤 Nama: *${data.nama}*
+      🎓 NPM: *${data.npm}*
+      🏫 Prodi: *${data.prodi}*
+      📱 WhatsApp: *${data.nowa}*
+      📝 Jenis Tugas: *${data.jenis}*
+      📄 Deskripsi: *${data.deskripsi}*
+      👨‍🏫 Dosen Pengampu: *${data.dosen}*
+      📚 Fakultas: *${data.fakultas}*
+      📘 Mata Kuliah: *${data.matkul}*
+      🗓 Deadline: *${data.deadline}*
+      👨‍🏫 Admin Joki: *${data.adminJoki}*
+      💳 Metode Pembayaran: *${data.metode}*
+      📱 Nomor Dana: *${data.dana}*
+      💰 Harga: *${data.harga}*
+      🆔 Tracking ID: *${data.trackingID}*
+      `.trim();
+
+      // 1. Kirim ke grup supergroup (dengan gambar)
+      const formData = new FormData();
+      formData.append("chat_id", GROUP_CHAT_ID);
+      formData.append("caption", pesan);
+      formData.append("photo", file);
+      formData.append("parse_mode", "Markdown");
+
+      const urlPhoto = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
+      const responsePhoto = await fetch(urlPhoto, {
+        method: "POST",
+        body: formData
+      });
+
+      if (!responsePhoto.ok) {
+        const errText = await responsePhoto.text();
+        throw new Error(`Telegram Group Error: ${errText}`);
+      }
+
+      // 2. Kirim ke admin pribadi (teks saja)
+      const urlText = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+      const responseText = await fetch(urlText, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: ADMIN_CHAT_ID,
+          text: pesan,
+          parse_mode: "Markdown"
+        })
+      });
+
+      if (!responseText.ok) {
+        const errText = await responseText.text();
+        throw new Error(`Telegram Admin Error: ${errText}`);
+      }
+    }
+
+    document.getElementById("formPesanan").addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const jenis = document.getElementById("jenis").value.trim();
+      const adminJoki = document.getElementById("adminJoki").value.trim();
+      const deskripsi = document.getElementById("deskripsi").value.trim();
+      const dosen = document.getElementById("dosen").value.trim();
+      const fakultas = document.getElementById("fakultas").value.trim();
+      const matkul = document.getElementById("matkul").value.trim();
+      const deadline = document.getElementById("deadline").value;
+      const metode = document.getElementById("metode").value;
+      const harga = document.getElementById("harga").value;
+      const trackingID = "TRK" + Date.now();
+      const fileInput = document.getElementById("bukti");
+      const file = fileInput.files[0];
+
+      if (!file) {
+        return showNotif("error", "Upload Gagal", "Mohon unggah bukti pembayaran berupa gambar.");
+      }
+
+      const data = {
+        trackingID,
+        nama: user.nama,
+        npm: user.npm,
+        prodi: user.prodi,
+        nowa: user.nowa,
+        jenis,
+        deskripsi,
+        dosen,
+        fakultas,
+        matkul,
+        deadline,
+        metode,
+        harga,
+        adminJoki,
+        dana: nomorDanaMap[adminJoki] || "-"
+      };
+
+      const statusPesanan = document.getElementById("statusPesanan");
+      statusPesanan.style.display = "block";
+      statusPesanan.innerText = "📡 Mengirim pesanan ke Telegram...";
+
+      try {
+        await kirimTelegramDenganGambar(data, file);
+        document.getElementById("formPesanan").reset();
+        statusPesanan.innerHTML = `✅ Pesanan & bukti berhasil dikirim!<br><strong>ID:</strong> ${trackingID}`;
+        navigator.clipboard.writeText(trackingID);
+        showNotif("success", "Terkirim!", `Tracking ID: ${trackingID}`);
+      } catch (error) {
+        statusPesanan.innerHTML = "❌ Gagal mengirim ke Telegram.<br>Silakan coba lagi.";
+        showNotif("error", "Gagal", error.message);
+      }
+    });
+
+    let semuaRiwayat = [];
+
+    async function loadRiwayat() {
+      const box = document.getElementById("tabelRiwayat");
+      box.textContent = "Memuat data...";
+
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user || !user.npm) {
+        box.innerHTML = "<i>Data pengguna tidak ditemukan.</i>";
+        return showNotif("error", "Gagal Memuat", "Data pengguna tidak lengkap.");
+      }
+
+      try {
+        const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getRiwayat&npm=${user.npm}`);
+        const data = await res.json();
+        semuaRiwayat = Array.isArray(data) ? data : [];
+
+        if (semuaRiwayat.length === 0) {
+          box.innerHTML = "<i>Belum ada data.</i>";
+          return;
+        }
+
+        tampilkanRiwayat(semuaRiwayat);
+      } catch (e) {
+        console.error("loadRiwayat error:", e);
+        box.innerHTML = "<i>Gagal memuat data.</i>";
+        showNotif("error", "Gagal Memuat Riwayat", "Terjadi kesalahan saat mengambil data.");
+      }
+    }
+
+    function tampilkanRiwayat(data) {
+      let html = "<table><tr><th>ID</th><th>Jenis</th><th>Deadline</th><th>Status</th></tr>";
+
+      data.forEach(r => {
+        const status = (r.status || "Menunggu").toLowerCase();
+        let cls = "status-menunggu";
+        if (status.includes("proses")) cls = "status-proses";
+        else if (status.includes("selesai")) cls = "status-selesai";
+        else if (status.includes("batal")) cls = "status-batal";
+
+        html += `<tr>
+          <td>${r.trackingID || '-'}</td>
+          <td>${r.jenis || '-'}</td>
+          <td>${r.deadline || '-'}</td>
+          <td><span class="status-badge ${cls}">${r.status || 'Menunggu'}</span></td>
+        </tr>`;
+      });
+
+      html += "</table>";
+      document.getElementById("tabelRiwayat").innerHTML = html;
+    }
+
+    function filterRiwayat() {
+      const q = document.getElementById("searchRiwayat").value.toLowerCase();
+      const hasil = semuaRiwayat.filter(r => {
+        const id = (r.trackingID || "").toLowerCase();
+        const jenis = (r.jenis || "").toLowerCase();
+        const deadline = (r.deadline || "").toLowerCase();
+        const status = (r.status || "").toLowerCase();
+        return id.includes(q) || jenis.includes(q) || deadline.includes(q) || status.includes(q);
+      });
+      tampilkanRiwayat(hasil);
+    }
+
+    let semuaPembayaran = [];
+    async function loadPembayaran() {
+      const box = document.getElementById("tabelPembayaran");
+      box.textContent = "Memuat data...";
+      try {
+        const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getPembayaran&npm=${user.npm}`);
+        const data = await res.json();
+        semuaPembayaran = data;
+        if (!Array.isArray(data) || data.length === 0) return box.innerHTML = "<i>Belum ada data pembayaran.</i>";
+        tampilkanPembayaran(data);
+      } catch (e) {
+        box.innerHTML = "<i>Gagal memuat data pembayaran.</i>";
+        showNotif("error", "Gagal Memuat Pembayaran");
+      }
+    }
+
+    function tampilkanPembayaran(data) {
+      let html = "<table><tr><th>ID</th><th>Tanggal</th><th>Metode</th><th>Jumlah</th><th>Status</th></tr>";
+      data.forEach(p => {
+        const s = (p.status || "Pending").toLowerCase();
+        let cls = "status-menunggu";
+        if (s.includes("terverifikasi")) cls = "status-selesai";
+        else if (s.includes("gagal")) cls = "status-batal";
+        html += `<tr><td>${p.id || '-'}</td><td>${p.tanggal || '-'}</td><td>${p.metode || '-'}</td><td>Rp ${parseInt(p.jumlah || 0).toLocaleString("id-ID")}</td><td><span class="status-badge ${cls}">${p.status || 'Pending'}</span></td></tr>`;
+      });
+      html += "</table>";
+      document.getElementById("tabelPembayaran").innerHTML = html;
+    }
+
+    function filterPembayaran() {
+      const q = document.getElementById("searchPembayaran").value.toLowerCase();
+      const f = semuaPembayaran.filter(p =>
+        p.id.toLowerCase().includes(q) ||
+        p.tanggal.toLowerCase().includes(q) ||
+        p.metode.toLowerCase().includes(q) ||
+        p.status.toLowerCase().includes(q)
+      );
+      tampilkanPembayaran(f);
+    }
+
+    const nomorDanaMap = {
+      "RENALDI": "081348722325",
+      "AFRIZAL": "085182489261",
+      "ABDUL HAKIM": "085764534425",
+      "AIDIL ANWAR": "082279458613"
+    };
+
+    document.getElementById("adminJoki").addEventListener("change", function () {
+      const admin = this.value;
+      const nomor = nomorDanaMap[admin];
+      const metodeInput = document.getElementById("metode");
+      const danaBox = document.getElementById("infoDana");
+
+      if (nomor) {
+        metodeInput.value = "Dana";
+        danaBox.style.display = "block";
+        document.getElementById("nomorDana").textContent = nomor;
+      } else {
+        metodeInput.value = "";
+        danaBox.style.display = "none";
+        document.getElementById("nomorDana").textContent = "";
+      }
+    });
+
+    async function loadStatistik() {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user) return;
+
+      const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getStatistik&npm=${user.npm}`);
+      const statistik = await res.json();
+      
+      document.getElementById("tugasSelesai").textContent = statistik.tugasSelesai || 0;
+      document.getElementById("totalPembayaran").textContent = `Rp ${statistik.totalPembayaran.toLocaleString("id-ID") || 0}`;
+    }
+
+    // Notifikasi real-time
+    setInterval(async () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user) {
+        const res = await fetch(`https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getLatestUpdates&npm=${user.npm}`);
+        const updates = await res.json();
+        if (updates.length > 0) {
+          updates.forEach(update => {
+            showNotif("info", "Update Terkini", update.message);
+          });
+        }
+      }
+    }, 30000); // Cek setiap 30 detik
+  </script>
 </body>
 </html>
