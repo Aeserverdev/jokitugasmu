@@ -2,9 +2,10 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin Panel</title>
+  <title>Admin Panel - Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
     :root {
       --primary: #007bff;
@@ -14,14 +15,58 @@
       --dark-bg: #1e1e2f;
       --dark-card: #2c2c3e;
       --dark-text: #eee;
+      --card-bg: white;
+      --card-shadow: rgba(0, 0, 0, 0.1);
+      --border-radius: 12px;
     }
     body {
       font-family: 'Segoe UI', sans-serif;
       background: var(--bg);
       color: #333;
       margin: 0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 250px;
+      background: var(--primary);
+      color: white;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+      position: relative;
+    }
+    .sidebar.hidden {
+      transform: translateX(-100%);
+    }
+    .sidebar h2 {
+      color: white;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 0.5rem;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .nav-item i {
+      margin-right: 10px;
+    }
+    .main {
+      flex: 1;
       padding: 2rem;
-      transition: 0.3s ease;
+      overflow-y: auto;
+      transition: margin-left 0.3s ease;
     }
     .dark-mode {
       background: var(--dark-bg);
@@ -30,27 +75,60 @@
     h1 {
       text-align: center;
       margin-bottom: 2rem;
-      font-size: 2rem;
+      font-size: 2.5rem;
       color: var(--primary);
     }
-    .section {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
+    .statistics {
+      display: flex;
+      justify-content: space-between;
       margin-bottom: 2rem;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    .stat-card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 10px var(--card-shadow);
+      flex: 1;
+      margin: 0 1rem;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px var(--card-shadow);
+    }
+    .stat-card h3 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+    .stat-card p {
+      margin: 0.5rem 0 0;
+      font-size: 1rem;
+      color: #666;
+    }
+    .section {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 10px var(--card-shadow);
+      transition: transform 0.3s;
+    }
+    .section:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px var(--card-shadow);
     }
     .dark-mode .section {
       background: var(--dark-card);
     }
     h2 {
       margin-top: 0;
-      font-size: 1.3rem;
+      font-size: 1.5rem;
       border-left: 5px solid var(--primary);
       padding-left: 10px;
     }
     .dark-toggle {
-      float: right;
       margin-bottom: 1rem;
       background: var(--primary);
       color: white;
@@ -58,14 +136,23 @@
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
+      transition: background 0.3s;
+    }
+    .dark-toggle:hover {
+      background: #0056b3;
     }
     input[type="text"], select {
       width: 100%;
       padding: 10px;
-      margin: 1rem 0;
+      margin: 0.5rem 0 1rem 0;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 1rem;
+      transition: border 0.3s;
+    }
+    input[type="text"]:focus, select:focus {
+      border-color: var(--primary);
+      outline: none;
     }
     table {
       width: 100%;
@@ -91,9 +178,12 @@
       padding: 6px 12px;
       font-weight: bold;
       cursor: pointer;
+      transition: background 0.3s;
     }
     button.verif { background: var(--success); color: white; }
+    button.verif:hover { background: #218838; }
     button.tolak { background: var(--danger); color: white; }
+    button.tolak:hover { background: #c82333; }
     .loading { text-align: center; padding: 20px; }
     .spinner {
       border: 4px solid #f3f3f3;
@@ -109,33 +199,103 @@
       100% { transform: rotate(360deg); }
     }
     @media(max-width:768px){
+      .sidebar {
+        position: absolute;
+        z-index: 1000;
+        height: 100%;
+        transform: translateX(-100%);
+      }
+      .sidebar.visible {
+        transform: translateX(0);
+      }
+      .main {
+        margin-left: 0;
+      }
+      .main.open {
+        margin-left: 250px;
+      }
       table, thead, tbody, th, td, tr { display: block; }
       th { position: sticky; top: 0; background: var(--primary); z-index: 1; }
       td { border-bottom: 1px solid #ccc; }
     }
+    .menu-toggle {
+      display: none;
+      background: var(--primary);
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+    @media(max-width:768px){
+      .menu-toggle {
+        display: block;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="dark-toggle" onclick="toggleDark()">🌙 Dark Mode</div>
-  <h1>📊 Admin Panel - Joki Tugas</h1>
-
-  <div class="section">
-    <h2>📥 Data Pesanan</h2>
-    <input type="text" placeholder="🔍 Cari pesanan..." oninput="filterPesanan()" id="searchPesanan">
-    <select onchange="filterPesanan()" id="filterStatus">
-      <option value="">📂 Semua Status</option>
-      <option value="Menunggu">⏳ Menunggu</option>
-      <option value="Proses">⚙️ Proses</option>
-      <option value="Selesai">✅ Selesai</option>
-      <option value="Batal">❌ Batal</option>
-    </select>
-    <div id="tabelPesanan"><div class="loading"><div class="spinner"></div></div></div>
+  <div class="sidebar" id="sidebar">
+    <h2>Menu</h2>
+    <div class="nav-item" onclick="loadPesanan()">
+      <i class="fas fa-box"></i> <span>Data Pesanan</span>
+    </div>
+    <div class="nav-item" onclick="loadPembayaran()">
+      <i class="fas fa-credit-card"></i> <span>Data Pembayaran</span>
+    </div>
+    <div class="nav-item" onclick="loadAdmin()">
+      <i class="fas fa-user-shield"></i> <span>Manajemen Admin</span>
+    </div>
+    <div class="dark-toggle" onclick="toggleDark()">🌙 Dark Mode</div>
   </div>
+  <div class="main" id="main">
+    <button class="menu-toggle" onclick="toggleSidebar()">☰ Menu</button>
+    <h1>📊 Admin Panel - Joki Tugas</h1>
 
-  <div class="section">
-    <h2>💳 Data Pembayaran</h2>
-    <input type="text" placeholder="🔍 Cari pembayaran..." oninput="filterPembayaran()" id="searchPembayaran">
-    <div id="tabelPembayaran"><div class="loading"><div class="spinner"></div></div></div>
+    <div class="statistics">
+      <div class="stat-card">
+        <h3 id="totalOrders">0</h3>
+        <p>Total Pesanan</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="totalPayments">0</h3>
+        <p>Total Pembayaran</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="totalAdmins">0</h3>
+        <p>Total Admin</p>
+      </div>
+    </div>
+
+    <div class="section" id="pesanan">
+      <h2>📥 Data Pesanan</h2>
+      <input type="text" placeholder="🔍 Cari pesanan..." oninput="filterPesanan()" id="searchPesanan">
+      <select onchange="filterPesanan()" id="filterStatus">
+        <option value="">📂 Semua Status</option>
+        <option value="Menunggu">⏳ Menunggu</option>
+        <option value="Proses">⚙️ Proses</option>
+        <option value="Selesai">✅ Selesai</option>
+        <option value="Batal">❌ Batal</option>
+      </select>
+      <div id="tabelPesanan"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <div class="section" id="pembayaran">
+      <h2>💳 Data Pembayaran</h2>
+      <input type="text" placeholder="🔍 Cari pembayaran..." oninput="filterPembayaran()" id="searchPembayaran">
+      <div id="tabelPembayaran"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <div class="section" id="admin">
+      <h2>👥 Manajemen Admin</h2>
+      <form onsubmit="tambahAdmin(event)">
+        <input type="text" id="namaAdmin" placeholder="Nama Admin" required />
+        <input type="text" id="emailAdmin" placeholder="Email Admin" required />
+        <button type="submit" style="background: var(--primary); color: white;">+ Tambah Admin</button>
+      </form>
+      <div id="tabelAdmin"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
   </div>
 
   <script>
@@ -147,6 +307,13 @@
     }
     if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark-mode");
 
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const main = document.getElementById("main");
+      sidebar.classList.toggle("visible");
+      main.classList.toggle("open");
+    }
+
     let semuaPesanan = [];
     async function loadPesanan() {
       document.getElementById("tabelPesanan").innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
@@ -155,6 +322,7 @@
         const data = await res.json();
         semuaPesanan = data;
         tampilkanPesanan(data);
+        document.getElementById("totalOrders").innerText = data.length; // Update total orders
       } catch (e) {
         document.getElementById("tabelPesanan").innerHTML = "❌ Gagal memuat data.";
       }
@@ -218,6 +386,7 @@
         const data = await res.json();
         semuaPembayaran = data;
         tampilkanPembayaran(data);
+        document.getElementById("totalPayments").innerText = data.length; // Update total payments
       } catch (e) {
         document.getElementById("tabelPembayaran").innerHTML = "❌ Gagal memuat data.";
       }
@@ -234,8 +403,8 @@
           <td>${p.metode}</td>
           <td>${p.status}</td>
           <td>
-            <button class="verif" onclick="verifikasi('${p.id}', 'Terverifikasi')">✔️</button>
-            <button class="tolak" onclick="verifikasi('${p.id}', 'Gagal')">❌</button>
+            <button class="verif" onclick="verifikasi('${p.id}', 'Terverifikasi')">✔</button>
+            <button class="tolak" onclick="verifikasi('${p.id}', 'Gagal')">✖</button>
           </td>
         </tr>`;
       });
@@ -260,8 +429,57 @@
       loadPembayaran();
     }
 
+    let semuaAdmin = [];
+    async function loadAdmin() {
+      document.getElementById("tabelAdmin").innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+      try {
+        const res = await fetch(`${BASE_URL}?action=getAdminList`);
+        const data = await res.json();
+        semuaAdmin = data;
+        tampilkanAdmin(data);
+        document.getElementById("totalAdmins").innerText = data.length; // Update total admins
+      } catch (e) {
+        document.getElementById("tabelAdmin").innerHTML = "❌ Gagal memuat data admin.";
+      }
+    }
+
+    function tampilkanAdmin(data) {
+      let html = `<p>Menampilkan ${data.length} admin</p>`;
+      html += `<table><tr><th>Nama</th><th>Email</th></tr>`;
+      data.forEach(admin => {
+                html += `<tr><td>${admin.nama}</td><td>${admin.email}</td></tr>`;
+      });
+      html += `</table>`;
+      document.getElementById("tabelAdmin").innerHTML = html;
+    }
+
+    async function tambahAdmin(e) {
+      e.preventDefault();
+      const nama = document.getElementById("namaAdmin").value.trim();
+      const email = document.getElementById("emailAdmin").value.trim();
+      if (!nama || !email) return;
+
+      const res = await fetch(`${BASE_URL}?action=tambahAdmin`, {
+        method: "POST",
+        body: JSON.stringify({ nama, email }),
+        headers: { "Content-Type": "application/json" }
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        Swal.fire({ icon: 'success', title: 'Admin ditambahkan!', toast: true, timer: 2000, showConfirmButton: false });
+        loadAdmin();
+        document.getElementById("namaAdmin").value = "";
+        document.getElementById("emailAdmin").value = "";
+      } else {
+        Swal.fire({ icon: 'error', title: 'Gagal menambahkan admin', text: result.message });
+      }
+    }
+
+    // Load initial data
     loadPesanan();
     loadPembayaran();
+    loadAdmin();
   </script>
 </body>
 </html>
