@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const statusPesanan = document.getElementById("statusPesanan");
     statusPesanan.style.display = "block";
-    statusPesanan.innerText = "📡 Mengirim pesanan ke Telegram...";
+    statusPesanan.innerText = "📡 Mengirim pesanan...";
 
     try {
       await kirimTelegramDenganGambar(data, file);
@@ -206,7 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
       navigator.clipboard.writeText(trackingID);
       showNotif("success", "Terkirim!", `Tracking ID: ${trackingID}`);
     } catch (error) {
-      statusPesanan.innerHTML = "❌ Gagal mengirim ke Telegram.<br>Silakan coba lagi.";
+      statusPesanan.innerHTML = "❌ Gagal mengirim.<br>Silakan coba lagi.";
       showNotif("error", "Gagal", error.message);
     }
   });
