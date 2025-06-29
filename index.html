@@ -7,6 +7,396 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --primary: #4f8cff;
+      --accent: #7fffd4;
+      --bg: linear-gradient(135deg, #e0e7ff 0%, #f9fbfd 100%);
+      --dark-bg: linear-gradient(135deg, #232946 0%, #121629 100%);
+      --sidebar: #232946;
+      --sidebar-accent: #4f8cff;
+      --card-bg: rgba(255,255,255,0.85);
+      --card-shadow: rgba(79, 140, 255, 0.08);
+      --border-radius: 18px;
+      --glass: rgba(255,255,255,0.7);
+      --glass-dark: rgba(35,41,70,0.7);
+    }
+    body {
+      font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      color: #232946;
+      margin: 0;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.5s;
+    }
+    .sidebar {
+      width: 250px;
+      background: var(--sidebar);
+      color: #fff;
+      padding: 2rem 1.2rem 1.2rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      border-top-right-radius: 32px;
+      border-bottom-right-radius: 32px;
+      box-shadow: 0 8px 32px var(--card-shadow);
+      min-height: 100vh;
+      position: relative;
+      z-index: 10;
+      transition: background 0.5s;
+    }
+    .sidebar h2 {
+      color: var(--accent);
+      margin-bottom: 2rem;
+      font-size: 2rem;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .sidebar button {
+      background: none;
+      border: none;
+      color: #ccc;
+      padding: 1rem 1.2rem;
+      text-align: left;
+      cursor: pointer;
+      border-radius: 12px;
+      font-weight: 500;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sidebar button.active, .sidebar button:hover {
+      background: linear-gradient(45deg, var(--primary), var(--accent));
+      color: #fff;
+      box-shadow: 0 4px 12px var(--card-shadow);
+      transform: translateX(5px) scale(1.04);
+    }
+    .content {
+      flex: 1;
+      padding: 2.5rem 3vw 2rem 3vw;
+      overflow-y: auto;
+      background: transparent;
+      min-height: 100vh;
+      transition: background 0.5s;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .toggle-dark {
+      padding: 0.7rem 1.5rem;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      border: none;
+      font-size: 1.1rem;
+      transition: all 0.3s;
+      box-shadow: 0 2px 8px var(--card-shadow);
+    }
+    .toggle-dark:hover {
+      background: var(--accent);
+      color: #232946;
+      transform: scale(1.05);
+    }
+    .section {
+      background: var(--glass);
+      padding: 2rem 1.5rem;
+      border-radius: var(--border-radius);
+      margin-bottom: 2.5rem;
+      box-shadow: 0 8px 32px var(--card-shadow);
+      transition: transform 0.3s, box-shadow 0.3s;
+      backdrop-filter: blur(8px);
+      animation: fadeIn 0.6s;
+    }
+    .section.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .card-profile {
+      max-width: 420px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.95) 60%, var(--accent) 100%);
+      border-radius: 32px;
+      margin: auto;
+      padding: 2.5rem 2rem 2rem 2rem;
+      text-align: center;
+      box-shadow: 0 8px 32px 0 rgba(79,140,255,0.12), 0 1.5px 8px 0 rgba(127,255,212,0.10);
+      backdrop-filter: blur(18px) saturate(1.2);
+      transition: all 0.4s cubic-bezier(.4,2,.6,1);
+      position: relative;
+      overflow: visible;
+      border: 2.5px solid var(--primary);
+      animation: popIn 0.7s cubic-bezier(.4,2,.6,1);
+    }
+    .card-profile:hover {
+      transform: translateY(-8px) scale(1.03) rotate(-1deg);
+      box-shadow: 0 16px 40px 0 rgba(79,140,255,0.18), 0 2px 12px 0 rgba(127,255,212,0.13);
+      border-color: var(--accent);
+    }
+    .card-profile-img-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1.2rem;
+    }
+    .card-profile-img-wrap img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 5px solid var(--primary);
+      box-shadow: 0 4px 16px 0 rgba(79,140,255,0.18);
+      background: #fff;
+      aspect-ratio: 1/1;
+      display: block;
+      transition: border 0.3s, box-shadow 0.3s;
+      z-index: 1;
+    }
+    .card-profile-img-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, var(--accent) 0%, transparent 70%);
+      filter: blur(8px) brightness(1.2);
+      opacity: 0.7;
+      z-index: 0;
+      pointer-events: none;
+      animation: glowPulse 2.5s infinite alternate cubic-bezier(.4,2,.6,1);
+    }
+    @keyframes glowPulse {
+      0% { opacity: 0.7; filter: blur(8px) brightness(1.2); }
+      100% { opacity: 1; filter: blur(16px) brightness(1.4); }
+    }
+    .info-box, input, textarea, select {
+      background: var(--glass);
+      padding: 1.1rem;
+      margin: 1rem 0;
+      border-radius: 14px;
+      border: 1.5px solid #cfd8dc;
+      box-shadow: 0 2px 10px var(--card-shadow);
+      transition: 0.3s;
+      width: 100%;
+      font-size: 1.05rem;
+    }
+    .btn {
+      background: linear-gradient(45deg, var(--primary), var(--accent));
+      color: #fff;
+      padding: 0.9rem 2.2rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 2px 8px var(--card-shadow);
+    }
+    .btn:hover {
+      filter: brightness(1.1);
+      transform: scale(1.05);
+      background: linear-gradient(45deg, var(--accent), var(--primary));
+      color: #232946;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--glass);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-top: 1.2rem;
+      box-shadow: 0 2px 12px var(--card-shadow);
+    }
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+      font-size: 1.05rem;
+    }
+    th {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+    }
+    tr:hover {
+      background: #f5faff;
+    }
+    .dark-mode tr:hover {
+      background: #232946;
+    }
+    .status-badge {
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .status-menunggu { background: #ff9800; }
+    .status-proses { background: #2196f3; }
+    .status-selesai { background: #4caf50; }
+    .status-batal { background: #f44336; }
+    /* Chatbot Styles */
+    #chatbot-btn {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 9999;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  box-shadow: 0 4px 24px var(--card-shadow);
+  font-size: 2.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s, transform 0.2s;
+  animation: chatbotPop 0.7s;
+}
+#chatbot-btn:hover {
+  background: linear-gradient(135deg, var(--accent), var(--primary));
+  color: var(--primary);
+  transform: scale(1.08);
+}
+@keyframes chatbotPop {
+  0% { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+#chatbot-window {
+  position: fixed;
+  bottom: 110px;
+  right: 32px;
+  width: 340px;
+  max-width: 95vw;
+  background: var(--glass);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px var(--card-shadow);
+  z-index: 10000;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  animation: fadeIn 0.4s;
+  backdrop-filter: blur(12px) saturate(1.2);
+}
+#chatbot-header {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  padding: 1rem 1.2rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#chatbot-header button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+  margin-left: 8px;
+}
+#chatbot-messages {
+  flex: 1;
+  padding: 1rem;
+  background: transparent;
+  overflow-y: auto;
+  max-height: 320px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.chatbot-msg {
+  background: #fff;
+  color: #232946;
+  padding: 0.7rem 1rem;
+  border-radius: 16px 16px 4px 16px;
+  max-width: 80%;
+  align-self: flex-end;
+  box-shadow: 0 2px 8px var(--card-shadow);
+  font-size: 1.01rem;
+  word-break: break-word;
+}
+.chatbot-msg.bot {
+  background: var(--primary);
+  color: #fff;
+  align-self: flex-start;
+  border-radius: 16px 16px 16px 4px;
+  animation: fadeIn 0.5s;
+}
+#chatbot-input-area {
+  display: flex;
+  border-top: 1.5px solid #e0e7ff;
+  background: var(--glass);
+  padding: 0.7rem 0.7rem 0.7rem 1rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+#chatbot-input {
+  flex: 1;
+  border: none;
+  border-radius: 12px;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  background: #f9fbfd;
+  outline: none;
+}
+#chatbot-send {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#chatbot-send:hover {
+  background: var(--accent);
+  color: var(--primary);
+}
+    @media (max-width: 900px) {
+      .content { padding: 1.2rem 2vw 1rem 2vw; }
+      .statistics { flex-direction: column; gap: 1.5rem; }
+      .stat-card { margin: 0; }
+    }
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        gap: 0;
+        overflow-x: auto;
+        justify-content: space-around;
+        border-radius: 0 0 32px 32px;
+        min-height: unset;
+        padding: 1rem 0.5rem;
+      }
+      .sidebar button {
+        flex: 1;
+        text-align: center;
+        padding: 1rem 0.5rem;
+        font-size: 1rem;
+      }
+      .content { padding: 1rem 2vw; }
+      .card-profile { padding: 1.2rem 0.5rem; }
+    }
+  </style>
 </head>
 <body>
   <div class="sidebar">
@@ -29,11 +419,15 @@
   <option value="merah">Merah</option>
 </select>
 
-  <!-- Edit Profil -->
+  <!-- Edit Profil (pindah ke pengaturan) -->
   <div class="info-box">
-    <label>✏️ Edit Nama</label>
-    <input type="text" id="pengaturanNama" placeholder="Masukkan nama baru">
-    <button class="btn" onclick="simpanEditNama()">💾 Simpan Nama</button>
+    <label>✏️ Edit Profil</label>
+    <input type="text" id="editNama" placeholder="Nama Lengkap">
+    <input type="text" id="editProdi" placeholder="Program Studi">
+    <input type="text" id="editNowa" placeholder="Nomor WhatsApp">
+    <label for="editFoto">Foto Profil</label>
+    <input type="file" id="editFoto" accept="image/*">
+    <button class="btn" onclick="simpanEditProfil()">💾 Simpan Perubahan</button>
   </div>
 
   <!-- Ganti Password -->
@@ -59,7 +453,10 @@
     </div>
     <div id="profil" class="section active">
       <div class="card-profile">
-        <img src="https://ui-avatars.com/api/?name=Mahasiswa" alt="Foto Mahasiswa">
+        <div class="card-profile-img-wrap">
+          <span class="card-profile-img-glow"></span>
+          <img id="fotoProfil" src="https://ui-avatars.com/api/?name=Mahasiswa" alt="Foto Mahasiswa">
+        </div>
         <h3 id="nama"></h3>
         <p><strong>NPM:</strong> <span id="npm"></span></p>
         <p><strong>Prodi:</strong> <span id="prodi"></span></p>
@@ -167,6 +564,373 @@
     <div class="info-box" id="tabelPembayaran">Memuat data...</div>
   </div>
 </div>
+  <button id="chatbot-btn" title="Chatbot" aria-label="Chatbot" onclick="toggleChatbot()">💬</button>
+<div id="chatbot-window">
+  <div id="chatbot-header">
+    <span id="chatbot-title">🤖 Chatbot</span>
+    <button onclick="toggleChatbot()" aria-label="Tutup">&times;</button>
+  </div>
+  <div id="chatbot-messages"></div>
+  <form id="chatbot-input-area" onsubmit="return sendChatbotMsg()">
+    <input id="chatbot-input" type="text" placeholder="Tulis pertanyaan..." autocomplete="off" />
+    <button id="chatbot-send" type="submit">➤</button>
+  </form>
+</div>
   <script src="script.js"></script>
+<script>
+// --- Edit Profil ---
+function simpanEditProfil() {
+  const namaBaru = document.getElementById('editNama').value.trim();
+  const prodiBaru = document.getElementById('editProdi').value.trim();
+  const nowaBaru = document.getElementById('editNowa').value.trim();
+  const fotoInput = document.getElementById('editFoto');
+  if (!namaBaru || !prodiBaru || !nowaBaru) {
+    Swal.fire({icon:'error',title:'Lengkapi semua data!'}); return;
+  }
+  let user = JSON.parse(localStorage.getItem('user')) || {};
+  user.nama = namaBaru;
+  user.prodi = prodiBaru;
+  user.nowa = nowaBaru;
+  // Jika ada file foto baru
+  if (fotoInput.files && fotoInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      user.foto = e.target.result;
+      localStorage.setItem('user', JSON.stringify(user));
+      document.getElementById('fotoProfil').src = user.foto;
+    };
+    reader.readAsDataURL(fotoInput.files[0]);
+  } else {
+    // Jika tidak upload baru, tetap pakai yang lama atau avatar
+    if (user.foto) {
+      document.getElementById('fotoProfil').src = user.foto;
+    } else {
+      document.getElementById('fotoProfil').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(namaBaru)}`;
+    }
+    localStorage.setItem('user', JSON.stringify(user));
+  }
+  document.getElementById('nama').textContent = namaBaru;
+  document.getElementById('prodi').textContent = prodiBaru;
+  document.getElementById('nowa').textContent = nowaBaru;
+  Swal.fire({icon:'success',title:'Profil berhasil diperbarui!'});
+}
+// Set nilai awal form edit profil saat buka pengaturan
+function setEditProfilForm() {
+  document.getElementById('editNama').value = document.getElementById('nama').textContent;
+  document.getElementById('editProdi').value = document.getElementById('prodi').textContent;
+  document.getElementById('editNowa').value = document.getElementById('nowa').textContent;
+  // Set foto preview jika ada
+  let user = JSON.parse(localStorage.getItem('user')) || {};
+  if (user.foto) {
+    document.getElementById('fotoProfil').src = user.foto;
+  } else {
+    document.getElementById('fotoProfil').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nama||'Mahasiswa')}`;
+  }
+  document.getElementById('editFoto').value = '';
+}
+// --- Tema Warna ---
+function gantiWarnaTema() {
+  const tema = document.getElementById('temaWarna').value;
+  let root = document.documentElement;
+  if (tema === 'biru') {
+    root.style.setProperty('--primary', '#4f8cff');
+    root.style.setProperty('--accent', '#7fffd4');
+    root.style.setProperty('--bg', 'linear-gradient(135deg, #e0e7ff 0%, #f9fbfd 100%)');
+  } else if (tema === 'ungu') {
+    root.style.setProperty('--primary', '#7c3aed');
+    root.style.setProperty('--accent', '#e0aaff');
+    root.style.setProperty('--bg', 'linear-gradient(135deg, #ede9fe 0%, #f9f5ff 100%)');
+  } else if (tema === 'hijau') {
+    root.style.setProperty('--primary', '#22c55e');
+    root.style.setProperty('--accent', '#bbf7d0');
+    root.style.setProperty('--bg', 'linear-gradient(135deg, #d1fae5 0%, #f0fdf4 100%)');
+  } else if (tema === 'merah') {
+    root.style.setProperty('--primary', '#ef4444');
+    root.style.setProperty('--accent', '#fca5a5');
+    root.style.setProperty('--bg', 'linear-gradient(135deg, #fee2e2 0%, #fff1f2 100%)');
+  }
+  localStorage.setItem('temaWarna', tema);
+}
+// Set tema saat halaman dimuat
+window.addEventListener('DOMContentLoaded', function() {
+  const tema = localStorage.getItem('temaWarna') || 'biru';
+  document.getElementById('temaWarna').value = tema;
+  gantiWarnaTema();
+});
+
+// --- Ganti Password ---
+function gantiPassword() {
+  const passLama = document.getElementById('passLama').value;
+  const passBaru = document.getElementById('passBaru').value;
+  if (!passLama || !passBaru) {
+    Swal.fire({icon:'error',title:'Isi semua kolom password!'}); return;
+  }
+  let user = JSON.parse(localStorage.getItem('user')) || {};
+  if (!user.password) {
+    // Jika belum ada password, izinkan set password baru
+    user.password = passBaru;
+    localStorage.setItem('user', JSON.stringify(user));
+    Swal.fire({icon:'success',title:'Password berhasil dibuat!'});
+    document.getElementById('passLama').value = '';
+    document.getElementById('passBaru').value = '';
+    return;
+  }
+  if (user.password !== passLama) {
+    Swal.fire({icon:'error',title:'Password lama salah!'}); return;
+  }
+  if (passLama === passBaru) {
+    Swal.fire({icon:'warning',title:'Password baru tidak boleh sama dengan lama!'}); return;
+  }
+  user.password = passBaru;
+  localStorage.setItem('user', JSON.stringify(user));
+  Swal.fire({icon:'success',title:'Password berhasil diubah!'});
+  document.getElementById('passLama').value = '';
+  document.getElementById('passBaru').value = '';
+}
+
+// --- Pilih Bahasa ---
+function ubahBahasa() {
+  const bahasa = document.getElementById('pilihBahasa').value;
+  localStorage.setItem('bahasa', bahasa);
+  setBahasa(bahasa);
+}
+function setBahasa(bahasa) {
+  // Label dan teks statis
+  const teks = {
+    id: {
+      'Dashboard': 'Dashboard',
+      'Profil': 'Profil',
+      'Riwayat': 'Riwayat',
+      'Pesanan': 'Pesanan',
+      'Pembayaran': 'Pembayaran',
+      'Pengaturan': 'Pengaturan',
+      'Logout': 'Logout',
+      'Edit Profil': '✏️ Edit Profil',
+      'Nama Lengkap': 'Nama Lengkap',
+      'Program Studi': 'Program Studi',
+      'Nomor WhatsApp': 'Nomor WhatsApp',
+      'Simpan Perubahan': '💾 Simpan Perubahan',
+      'Ganti Password': '🔐 Ganti Password',
+      'Password Lama': 'Password Lama',
+      'Password Baru': 'Password Baru',
+      'Update Password': '🔁 Update Password',
+      'Warna Tema': 'Warna Tema',
+      'Bahasa': 'Bahasa',
+      'Riwayat Joki Tugas': '📚 Riwayat Joki Tugas',
+      'Tambah Pesanan': '📝 Tambah Pesanan',
+      'Pilih Admin Joki': 'Pilih Admin Joki',
+      'Jenis Tugas': 'Jenis Tugas',
+      'Metode Pembayaran': 'Metode Pembayaran',
+      'Judul': 'Judul',
+      'Deskripsi': 'Deskripsi',
+      'Nama Lengkap Dosen': 'Nama Lengkap Dosen',
+      'Fakultas': 'Fakultas',
+      'Mata Kuliah': 'Mata Kuliah',
+      'Deadline wajib lewat dari 1 Hari': 'Deadline wajib lewat dari 1 Hari',
+      'Harga': 'Harga',
+      'Upload Bukti Pembayaran (gambar)': 'Upload Bukti Pembayaran (gambar)',
+      'Kirim Pesanan': '🚀 Kirim Pesanan',
+      'Riwayat Pembayaran': '💳 Riwayat Pembayaran',
+      'Cari tugas...': '🔍 Cari tugas...',
+      'Cari pembayaran...': '🔍 Cari pembayaran...'
+    },
+    en: {
+      'Dashboard': 'Dashboard',
+      'Profil': 'Profile',
+      'Riwayat': 'History',
+      'Pesanan': 'Order',
+      'Pembayaran': 'Payment',
+      'Pengaturan': 'Settings',
+      'Logout': 'Logout',
+      'Edit Profil': '✏️ Edit Profile',
+      'Nama Lengkap': 'Full Name',
+      'Program Studi': 'Study Program',
+      'Nomor WhatsApp': 'WhatsApp Number',
+      'Simpan Perubahan': '💾 Save Changes',
+      'Ganti Password': '🔐 Change Password',
+      'Password Lama': 'Old Password',
+      'Password Baru': 'New Password',
+      'Update Password': '🔁 Update Password',
+      'Warna Tema': 'Theme Color',
+      'Bahasa': 'Language',
+      'Riwayat Joki Tugas': '📚 Task History',
+      'Tambah Pesanan': '📝 Add Order',
+      'Pilih Admin Joki': 'Select Admin',
+      'Jenis Tugas': 'Task Type',
+      'Metode Pembayaran': 'Payment Method',
+      'Judul': 'Title',
+      'Deskripsi': 'Description',
+      'Nama Lengkap Dosen': 'Lecturer Name',
+      'Fakultas': 'Faculty',
+      'Mata Kuliah': 'Course',
+      'Deadline wajib lewat dari 1 Hari': 'Deadline must be more than 1 day',
+      'Harga': 'Price',
+      'Upload Bukti Pembayaran (gambar)': 'Upload Payment Proof (image)',
+      'Kirim Pesanan': '🚀 Submit Order',
+      'Riwayat Pembayaran': '💳 Payment History',
+      'Cari tugas...': '🔍 Search task...',
+      'Cari pembayaran...': '🔍 Search payment...'
+    }
+  };
+  // Sidebar
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar) {
+    const btns = sidebar.querySelectorAll('button');
+    btns[0].innerHTML = '📄 ' + teks[bahasa]['Profil'];
+    btns[1].innerHTML = '📚 ' + teks[bahasa]['Riwayat'];
+    btns[2].innerHTML = '📝 ' + teks[bahasa]['Pesanan'];
+    btns[3].innerHTML = '💳 ' + teks[bahasa]['Pembayaran'];
+    btns[4].innerHTML = '⚙️ ' + teks[bahasa]['Pengaturan'];
+    btns[5].innerHTML = '🚪 ' + teks[bahasa]['Logout'];
+  }
+  // Topbar
+  document.querySelector('.topbar h1').textContent = teks[bahasa]['Dashboard'];
+  // Pengaturan
+  document.querySelector('label[for="temaWarna"]').textContent = teks[bahasa]['Warna Tema'];
+  document.querySelector('label[for="temaWarna"]').nextElementSibling.nextElementSibling.querySelector('label').textContent = teks[bahasa]['Edit Profil'];
+  document.getElementById('editNama').placeholder = teks[bahasa]['Nama Lengkap'];
+  document.getElementById('editProdi').placeholder = teks[bahasa]['Program Studi'];
+  document.getElementById('editNowa').placeholder = teks[bahasa]['Nomor WhatsApp'];
+  document.querySelector('button[onclick="simpanEditProfil()"] span, button[onclick="simpanEditProfil()"]').textContent = teks[bahasa]['Simpan Perubahan'];
+  // Ganti Password
+  document.querySelectorAll('.info-box label')[2].textContent = teks[bahasa]['Ganti Password'];
+  document.getElementById('passLama').placeholder = teks[bahasa]['Password Lama'];
+  document.getElementById('passBaru').placeholder = teks[bahasa]['Password Baru'];
+  document.querySelector('button[onclick="gantiPassword()"] span, button[onclick="gantiPassword()"]').textContent = teks[bahasa]['Update Password'];
+  // Bahasa
+  document.querySelectorAll('.info-box label')[3].textContent = teks[bahasa]['Bahasa'];
+  // Profil
+  document.querySelector('#profil .card-profile p strong').textContent = teks[bahasa]['Profil']+':';
+  // Riwayat
+  document.getElementById('riwayat').querySelector('h2').textContent = teks[bahasa]['Riwayat Joki Tugas'];
+  document.getElementById('searchRiwayat').placeholder = teks[bahasa]['Cari tugas...'];
+  // Pesanan
+  document.getElementById('pesanan').querySelector('h2').textContent = teks[bahasa]['Tambah Pesanan'];
+  document.querySelector('label[for="adminJoki"]').textContent = teks[bahasa]['Pilih Admin Joki'];
+  document.querySelector('label[for="jenis"]').textContent = teks[bahasa]['Jenis Tugas'];
+  document.querySelector('label[for="metode"]').textContent = teks[bahasa]['Metode Pembayaran'];
+  document.getElementById('judul').placeholder = teks[bahasa]['Judul'];
+  document.getElementById('deskripsi').placeholder = teks[bahasa]['Deskripsi'];
+  document.getElementById('dosen').placeholder = teks[bahasa]['Nama Lengkap Dosen'];
+  document.getElementById('fakultas').placeholder = teks[bahasa]['Fakultas'];
+  document.getElementById('matkul').placeholder = teks[bahasa]['Mata Kuliah'];
+  document.querySelector('label[for="deadline"]').textContent = teks[bahasa]['Deadline wajib lewat dari 1 Hari'];
+  document.querySelector('label[for="harga"]').textContent = teks[bahasa]['Harga'];
+  document.querySelector('label[for="bukti"]').textContent = teks[bahasa]['Upload Bukti Pembayaran (gambar)'];
+  document.querySelector('button[type="submit"] span, button[type="submit"]').textContent = teks[bahasa]['Kirim Pesanan'];
+  // Pembayaran
+  document.getElementById('pembayaran').querySelector('h2').textContent = teks[bahasa]['Riwayat Pembayaran'];
+  document.getElementById('searchPembayaran').placeholder = teks[bahasa]['Cari pembayaran...'];
+}
+// Set bahasa saat halaman dimuat
+window.addEventListener('DOMContentLoaded', function() {
+  const bahasa = localStorage.getItem('bahasa') || 'id';
+  document.getElementById('pilihBahasa').value = bahasa;
+  setBahasa(bahasa);
+});
+
+function logout() {
+  Swal.fire({
+    title: 'Logout?',
+    text: 'Apakah Anda yakin ingin keluar dari dashboard?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#4f8cff',
+    cancelButtonColor: '#aaa',
+    confirmButtonText: 'Ya, Logout',
+    cancelButtonText: 'Batal'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      localStorage.removeItem('user');
+      localStorage.removeItem('bahasa');
+      localStorage.removeItem('temaWarna');
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil logout!',
+        showConfirmButton: false,
+        timer: 1200
+      }).then(() => {
+        window.location.href = 'admin-login.html';
+      });
+    }
+  });
+}
+// --- Chatbot ---
+function toggleChatbot() {
+  const win = document.getElementById('chatbot-window');
+  win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
+  if (win.style.display === 'flex') {
+    setTimeout(() => {
+      document.getElementById('chatbot-input').focus();
+    }, 200);
+  }
+}
+const chatbotQnA = {
+  id: [
+    {q:/profil|edit/i, a:'Untuk mengedit profil, buka menu Pengaturan lalu Edit Profil.'},
+    {q:/tema|warna/i, a:'Anda bisa mengganti warna tema di Pengaturan > Warna Tema.'},
+    {q:/password|sandi/i, a:'Ganti password di Pengaturan > Ganti Password.'},
+    {q:/bahasa/i, a:'Ubah bahasa di Pengaturan > Bahasa.'},
+    {q:/pesan|order/i, a:'Tambah pesanan di menu Pesanan.'},
+    {q:/riwayat/i, a:'Lihat riwayat tugas di menu Riwayat.'},
+    {q:/pembayaran/i, a:'Cek riwayat pembayaran di menu Pembayaran.'},
+    {q:/logout|keluar/i, a:'Klik tombol Logout di sidebar.'},
+    {q:/.*/, a:'Maaf, saya hanya bisa membantu seputar fitur dashboard.'}
+  ],
+  en: [
+    {q:/profile|edit/i, a:'To edit your profile, go to Settings then Edit Profile.'},
+    {q:/theme|color/i, a:'You can change the theme color in Settings > Theme Color.'},
+    {q:/password/i, a:'Change your password in Settings > Change Password.'},
+    {q:/language/i, a:'Switch language in Settings > Language.'},
+    {q:/order/i, a:'Add an order in the Order menu.'},
+    {q:/history/i, a:'View your task history in the History menu.'},
+    {q:/payment/i, a:'Check payment history in the Payment menu.'},
+    {q:/logout|sign out/i, a:'Click the Logout button in the sidebar.'},
+    {q:/.*/, a:'Sorry, I can only help with dashboard features.'}
+  ]
+};
+function sendChatbotMsg() {
+  const input = document.getElementById('chatbot-input');
+  const msg = input.value.trim();
+  if (!msg) return false;
+  addChatMsg(msg, 'user');
+  input.value = '';
+  setTimeout(() => chatbotReply(msg), 500);
+  return false;
+}
+function addChatMsg(text, who) {
+  const box = document.getElementById('chatbot-messages');
+  const div = document.createElement('div');
+  div.className = 'chatbot-msg' + (who==='bot'?' bot':'');
+  div.textContent = text;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+function chatbotReply(msg) {
+  const lang = localStorage.getItem('bahasa')||'id';
+  const qna = chatbotQnA[lang]||chatbotQnA.id;
+  let res = qna.find(item => item.q.test(msg));
+  addChatMsg(res ? res.a : qna[qna.length-1].a, 'bot');
+}
+// Reset chatbot on language change
+function resetChatbotLang() {
+  document.getElementById('chatbot-messages').innerHTML = '';
+  addChatMsg(localStorage.getItem('bahasa')==='en' ?
+    'Hi! Ask me about dashboard features.' :
+    'Hai! Tanyakan saya seputar fitur dashboard.', 'bot');
+  document.getElementById('chatbot-title').textContent =
+    (localStorage.getItem('bahasa')==='en' ? '🤖 Chatbot' : '🤖 Chatbot');
+  document.getElementById('chatbot-input').placeholder =
+    (localStorage.getItem('bahasa')==='en' ? 'Type your question...' : 'Tulis pertanyaan...');
+}
+window.addEventListener('DOMContentLoaded', resetChatbotLang);
+// Integrate with language selector
+const oldSetBahasa = window.setBahasa;
+window.setBahasa = function(bahasa) {
+  oldSetBahasa(bahasa);
+  resetChatbotLang();
+};
+</script>
+<!-- End Chatbot -->
 </body>
 </html>
