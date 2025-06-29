@@ -75,33 +75,34 @@
 
     <div id="pesanan" class="section">
       <h2>📝 Tambah Pesanan</h2>
-      <form id="formPesanan">
-        <div class="info-box">
-          <label>Jenis Tugas</label>
-         <select id="jenis" onchange="updateHarga()">
-  <option value="">Pilih Jenis Tugas</option>
-  <option value="MAKALAH">MAKALAH</option>
-  <option value="PPT">PPT</option>
-  <option value="PPT PREMIUM">PPT PREMIUM</option>
-  <option value="WEBSITE">WEBSITE</option>
-  <option value="KODING">KODING</option>
-  <option value="ANIMACY">ANIMACY</option>
-  <option value="ANIMACY VIDEO">ANIMACY VIDEO</option>
-  <option value="BIKIN APLIKASI">BIKIN APLIKASI</option>
-</select>
-
-        </div>
-
+       <form id="formPesanan">
         <div class="info-box">
           <label>Pilih Admin Joki</label>
           <select id="adminJoki">
-  <option value="">Pilih Admin</option>
-  <option value="RENALDI">Renaldi</option>
-  <option value="AFRIZAL">Afrizal</option>
-  <option value="ABDUL HAKIM">Abdul Hakim</option>
-  <option value="AIDIL ANWAR">Aidil Anwar</option>
-</select>
-      </div>
+          <option value="">Pilih Admin</option>
+          <option value="RENALDI">Renaldi (KODING, WEBSITE, BIKIN APLIKASI ,ANIMACY VIDEO)</option>
+          <option value="AFRIZAL">Afrizal (ANIMACY VIDEO, PPT, MAKALAH, KODING)</option>
+          <option value="ABDUL HAKIM">Abdul Hakim (MAKALAH, PPT)</option>
+          <option value="AIDIL ANWAR">Aidil Anwar (MAKALAH, PPT)</option>
+          <option value="DIAN EKA YULISBA">Dian Eka Yulisba (JURNAL, REVISI SKRIPSI)</option>
+          </select>
+          </div>
+
+       <div class="info-box">
+          <label>Jenis Tugas</label>
+          <select id="jenis" onchange="updateHarga()">
+          <option value="">Pilih Jenis Tugas</option>
+          <option value="MAKALAH">MAKALAH</option>
+          <option value="PPT">PPT</option>
+          <option value="JURNAL">JURNAL</option>
+          <option value="REVISI SKRIPSI">REVISI SKRIPSI</option>
+          <option value="PPT PREMIUM">PPT PREMIUM</option>
+          <option value="WEBSITE">WEBSITE</option>
+          <option value="KODING">KODING</option>
+          <option value="ANIMACY VIDEO">ANIMACY VIDEO</option>
+          <option value="BIKIN APLIKASI">BIKIN APLIKASI</option>
+          </select>
+          </div>
 
       <div class="info-box">
         <label>Metode Pembayaran</label>
