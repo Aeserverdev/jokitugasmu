@@ -1,4 +1,4 @@
-function simpanEditNama() {
+ function simpanEditNama() {
   const namaBaru = document.getElementById("pengaturanNama").value.trim();
   if (!namaBaru) return showNotif("error", "Nama kosong", "Silakan masukkan nama baru.");
   
@@ -74,15 +74,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const hargaMap = {
-    "MAKALAH": 25000,
-    "PPT": 25000,
-    "PPT PREMIUM": 50000,
-    "WEBSITE": 150000,
-    "KODING": 75000,
-    "ANIMACY": 50000,
-    "ANIMACY VIDEO": 75000,
-    "BIKIN APLIKASI": 500000
-  };
+      "MAKALAH": 25000,
+      "PPT": 25000,
+      "PPT PREMIUM": 50000,
+      "WEBSITE": 150000,
+      "KODING": 75000,
+      "ANIMACY VIDEO": 75000,
+      "BIKIN APLIKASI": 500000,
+      "JURNAL": 50000,
+      "REVISI SKRIPSI": 120000
+ };
+
 
 
   function updateHarga() {
@@ -315,11 +317,13 @@ function filterRiwayat() {
   }
 
   const nomorDanaMap = {
-    "RENALDI": "081348722325",
-    "AFRIZAL": "085182489261",
-    "ABDUL HAKIM": "085764534425",
-    "AIDIL ANWAR": "082279458613"
-  };
+  "RENALDI": "081348722325",
+  "AFRIZAL": "085182489261",
+  "ABDUL HAKIM": "085764534425",
+  "AIDIL ANWAR": "082279458613",
+  "DIAN EKA YULISBA": "082274459135"
+};
+
 
   document.getElementById("adminJoki").addEventListener("change", function () {
     const admin = this.value;
