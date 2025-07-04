@@ -1362,34 +1362,35 @@ function tampilkanRiwayat(data) {
     else if (status.includes("selesai")) cls = "status-selesai";
     else if (status.includes("batal")) cls = "status-batal";
 
-    // Download hasil tugas: tampilkan semua file dengan nama asli jika ada, dan preview icon
+
+    // Download file: Gunakan tombol yang kompatibel di semua perangkat (termasuk iOS/Android)
     let downloadBtn = '-';
     if (status.includes("selesai")) {
+      function universalDownloadBtn(url, name, icon) {
+        // Untuk file cross-origin, download attribute tidak selalu berfungsi di mobile, jadi gunakan window.open
+        return `<button type="button" class="btn" style="padding:4px 12px;font-size:0.95rem;margin-bottom:2px;display:inline-flex;align-items:center;gap:6px;" onclick="downloadFileUniversal('${encodeURIComponent(url)}','${encodeURIComponent(name)}')">${icon} ${name}</button>`;
+      }
       if (r.fileHasil && Array.isArray(r.fileHasil) && r.fileHasil.length > 0) {
-        // Banyak file dari API (backend)
         downloadBtn = r.fileHasil.map((file, idx) => {
-          let url = file.url || file; // support object or string
+          let url = file.url || file;
           let name = file.name || `File_${idx+1}`;
           let ext = name.split('.').pop().toLowerCase();
           let icon = (ext === 'pdf') ? '📄' : (['png','jpg','jpeg','gif','bmp','webp'].includes(ext) ? '🖼️' : '📦');
-          return `<a href="${url}" download="${name}" target="_blank" class="btn" style="padding:4px 12px;font-size:0.95rem;margin-bottom:2px;display:inline-flex;align-items:center;gap:6px;">${icon} ${name}</a>`;
+          return universalDownloadBtn(url, name, icon);
         }).join('<br>');
-        // Hapus dummy localStorage agar tidak bentrok
         let i = 0;
         while (localStorage.getItem('hasil_' + r.trackingID + '_' + i)) {
           localStorage.removeItem('hasil_' + r.trackingID + '_' + i);
           i++;
         }
       } else if (r.fileHasil && typeof r.fileHasil === 'string' && r.fileHasil.startsWith('http')) {
-        // Satu file dari API
         let url = r.fileHasil;
         let name = url.split('/').pop().split('?')[0] || 'File';
         let ext = name.split('.').pop().toLowerCase();
         let icon = (ext === 'pdf') ? '📄' : (['png','jpg','jpeg','gif','bmp','webp'].includes(ext) ? '🖼️' : '📦');
-        downloadBtn = `<a href="${url}" download="${name}" target="_blank" class="btn" style="padding:4px 12px;font-size:0.95rem;display:inline-flex;align-items:center;gap:6px;">${icon} ${name}</a>`;
+        downloadBtn = universalDownloadBtn(url, name, icon);
         localStorage.removeItem('hasil_' + r.trackingID);
       } else {
-        // Cek localStorage hasil_{trackingID}_N (dummy multi file)
         let found = false;
         let btns = [];
         let i = 0;
@@ -1397,9 +1398,8 @@ function tampilkanRiwayat(data) {
           const hasilLocal = localStorage.getItem('hasil_' + r.trackingID + '_' + i);
           if (hasilLocal) {
             let name = `File_${i+1}`;
-            let ext = '';
             let icon = '📦';
-            btns.push(`<a href="${hasilLocal}" download="hasil_${r.trackingID}_${i}" class="btn" style="padding:4px 12px;font-size:0.95rem;margin-bottom:2px;display:inline-flex;align-items:center;gap:6px;">${icon} ${name}</a>`);
+            btns.push(universalDownloadBtn(hasilLocal, name, icon));
             found = true;
             i++;
           } else {
@@ -1409,18 +1409,35 @@ function tampilkanRiwayat(data) {
         if (found) {
           downloadBtn = btns.join('<br>');
         } else {
-          // Cek single dummy lama
           const hasilLocal = localStorage.getItem('hasil_' + r.trackingID);
           if (hasilLocal) {
             let name = `File`;
             let icon = '📦';
-            downloadBtn = `<a href="${hasilLocal}" download="hasil_${r.trackingID}" class="btn" style="padding:4px 12px;font-size:0.95rem;display:inline-flex;align-items:center;gap:6px;">${icon} ${name}</a>`;
+            downloadBtn = universalDownloadBtn(hasilLocal, name, icon);
           } else {
             downloadBtn = `<span style='color:#aaa'>Belum Ada</span>`;
           }
         }
       }
     }
+// Fungsi download universal agar tombol download bisa digunakan di semua perangkat
+function downloadFileUniversal(urlEnc, nameEnc) {
+  const url = decodeURIComponent(urlEnc);
+  const name = decodeURIComponent(nameEnc);
+  // Cek apakah file dari domain yang sama (bisa pakai download attribute)
+  const sameOrigin = url.startsWith(window.location.origin) || url.startsWith('/') || url.startsWith('data:');
+  if (sameOrigin) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => a.remove(), 500);
+  } else {
+    // Untuk file cross-origin, buka di tab baru (user bisa save manual)
+    window.open(url, '_blank');
+  }
+}
 
     html += `<tr>
       <td>${r.trackingID || '-'}</td>
