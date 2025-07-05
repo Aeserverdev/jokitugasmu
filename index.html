@@ -197,55 +197,82 @@
       color: var(--primary);
     }
     
-    .sidebar {
-      width: 260px;
-      background: linear-gradient(135deg, #232946 60%, #4f8cff 100%);
-      color: #fff;
-      padding: 2.5rem 1.2rem 1.2rem 1.2rem;
-      display: flex;
-      flex-direction: column;
-      border-top-right-radius: 36px;
-      border-bottom-right-radius: 36px;
-      box-shadow: 0 8px 32px var(--card-shadow);
-      min-height: 100vh;
-      position: relative;
-      z-index: 10;
-      transition: background 0.5s;
-      gap: 0.5rem;
-    }
-    .sidebar h2 {
-      color: var(--accent);
-      margin-bottom: 2.5rem;
-      font-size: 2.2rem;
-      letter-spacing: 2px;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.10);
-      text-align: center;
-    }
-    .sidebar button {
-      background: rgba(255,255,255,0.07);
-      border: none;
-      color: #e0e7ff;
-      padding: 1.1rem 1.2rem;
-      text-align: left;
-      cursor: pointer;
-      border-radius: 16px;
-      font-weight: 500;
-      font-size: 1.13rem;
-      margin-bottom: 0.2rem;
-      transition: all 0.25s;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: 0 1px 4px rgba(79,140,255,0.04);
-      outline: none;
-    }
-    .sidebar button.active, .sidebar button:hover {
-      background: linear-gradient(45deg, var(--primary), var(--accent));
-      color: #232946;
-      box-shadow: 0 4px 16px var(--card-shadow);
-      transform: translateX(7px) scale(1.06);
-      font-weight: bold;
-    }
+.sidebar {
+  width: 230px;
+  background: rgba(36, 44, 80, 0.82);
+  backdrop-filter: blur(16px) saturate(1.2);
+  color: #fff;
+  padding: 1.2rem 0.5rem 0.7rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  border-top-right-radius: 32px;
+  border-bottom-right-radius: 32px;
+  box-shadow: 0 8px 32px 0 rgba(79,140,255,0.13), 0 1.5px 8px 0 rgba(127,255,212,0.10);
+  min-height: 100vh;
+  position: relative;
+  z-index: 10;
+  transition: background 0.5s, box-shadow 0.3s;
+  gap: 0.3rem;
+  border-right: 2.5px solid #4f8cff33;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 0.7rem 0.1rem 0.4rem 0.1rem;
+  text-align: center;
+  font-size: 0.98em;
+  color: #b6d0ff;
+  opacity: 0.85;
+  letter-spacing: 0.2px;
+  font-weight: 500;
+  user-select: none;
+}
+body.dark-mode .sidebar-footer {
+  color: #7fffd4;
+  opacity: 0.85;
+}
+
+.sidebar h2 {
+  color: var(--accent);
+  margin-bottom: 1.1rem;
+  font-size: 2rem;
+  letter-spacing: 1.5px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.13);
+  text-align: center;
+  font-weight: 800;
+  background: linear-gradient(90deg, #4f8cff 60%, #7fffd4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.sidebar button {
+  background: rgba(255,255,255,0.10);
+  border: none;
+  color: #e0e7ff;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 0.05rem;
+  transition: background 0.22s, color 0.18s, box-shadow 0.18s, transform 0.18s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 1px 4px rgba(79,140,255,0.04);
+  outline: none;
+  letter-spacing: 0.2px;
+}
+.sidebar button.active, .sidebar button:hover {
+  background: linear-gradient(90deg, #4f8cff 60%, #7fffd4 100%);
+  color: #232946;
+  box-shadow: 0 4px 18px rgba(79,140,255,0.13);
+  transform: translateX(5px) scale(1.04);
+  font-weight: 700;
+  border: 1.5px solid #7fffd4;
+}
     .content {
       flex: 1;
       padding: 2.7rem 3vw 2.2rem 3vw;
@@ -590,6 +617,7 @@
     <button onclick="showSection('pembayaran')">💳 Pembayaran</button>
     <button onclick="showSection('pengaturan')">⚙️ Pengaturan</button>
     <button onclick="logout()">🚪 Logout</button>
+    <div class="sidebar-footer">By Renaldi 2025</div>
   </div>
   <div class="content">
     <div id="pengaturan" class="section">
@@ -1717,17 +1745,6 @@ window.addEventListener('storage', function(e) {
 </script>
 <!-- End Chatbot -->
 </body>
-<script>
-// Update sidebar avatar and name from user data
-window.addEventListener('DOMContentLoaded', function() {
-  try {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      document.getElementById('sidebarNama').textContent = user.nama || 'Mahasiswa';
-      document.getElementById('sidebarAvatar').src = user.foto || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nama||'Mahasiswa')}`;
-    }
-  } catch(e) {}
-});
-</script>
+<!-- Tidak perlu script avatar sidebar karena tidak ada elemen sidebarNama/sidebarAvatar di HTML -->
 </html>
 
