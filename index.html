@@ -553,70 +553,36 @@
       background: var(--accent);
       color: var(--primary);
     }
-    /* Download Button Modern Style */
-    .btn-download {
-      background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 0.98rem;
-      padding: 7px 18px;
-      margin: 2px 0 2px 0;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 2px 8px var(--card-shadow);
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s, transform 0.15s;
-      outline: none;
-      position: relative;
-      overflow: hidden;
+    @media (max-width: 900px) {
+      .content { padding: 1.3rem 2vw 1.1rem 2vw; }
+      .statistics { flex-direction: column; gap: 1.7rem; }
+      .stat-card { margin: 0; }
     }
-    .btn-download:hover, .btn-download:focus {
-      background: linear-gradient(90deg, var(--accent) 60%, var(--primary) 100%);
-      color: #232946;
-      transform: scale(1.04);
-      box-shadow: 0 4px 16px var(--card-shadow);
-    }
-    .btn-download .download-icon {
-      font-size: 1.15em;
-      margin-right: 4px;
-      display: flex;
-      align-items: center;
-    }
-    .btn-download .download-label {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 120px;
-      display: inline-block;
-      vertical-align: middle;
-    }
-    @media (max-width: 600px) {
-      .btn-download .download-label {
-        max-width: 70px;
-        font-size: 0.93em;
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        gap: 0.2rem;
+        overflow-x: auto;
+        justify-content: space-around;
+        border-radius: 0 0 36px 36px;
+        min-height: unset;
+        padding: 1.1rem 0.5rem;
       }
-      .btn-download {
-        padding: 7px 10px;
-        font-size: 0.93rem;
+      .sidebar button {
+        flex: 1;
+        text-align: center;
+        padding: 1.1rem 0.5rem;
+        font-size: 1.05rem;
       }
-    }
-    .dark-mode .btn-download {
-      background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
-      color: #232946;
-      border: none;
-      box-shadow: 0 2px 8px rgba(79,140,255,0.18);
-    }
-    .dark-mode .btn-download:hover, .dark-mode .btn-download:focus {
-      background: linear-gradient(90deg, var(--accent) 60%, var(--primary) 100%);
-      color: #e0e7ff;
+      .content { padding: 1.1rem 2vw; }
+      .card-profile { padding: 1.3rem 0.5rem; }
     }
   </style>
 </head>
 <body>
-  <div class="sidebar" id="sidebar">
+  <div class="sidebar">
     <h2>👨‍🎓 Mahasiswa</h2>
     <button onclick="showSection('profil')" class="active">📄 Profil</button>
     <button onclick="showSection('riwayat')">📚 Riwayat</button>
@@ -624,104 +590,8 @@
     <button onclick="showSection('pembayaran')">💳 Pembayaran</button>
     <button onclick="showSection('pengaturan')">⚙️ Pengaturan</button>
     <button onclick="logout()">🚪 Logout</button>
-    <button class="menu-toggle" onclick="toggleSidebar()" style="display:none;margin-top:2rem;background:var(--primary);color:#fff;font-size:1.3rem;">☰ Menu</button>
   </div>
-<script>
-// Navbar pindah ke atas jika mobile
-function isTouchDevice() {
-  return (
-    'ontouchstart' in window ||
-    navigator.maxTouchPoints > 0 ||
-    navigator.msMaxTouchPoints > 0
-  );
-}
-function moveNavbarToTop() {
-  const sidebar = document.getElementById('sidebar');
-  if (!sidebar) return;
-  const isSmallScreen = window.innerWidth <= 700;
-  if (isSmallScreen && isTouchDevice()) {
-    if (!document.getElementById('mobile-navbar')) {
-      const nav = sidebar.cloneNode(true);
-      nav.id = 'mobile-navbar';
-      nav.classList.add('mobile-navbar');
-      nav.style.position = 'fixed';
-      nav.style.top = '0';
-      nav.style.left = '0';
-      nav.style.width = '100vw';
-      nav.style.height = 'auto';
-      nav.style.zIndex = '3000';
-      nav.style.borderRadius = '0 0 18px 18px';
-      nav.style.display = 'flex';
-      nav.style.flexDirection = 'row';
-      nav.style.justifyContent = 'space-around';
-      nav.style.alignItems = 'center';
-      nav.style.padding = '0.5rem 0.2rem';
-      nav.querySelectorAll('button').forEach(btn => {
-        btn.style.margin = '0 0.2rem';
-        btn.style.padding = '0.7rem 0.7rem';
-        btn.style.fontSize = '1.05rem';
-        btn.style.borderRadius = '10px';
-      });
-      nav.querySelector('h2').style.display = 'none';
-      document.body.appendChild(nav);
-      sidebar.style.display = 'none';
-    }
-  } else {
-    const nav = document.getElementById('mobile-navbar');
-    if (nav) nav.remove();
-    sidebar.style.display = '';
-  }
-}
-window.addEventListener('DOMContentLoaded', moveNavbarToTop);
-window.addEventListener('resize', moveNavbarToTop);
-</script>
-  <div class="content" id="mainContent">
-<style>
-@media (max-width: 900px) {
-  .sidebar {
-    position: fixed;
-    left: 0; top: 0; bottom: 0;
-    z-index: 1000;
-    height: 100vh;
-    transform: translateX(-100%);
-    border-radius: 0 36px 36px 0;
-    transition: transform 0.3s;
-    box-shadow: 0 8px 32px var(--card-shadow);
-  }
-  .sidebar.visible { transform: translateX(0); }
-  .menu-toggle { display: block !important; }
-  .content { padding: 1.2rem 2vw 1rem 2vw; }
-}
-@media (max-width: 600px) {
-  .section, .card-profile, .info-box, input, textarea, select {
-    padding: 0.8rem !important;
-    border-radius: 10px !important;
-  }
-  .sidebar h2 { font-size: 1.3rem; }
-  .sidebar button { font-size: 1rem; padding: 0.7rem 1rem; }
-  .topbar h1 { font-size: 1.2rem; }
-  .toggle-dark { font-size: 1rem; padding: 0.5rem 1rem; }
-}
-.sidebar .menu-toggle { display: none; }
-</style>
-<script>
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const main = document.getElementById('mainContent');
-  sidebar.classList.toggle('visible');
-  main.classList.toggle('open');
-}
-// Tutup sidebar jika klik di luar sidebar pada mobile
-document.addEventListener('click', function(e) {
-  const sidebar = document.getElementById('sidebar');
-  if (window.innerWidth <= 900 && sidebar.classList.contains('visible')) {
-    if (!sidebar.contains(e.target) && !e.target.classList.contains('menu-toggle')) {
-      sidebar.classList.remove('visible');
-      document.getElementById('mainContent').classList.remove('open');
-    }
-  }
-});
-</script>
+  <div class="content">
     <div id="pengaturan" class="section">
   <h2>⚙️ Pengaturan</h2>
   <label for="temaWarna">Warna Tema</label>
@@ -777,54 +647,11 @@ document.addEventListener('click', function(e) {
       </div>
     </div>
 
-<div id="riwayat" class="section">
-  <h2>📚 Riwayat Joki Tugas</h2>
-  <input type="text" placeholder="🔍 Cari tugas..." class="info-box" oninput="filterRiwayat()" id="searchRiwayat">
-  <div class="info-box" id="tabelRiwayat">Memuat data...</div>
-</div>
-<script>
-// Deteksi mobile dan update tampilan otomatis
-function isMobile() {
-  return window.innerWidth <= 700 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-}
-
-function updateMobileRiwayatTable() {
-  // Jika di mobile, ubah tabel riwayat menjadi card list
-  if (!isMobile()) return;
-  const box = document.getElementById('tabelRiwayat');
-  const table = box.querySelector('table');
-  if (!table) return;
-  const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent);
-  const rows = Array.from(table.querySelectorAll('tbody tr'));
-  let cards = '';
-  rows.forEach(tr => {
-    const tds = Array.from(tr.querySelectorAll('td'));
-    cards += `<div class='riwayat-card' style='margin-bottom:1.2rem;padding:1.1rem 1rem;background:var(--glass);border-radius:16px;box-shadow:0 2px 10px var(--card-shadow);display:flex;flex-direction:column;gap:0.5rem;'>`;
-    for (let i = 0; i < tds.length; i++) {
-      let label = headers[i];
-      let val = tds[i].innerHTML;
-      cards += `<div style='display:flex;align-items:center;gap:0.7em;'><span style='font-weight:600;min-width:70px;color:var(--primary);'>${label}:</span> <span>${val}</span></div>`;
-    }
-    cards += `</div>`;
-  });
-  box.innerHTML = cards;
-}
-
-// Jalankan saat halaman dimuat dan saat resize
-window.addEventListener('DOMContentLoaded', function() {
-  if (isMobile()) setTimeout(updateMobileRiwayatTable, 400);
-});
-window.addEventListener('resize', function() {
-  if (isMobile()) setTimeout(updateMobileRiwayatTable, 400);
-});
-
-// Jika riwayat diubah, update juga jika mobile
-const origTampilkanRiwayat = window.tampilkanRiwayat;
-window.tampilkanRiwayat = function(data) {
-  origTampilkanRiwayat(data);
-  if (isMobile()) setTimeout(updateMobileRiwayatTable, 100);
-};
-</script>
+    <div id="riwayat" class="section">
+      <h2>📚 Riwayat Joki Tugas</h2>
+      <input type="text" placeholder="🔍 Cari tugas..." class="info-box" oninput="filterRiwayat()" id="searchRiwayat">
+      <div class="info-box" id="tabelRiwayat">Memuat data...</div>
+    </div>
 
     <div id="pesanan" class="section">
       <h2>📝 Tambah Pesanan</h2>
@@ -1512,45 +1339,6 @@ async function loadRiwayat() {
     const data = await res.json();
     semuaRiwayat = Array.isArray(data) ? data : [];
 
-    // Inject file hasil dari localStorage (upload admin) ke setiap riwayat yang statusnya selesai
-    semuaRiwayat.forEach(r => {
-      if ((r.status||'').toLowerCase().includes('selesai')) {
-        let npm = r.npm || user.npm;
-        let trackingID = r.trackingID || '';
-        let hasilFiles = [];
-        let i = 0;
-        // Cari file hasil dengan key hasil_{npm}_{i}
-        while (true) {
-          const hasil = localStorage.getItem('hasil_' + npm + '_' + i);
-          if (hasil) {
-            hasilFiles.push({ url: hasil, name: `File_${i+1}` });
-            i++;
-          } else break;
-        }
-        // Jika tidak ada, cari dengan key hasil_{trackingID}_{i}
-        if (hasilFiles.length === 0 && trackingID) {
-          i = 0;
-          while (true) {
-            const hasil = localStorage.getItem('hasil_' + trackingID + '_' + i);
-            if (hasil) {
-              hasilFiles.push({ url: hasil, name: `File_${i+1}` });
-              i++;
-            } else break;
-          }
-        }
-        if (hasilFiles.length > 0) {
-          r.fileHasil = hasilFiles;
-        } else {
-          // Fallback single file
-          let hasil = localStorage.getItem('hasil_' + npm);
-          if (!hasil && trackingID) hasil = localStorage.getItem('hasil_' + trackingID);
-          if (hasil) {
-            r.fileHasil = [{ url: hasil, name: 'File' }];
-          }
-        }
-      }
-    });
-
     if (semuaRiwayat.length === 0) {
       box.innerHTML = "<i>Belum ada data.</i>";
       return;
@@ -1579,167 +1367,77 @@ function tampilkanRiwayat(data) {
     let downloadBtn = '-';
     if (status.includes("selesai")) {
       function universalDownloadBtn(url, name, icon) {
-        // Tombol download modern dan responsif, fix encoding & escaping for all devices
-        const urlEsc = encodeURIComponent(url);
-        const nameEsc = encodeURIComponent(name);
-        return `<button type=\"button\" class=\"btn btn-download\" onclick=\"downloadFileUniversal('${urlEsc}','${nameEsc}')\">`
-          + `<span class=\"download-icon\">${icon}</span>`
-          + `<span class=\"download-label\">${name.replace(/'/g, '&apos;')}</span>`
-          + `</button>`;
+        // Untuk file cross-origin, download attribute tidak selalu berfungsi di mobile, jadi gunakan window.open
+        return `<button type="button" class="btn" style="padding:4px 12px;font-size:0.95rem;margin-bottom:2px;display:inline-flex;align-items:center;gap:6px;" onclick="downloadFileUniversal('${encodeURIComponent(url)}','${encodeURIComponent(name)}')">${icon} ${name}</button>`;
       }
-      // Jika admin mengirim file hasil (API/fileHasil), langsung tampilkan tombol download
-      // Pengecekan lebih ketat dan fallback multi sumber
-      // Selalu prioritaskan file hasil yang diupload admin (dari localStorage hasil_{NPM}_N atau hasil_{NPM})
-      let npm = (r.npm || (window.user && window.user.npm)) || '';
-      let hasilFiles = [];
-      let i = 0;
-      while (true) {
-        const hasil = localStorage.getItem('hasil_' + npm + '_' + i);
-        if (hasil) {
-          hasilFiles.push({ url: hasil, name: `File_${i+1}` });
-          i++;
-        } else break;
-      }
-      if (hasilFiles.length > 0) {
-        downloadBtn = hasilFiles.map((file, idx) => {
-          let url = file.url;
-          let name = file.name;
-          let ext = '';
-          if (url.startsWith('data:')) {
-            const match = url.match(/^data:([^;]+);/);
-            if (match) {
-              const mime = match[1];
-              if (mime.includes('pdf')) ext = '📄';
-              else if (mime.match(/image/)) ext = '🖼️';
-              else ext = '📦';
-            } else {
-              ext = '📦';
-            }
-          } else {
-            let e = name.split('.').pop().toLowerCase();
-            ext = (e === 'pdf') ? '📄' : (['png','jpg','jpeg','gif','bmp','webp'].includes(e) ? '🖼️' : '📦');
-          }
-          return `<button type='button' class='btn btn-download custom-download-btn' onclick="downloadFileUniversal('${encodeURIComponent(url)}','${encodeURIComponent(name)}')">
-            <span class='download-icon' style='font-size:1.3em;margin-right:6px;'>${ext}</span>
-            <span class='download-label' style='font-weight:600;'>Ambil Tugas</span>
-            <span class='download-filename' style='display:block;font-size:0.85em;color:#888;margin-top:2px;'>${name}</span>
-          </button>`;
+      if (r.fileHasil && Array.isArray(r.fileHasil) && r.fileHasil.length > 0) {
+        downloadBtn = r.fileHasil.map((file, idx) => {
+          let url = file.url || file;
+          let name = file.name || `File_${idx+1}`;
+          let ext = name.split('.').pop().toLowerCase();
+          let icon = (ext === 'pdf') ? '📄' : (['png','jpg','jpeg','gif','bmp','webp'].includes(ext) ? '🖼️' : '📦');
+          return universalDownloadBtn(url, name, icon);
         }).join('<br>');
+        let i = 0;
+        while (localStorage.getItem('hasil_' + r.trackingID + '_' + i)) {
+          localStorage.removeItem('hasil_' + r.trackingID + '_' + i);
+          i++;
+        }
+      } else if (r.fileHasil && typeof r.fileHasil === 'string' && r.fileHasil.startsWith('http')) {
+        let url = r.fileHasil;
+        let name = url.split('/').pop().split('?')[0] || 'File';
+        let ext = name.split('.').pop().toLowerCase();
+        let icon = (ext === 'pdf') ? '📄' : (['png','jpg','jpeg','gif','bmp','webp'].includes(ext) ? '🖼️' : '📦');
+        downloadBtn = universalDownloadBtn(url, name, icon);
+        localStorage.removeItem('hasil_' + r.trackingID);
       } else {
-        const hasil = localStorage.getItem('hasil_' + npm);
-        if (hasil) {
-          let name = 'File';
-          let ext = '';
-          if (hasil.startsWith('data:')) {
-            const match = hasil.match(/^data:([^;]+);/);
-            if (match) {
-              const mime = match[1];
-              if (mime.includes('pdf')) ext = '📄';
-              else if (mime.match(/image/)) ext = '🖼️';
-              else ext = '📦';
-            } else {
-              ext = '📦';
-            }
+        let found = false;
+        let btns = [];
+        let i = 0;
+        while (true) {
+          const hasilLocal = localStorage.getItem('hasil_' + r.trackingID + '_' + i);
+          if (hasilLocal) {
+            let name = `File_${i+1}`;
+            let icon = '📦';
+            btns.push(universalDownloadBtn(hasilLocal, name, icon));
+            found = true;
+            i++;
           } else {
-            ext = '📦';
+            break;
           }
-          downloadBtn = `<button type='button' class='btn btn-download custom-download-btn' onclick="downloadFileUniversal('${encodeURIComponent(hasil)}','${encodeURIComponent(name)}')">
-            <span class='download-icon' style='font-size:1.3em;margin-right:6px;'>${ext}</span>
-            <span class='download-label' style='font-weight:600;'>Ambil Tugas</span>
-            <span class='download-filename' style='display:block;font-size:0.85em;color:#888;margin-top:2px;'>${name}</span>
-          </button>`;
+        }
+        if (found) {
+          downloadBtn = btns.join('<br>');
         } else {
-          downloadBtn = `<span style='color:#aaa'>Belum Ada</span>`;
+          const hasilLocal = localStorage.getItem('hasil_' + r.trackingID);
+          if (hasilLocal) {
+            let name = `File`;
+            let icon = '📦';
+            downloadBtn = universalDownloadBtn(hasilLocal, name, icon);
+          } else {
+            downloadBtn = `<span style='color:#aaa'>Belum Ada</span>`;
+          }
         }
       }
     }
 // Fungsi download universal agar tombol download bisa digunakan di semua perangkat
 function downloadFileUniversal(urlEnc, nameEnc) {
-  try {
-    const url = decodeURIComponent(urlEnc);
-    let name = decodeURIComponent(nameEnc);
-    let ext = '';
-    // 1. Validasi data URL dan tambahkan ekstensi otomatis
-    if (url.startsWith('data:')) {
-      const match = url.match(/^data:([^;]+);/);
-      if (match) {
-        const mime = match[1];
-        if (mime.includes('pdf')) ext = '.pdf';
-        else if (mime.includes('png')) ext = '.png';
-        else if (mime.includes('jpeg')) ext = '.jpg';
-        else if (mime.includes('jpg')) ext = '.jpg';
-        else if (mime.includes('gif')) ext = '.gif';
-        else if (mime.includes('bmp')) ext = '.bmp';
-        else if (mime.includes('webp')) ext = '.webp';
-        else if (mime.includes('zip')) ext = '.zip';
-        else if (mime.includes('msword')) ext = '.doc';
-        else if (mime.includes('vnd.openxmlformats-officedocument.wordprocessingml.document')) ext = '.docx';
-        else if (mime.includes('vnd.ms-excel')) ext = '.xls';
-        else if (mime.includes('vnd.openxmlformats-officedocument.spreadsheetml.sheet')) ext = '.xlsx';
-        else if (mime.includes('plain')) ext = '.txt';
-      }
-      if (!name.match(/\.[a-z0-9]+$/i) && ext) name += ext;
-      // 2. Validasi base64 dan download dengan Blob
-      try {
-        const arr = url.split(",");
-        if (arr.length > 1) {
-          const mime = (arr[0].match(/:(.*?);/)||[])[1]||'';
-          const bstr = atob(arr[1]);
-          let n = bstr.length;
-          const u8arr = new Uint8Array(n);
-          while(n--){u8arr[n]=bstr.charCodeAt(n);}
-          const blob = new Blob([u8arr], {type: mime});
-          const blobUrl = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = blobUrl;
-          a.setAttribute('download', name);
-          document.body.appendChild(a);
-          a.click();
-          setTimeout(() => {
-            a.remove();
-            window.URL.revokeObjectURL(blobUrl);
-          }, 500);
-          return;
-        } else {
-          Swal.fire({icon:'error',title:'Download gagal',text:'File base64 tidak valid. Silakan hubungi admin.'});
-          return;
-        }
-      } catch (err) {
-        Swal.fire({icon:'error',title:'Download gagal',text:'File tidak dapat diunduh. Silakan hubungi admin.'});
-        return;
-      }
-    }
-    // 3. Untuk file link (http/https), download dengan fetch blob
-    if (url.startsWith('http')) {
-      fetch(url)
-        .then(resp => {
-          if (!resp.ok) throw new Error('HTTP error');
-          return resp.blob();
-        })
-        .then(blob => {
-          const blobUrl = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = blobUrl;
-          a.setAttribute('download', name);
-          document.body.appendChild(a);
-          a.click();
-          setTimeout(() => {
-            a.remove();
-            window.URL.revokeObjectURL(blobUrl);
-          }, 500);
-        })
-        .catch(() => {
-          Swal.fire({icon:'error',title:'Download gagal',text:'File tidak dapat diunduh. Silakan hubungi admin.'});
-        });
-      return;
-    }
-    // 4. Fallback jika format tidak dikenali
-    Swal.fire({icon:'error',title:'Download gagal',text:'Format file tidak dikenali atau rusak. Silakan hubungi admin.'});
-  } catch (e) {
-    Swal.fire({icon:'error',title:'Download gagal',text:'Terjadi error saat memproses file. Silakan hubungi admin.'});
+  const url = decodeURIComponent(urlEnc);
+  const name = decodeURIComponent(nameEnc);
+  // Cek apakah file dari domain yang sama (bisa pakai download attribute)
+  const sameOrigin = url.startsWith(window.location.origin) || url.startsWith('/') || url.startsWith('data:');
+  if (sameOrigin) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => a.remove(), 500);
+  } else {
+    // Untuk file cross-origin, buka di tab baru (user bisa save manual)
+    window.open(url, '_blank');
   }
 }
-window.downloadFileUniversal = downloadFileUniversal;
 
     html += `<tr>
       <td>${r.trackingID || '-'}</td>
@@ -1831,16 +1529,6 @@ function filterRiwayat() {
       document.getElementById("nomorDana").textContent = "";
     }
   });
-// Sinkronisasi riwayat jika file hasil dihapus oleh admin (atau tab lain)
-window.addEventListener('storage', function(e) {
-  // Jika key hasil_ dihapus, reload riwayat
-  if (e.key && e.key.startsWith('hasil_')) {
-    // Hanya reload jika tabel riwayat ada di halaman
-    if (document.getElementById('tabelRiwayat')) {
-      loadRiwayat();
-    }
-  }
-});
 </script>
 <!-- End Chatbot -->
 </body>
