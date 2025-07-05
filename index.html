@@ -616,7 +616,7 @@
   </style>
 </head>
 <body>
-  <div class="sidebar">
+  <div class="sidebar" id="sidebar">
     <h2>👨‍🎓 Mahasiswa</h2>
     <button onclick="showSection('profil')" class="active">📄 Profil</button>
     <button onclick="showSection('riwayat')">📚 Riwayat</button>
@@ -624,8 +624,55 @@
     <button onclick="showSection('pembayaran')">💳 Pembayaran</button>
     <button onclick="showSection('pengaturan')">⚙️ Pengaturan</button>
     <button onclick="logout()">🚪 Logout</button>
+    <button class="menu-toggle" onclick="toggleSidebar()" style="display:none;margin-top:2rem;background:var(--primary);color:#fff;font-size:1.3rem;">☰ Menu</button>
   </div>
-  <div class="content">
+  <div class="content" id="mainContent">
+<style>
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    z-index: 1000;
+    height: 100vh;
+    transform: translateX(-100%);
+    border-radius: 0 36px 36px 0;
+    transition: transform 0.3s;
+    box-shadow: 0 8px 32px var(--card-shadow);
+  }
+  .sidebar.visible { transform: translateX(0); }
+  .menu-toggle { display: block !important; }
+  .content { padding: 1.2rem 2vw 1rem 2vw; }
+}
+@media (max-width: 600px) {
+  .section, .card-profile, .info-box, input, textarea, select {
+    padding: 0.8rem !important;
+    border-radius: 10px !important;
+  }
+  .sidebar h2 { font-size: 1.3rem; }
+  .sidebar button { font-size: 1rem; padding: 0.7rem 1rem; }
+  .topbar h1 { font-size: 1.2rem; }
+  .toggle-dark { font-size: 1rem; padding: 0.5rem 1rem; }
+}
+.sidebar .menu-toggle { display: none; }
+</style>
+<script>
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('mainContent');
+  sidebar.classList.toggle('visible');
+  main.classList.toggle('open');
+}
+// Tutup sidebar jika klik di luar sidebar pada mobile
+document.addEventListener('click', function(e) {
+  const sidebar = document.getElementById('sidebar');
+  if (window.innerWidth <= 900 && sidebar.classList.contains('visible')) {
+    if (!sidebar.contains(e.target) && !e.target.classList.contains('menu-toggle')) {
+      sidebar.classList.remove('visible');
+      document.getElementById('mainContent').classList.remove('open');
+    }
+  }
+});
+</script>
     <div id="pengaturan" class="section">
   <h2>⚙️ Pengaturan</h2>
   <label for="temaWarna">Warna Tema</label>
