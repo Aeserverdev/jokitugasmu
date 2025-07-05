@@ -1,4 +1,62 @@
 <style>
+/* Mobile-first improvements for better usability */
+@media (max-width: 600px) {
+  body, html { font-size: 15px; }
+  .sidebar { width: 100vw; left: 0; top: 0; height: auto; min-height: unset; border-radius: 0 0 18px 18px; position: fixed; z-index: 2000; transform: translateY(-100%); transition: transform 0.3s; }
+  .sidebar.visible { transform: translateY(0); }
+  .sidebar h2 { font-size: 1.1rem; margin-bottom: 1rem; }
+  .sidebar button { font-size: 1rem; padding: 0.7rem 1rem; border-radius: 8px; margin-bottom: 0.3rem; }
+  .menu-toggle { display: block !important; position: fixed; top: 10px; left: 10px; z-index: 2100; background: var(--primary); color: #fff; border-radius: 8px; font-size: 1.3rem; padding: 8px 18px; }
+  .content { padding: 0.7rem 0.5vw 0.7rem 0.5vw; }
+  .section, .card-profile, .info-box, input, textarea, select { padding: 0.6rem !important; border-radius: 8px !important; }
+  .topbar { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .topbar h1 { font-size: 1.1rem; }
+  .toggle-dark { font-size: 1rem; padding: 0.4rem 0.7rem; }
+  table, th, td { font-size: 0.95rem !important; }
+  .btn, .btn-download { font-size: 0.95rem !important; padding: 0.7rem 1.2rem !important; border-radius: 8px !important; }
+  .card-profile-img-wrap img { width: 60px; height: 60px; }
+  .card-profile-img-glow { width: 70px; height: 70px; }
+  .info-box label, label { font-size: 0.98rem; }
+  .status-badge { font-size: 0.93rem; padding: 5px 10px; border-radius: 7px; }
+  /* Make tables scrollable horizontally */
+  table { display: block; overflow-x: auto; width: 100%; }
+  thead, tbody, tr { display: table; width: 100%; table-layout: fixed; }
+  th, td { word-break: break-word; }
+  /* Chatbot mobile fix */
+  #chatbot-window { width: 98vw !important; right: 1vw !important; border-radius: 12px !important; }
+  #chatbot-btn { right: 1vw !important; bottom: 1vw !important; }
+}
+</style>
+<style>
+/* Extra responsive and modern UI improvements */
+body, html { scroll-behavior: smooth; }
+.sidebar { box-shadow: 0 8px 32px var(--card-shadow), 0 1.5px 8px #0001; }
+.sidebar button { outline: none; border: none; }
+.sidebar button:focus { box-shadow: 0 0 0 2px var(--accent); }
+.sidebar h2 { letter-spacing: 1.5px; }
+.topbar { position: sticky; top: 0; background: var(--bg); z-index: 100; }
+.section { box-shadow: 0 4px 18px var(--card-shadow); margin-bottom: 2rem; }
+.info-box { margin-bottom: 1.2rem; }
+.btn, .btn-download { font-weight: 600; letter-spacing: 0.5px; }
+.btn:active, .btn-download:active { filter: brightness(0.95); }
+.card-profile { margin-bottom: 2rem; }
+.card-profile-img-wrap { margin-bottom: 0.7rem; }
+.card-profile h3 { font-size: 1.3rem; margin-bottom: 0.3rem; }
+.card-profile p { margin: 0.2rem 0; font-size: 1.05rem; }
+.status-badge { font-size: 0.98rem; padding: 6px 12px; border-radius: 10px; }
+input, textarea, select { font-size: 1rem; }
+input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--accent); }
+/* Chatbot mobile fix */
+@media (max-width: 600px) {
+  #chatbot-window { width: 98vw !important; right: 1vw !important; border-radius: 12px !important; }
+  #chatbot-btn { right: 1vw !important; bottom: 1vw !important; }
+}
+/* Hide scrollbars for a cleaner look */
+::-webkit-scrollbar { width: 7px; background: #e0e7ff33; }
+::-webkit-scrollbar-thumb { background: #4f8cff33; border-radius: 8px; }
+body.dark-mode ::-webkit-scrollbar-thumb { background: #23294688; }
+</style>
+<style>
 /* Responsive improvements for all devices */
 @media (max-width: 1200px) {
   .content { padding: 1.5rem 1vw 1.2rem 1vw; }
