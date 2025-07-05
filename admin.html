@@ -395,6 +395,9 @@
     <div class="nav-item" onclick="loadPembayaran()">
       <i class="fas fa-credit-card"></i> <span>Data Pembayaran</span>
     </div>
+    <div class="nav-item" onclick="loadUploadHasil()">
+      <i class="fas fa-upload"></i> <span>Upload Hasil</span>
+    </div>
     <div class="dark-toggle" onclick="toggleDark()">🌙 Dark Mode</div>
   </div>
   <div class="main" id="main">
@@ -410,6 +413,11 @@
         <h3 id="totalPayments">0</h3>
         <p>Total Pembayaran</p>
       </div>
+    </div>
+
+    <div class="section" id="uploadHasilSection" style="display:none;position:fixed;inset:0;z-index:9999;padding:0;margin:0;background:#fff;width:100vw;height:100vh;box-shadow:none;border-radius:0;">
+      <button onclick="closeUploadHasil()" style="position:absolute;top:18px;right:28px;z-index:10001;background:#dc3545;color:#fff;font-size:1.2rem;padding:10px 22px;border-radius:8px;border:none;box-shadow:0 2px 8px #dc354533;cursor:pointer;">Tutup ✖</button>
+      <iframe src="admin_panel.html" style="width:100vw;height:100vh;border:none;"></iframe>
     </div>
 
     <div class="section" id="pesanan">
@@ -473,7 +481,6 @@
               <th>Jenis</th>
               <th>Deadline</th>
               <th>Status</th>
-              <th>Upload Hasil</th>
             </tr>
           </thead>
           <tbody>`;
@@ -491,116 +498,26 @@
               <option value="Batal" ${r.status === "Batal" ? "selected" : ""}>Batal</option>
             </select>
           </td>
-          <td>`;
-        if (r.status === "Selesai") {
-          html += `<form id="formUpload_${r.trackingID}" class="form-upload" onsubmit="return uploadHasilTugas(event, '${r.npm}','${r.trackingID}')">
-            <input type="file" id="fileHasil_${r.trackingID}" class="input-upload" multiple>
-            <button type="submit" class="btn-upload">Upload</button>
-          </form>`;
-          // Tampilkan semua file hasil (API/real backend)
-          if (r.fileHasil && Array.isArray(r.fileHasil)) {
-            r.fileHasil.forEach((url, idx) => {
-              if (typeof url === 'string' && url.startsWith('http')) {
-                html += `<br><a class='btn-download' href='${url}' target='_blank'><i class='fas fa-download'></i> File ${idx+1}</a>`;
-              }
-            });
-          } else if (r.fileHasil && typeof r.fileHasil === 'string' && r.fileHasil.startsWith('http')) {
-            html += `<br><a class='btn-download' href='${r.fileHasil}' target='_blank'><i class='fas fa-download'></i> Download</a>`;
-          } else {
-            // Tampilkan semua file hasil dummy (localStorage, multi-file)
-            let i = 0;
-            let found = false;
-            while (true) {
-              const hasilLocal = localStorage.getItem('hasil_' + r.trackingID + '_' + i);
-              if (hasilLocal) {
-                html += `<br><a class='btn-download' href='${hasilLocal}' download='hasil_${r.trackingID}_${i}'><i class='fas fa-download'></i> File ${i+1}</a>`;
-                found = true;
-                i++;
-              } else {
-                break;
-              }
-            }
-            // Jika tidak ada multi, cek single dummy lama
-            if (!found) {
-              const hasilLocal = localStorage.getItem('hasil_' + r.trackingID);
-              if (hasilLocal) {
-                html += `<br><a class='btn-download' href='${hasilLocal}' download='hasil_${r.trackingID}'><i class='fas fa-download'></i> Download</a>`;
-              }
-            }
-          }
-        } else {
-          html += `<span style='color:#aaa'>-</span>`;
-        }
-        html += `</td></tr>`;
+        </tr>`;
       });
       html += `</tbody></table></div>`;
       document.getElementById("tabelPesanan").innerHTML = html;
-    // Custom table and badge styles
-    const style = document.createElement('style');
-    style.innerHTML = `
-      .custom-table-wrapper { overflow-x: auto; }
-      .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--glass); border-radius: 16px; box-shadow: 0 2px 8px var(--card-shadow); }
-      .custom-table th, .custom-table td { padding: 14px 12px; font-size: 1rem; border-bottom: 1px solid #e2e2e2; text-align: left; }
-      .custom-table th { background: var(--primary); color: #fff; font-size: 1.08rem; letter-spacing: 0.5px; }
-      .custom-table tr:last-child td { border-bottom: none; }
-      .badge { display: inline-block; padding: 4px 10px; border-radius: 8px; font-weight: 500; background: #f0f4ff; color: #2a3a5e; margin-right: 2px; }
-      .badge-id { background: #e3f0ff; color: #4f8cff; }
-      .badge-nama { background: #eafbe7; color: #28a745; }
-      .badge-jenis { background: #fffbe7; color: #e6a700; }
-      .badge-deadline { background: #ffe7e7; color: #dc3545; }
-      .select-status { padding: 6px 10px; border-radius: 6px; border: 1px solid #cfd8dc; background: #f7faff; font-size: 1rem; }
-      .form-upload { display: flex; gap: 6px; align-items: center; margin-bottom: 4px; }
-      .input-upload { border: 1px solid #cfd8dc; border-radius: 6px; padding: 4px 8px; background: #f7faff; }
-      .btn-upload { background: var(--primary); color: #fff; border: none; border-radius: 6px; padding: 6px 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-      .btn-upload:hover { background: #2563eb; }
-      .btn-download { display: inline-block; margin: 2px 0; background: #e3f0ff; color: #2563eb; border-radius: 6px; padding: 5px 12px; font-weight: 500; text-decoration: none; transition: background 0.2s, color 0.2s; }
-      .btn-download:hover { background: #4f8cff; color: #fff; }
-    `;
-    document.head.appendChild(style);
-    }
-    // Upload file hasil tugas (dummy, simpan ke localStorage, ganti dengan API untuk produksi)
-    async function uploadHasilTugas(event, npm, trackingID) {
-      event.preventDefault();
-      const input = document.getElementById('fileHasil_' + trackingID);
-      if (!input.files.length) {
-        Swal.fire({icon:'error',title:'Pilih file hasil!'});
-        return false;
-      }
-      // Hapus semua file hasil lama (dummy: localStorage) sebelum upload ulang
-      let idx = 0;
-      while (true) {
-        let key1 = 'hasil_' + npm + '_' + trackingID + '_' + idx;
-        let key2 = 'hasil_' + trackingID + '_' + idx;
-        if (localStorage.getItem(key1) || localStorage.getItem(key2)) {
-          localStorage.removeItem(key1);
-          localStorage.removeItem(key2);
-          idx++;
-        } else {
-          break;
-        }
-      }
-      // Hapus single dummy lama juga
-      localStorage.removeItem('hasil_' + npm + '_' + trackingID);
-      localStorage.removeItem('hasil_' + trackingID);
-      // Simulasi upload: simpan semua file ke localStorage (key: hasil_{npm}_{trackingID}_N dan hasil_{trackingID}_N)
-      let uploadedCount = 0;
-      for (let i = 0; i < input.files.length; i++) {
-        const file = input.files[i];
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          // Simpan dengan key unik per file
-          localStorage.setItem('hasil_' + npm + '_' + trackingID + '_' + i, e.target.result);
-          localStorage.setItem('hasil_' + trackingID + '_' + i, e.target.result);
-          uploadedCount++;
-          if (uploadedCount === input.files.length) {
-            Swal.fire({icon:'success',title:`${uploadedCount} file hasil diupload (simulasi)!`});
-            // Refresh tampilan agar file dummy terbaru langsung muncul
-            loadPesanan();
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-      return false;
+      // Custom table and badge styles
+      const style = document.createElement('style');
+      style.innerHTML = `
+        .custom-table-wrapper { overflow-x: auto; }
+        .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--glass); border-radius: 16px; box-shadow: 0 2px 8px var(--card-shadow); }
+        .custom-table th, .custom-table td { padding: 14px 12px; font-size: 1rem; border-bottom: 1px solid #e2e2e2; text-align: left; }
+        .custom-table th { background: var(--primary); color: #fff; font-size: 1.08rem; letter-spacing: 0.5px; }
+        .custom-table tr:last-child td { border-bottom: none; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 8px; font-weight: 500; background: #f0f4ff; color: #2a3a5e; margin-right: 2px; }
+        .badge-id { background: #e3f0ff; color: #4f8cff; }
+        .badge-nama { background: #eafbe7; color: #28a745; }
+        .badge-jenis { background: #fffbe7; color: #e6a700; }
+        .badge-deadline { background: #ffe7e7; color: #dc3545; }
+        .select-status { padding: 6px 10px; border-radius: 6px; border: 1px solid #cfd8dc; background: #f7faff; font-size: 1rem; }
+      `;
+      document.head.appendChild(style);
     }
 
     function filterPesanan() {
@@ -684,6 +601,31 @@
     // Load initial data
     loadPesanan();
     loadPembayaran();
+
+    // Fungsi untuk menampilkan panel upload hasil
+    function loadUploadHasil() {
+      document.getElementById("pesanan").style.display = "none";
+      document.getElementById("pembayaran").style.display = "none";
+      document.getElementById("uploadHasilSection").style.display = "block";
+      document.body.style.overflow = "hidden";
+    }
+    function closeUploadHasil() {
+      document.getElementById("uploadHasilSection").style.display = "none";
+      document.getElementById("pesanan").style.display = "block";
+      document.getElementById("pembayaran").style.display = "block";
+      document.body.style.overflow = "auto";
+    }
+    // Kembalikan tampilan default saat menu lain diklik
+    function showDefaultSections() {
+      document.getElementById("pesanan").style.display = "block";
+      document.getElementById("pembayaran").style.display = "block";
+      document.getElementById("uploadHasilSection").style.display = "none";
+    }
+    // Override menu klik agar kembali ke default
+    const pesananNav = document.querySelector('.nav-item[onclick="loadPesanan()"]');
+    if(pesananNav) pesananNav.onclick = function() { showDefaultSections(); loadPesanan(); };
+    const pembayaranNav = document.querySelector('.nav-item[onclick="loadPembayaran()"]');
+    if(pembayaranNav) pembayaranNav.onclick = function() { showDefaultSections(); loadPembayaran(); };
   </script>
 </body>
 </html>
