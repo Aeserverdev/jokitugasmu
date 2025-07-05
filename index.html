@@ -553,31 +553,65 @@
       background: var(--accent);
       color: var(--primary);
     }
-    @media (max-width: 900px) {
-      .content { padding: 1.3rem 2vw 1.1rem 2vw; }
-      .statistics { flex-direction: column; gap: 1.7rem; }
-      .stat-card { margin: 0; }
+    /* Download Button Modern Style */
+    .btn-download {
+      background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.98rem;
+      padding: 7px 18px;
+      margin: 2px 0 2px 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px var(--card-shadow);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, transform 0.15s;
+      outline: none;
+      position: relative;
+      overflow: hidden;
     }
-    @media (max-width: 768px) {
-      body { flex-direction: column; }
-      .sidebar {
-        width: 100%;
-        flex-direction: row;
-        gap: 0.2rem;
-        overflow-x: auto;
-        justify-content: space-around;
-        border-radius: 0 0 36px 36px;
-        min-height: unset;
-        padding: 1.1rem 0.5rem;
+    .btn-download:hover, .btn-download:focus {
+      background: linear-gradient(90deg, var(--accent) 60%, var(--primary) 100%);
+      color: #232946;
+      transform: scale(1.04);
+      box-shadow: 0 4px 16px var(--card-shadow);
+    }
+    .btn-download .download-icon {
+      font-size: 1.15em;
+      margin-right: 4px;
+      display: flex;
+      align-items: center;
+    }
+    .btn-download .download-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    @media (max-width: 600px) {
+      .btn-download .download-label {
+        max-width: 70px;
+        font-size: 0.93em;
       }
-      .sidebar button {
-        flex: 1;
-        text-align: center;
-        padding: 1.1rem 0.5rem;
-        font-size: 1.05rem;
+      .btn-download {
+        padding: 7px 10px;
+        font-size: 0.93rem;
       }
-      .content { padding: 1.1rem 2vw; }
-      .card-profile { padding: 1.3rem 0.5rem; }
+    }
+    .dark-mode .btn-download {
+      background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
+      color: #232946;
+      border: none;
+      box-shadow: 0 2px 8px rgba(79,140,255,0.18);
+    }
+    .dark-mode .btn-download:hover, .dark-mode .btn-download:focus {
+      background: linear-gradient(90deg, var(--accent) 60%, var(--primary) 100%);
+      color: #e0e7ff;
     }
   </style>
 </head>
@@ -1339,6 +1373,45 @@ async function loadRiwayat() {
     const data = await res.json();
     semuaRiwayat = Array.isArray(data) ? data : [];
 
+    // Inject file hasil dari localStorage (upload admin) ke setiap riwayat yang statusnya selesai
+    semuaRiwayat.forEach(r => {
+      if ((r.status||'').toLowerCase().includes('selesai')) {
+        let npm = r.npm || user.npm;
+        let trackingID = r.trackingID || '';
+        let hasilFiles = [];
+        let i = 0;
+        // Cari file hasil dengan key hasil_{npm}_{i}
+        while (true) {
+          const hasil = localStorage.getItem('hasil_' + npm + '_' + i);
+          if (hasil) {
+            hasilFiles.push({ url: hasil, name: `File_${i+1}` });
+            i++;
+          } else break;
+        }
+        // Jika tidak ada, cari dengan key hasil_{trackingID}_{i}
+        if (hasilFiles.length === 0 && trackingID) {
+          i = 0;
+          while (true) {
+            const hasil = localStorage.getItem('hasil_' + trackingID + '_' + i);
+            if (hasil) {
+              hasilFiles.push({ url: hasil, name: `File_${i+1}` });
+              i++;
+            } else break;
+          }
+        }
+        if (hasilFiles.length > 0) {
+          r.fileHasil = hasilFiles;
+        } else {
+          // Fallback single file
+          let hasil = localStorage.getItem('hasil_' + npm);
+          if (!hasil && trackingID) hasil = localStorage.getItem('hasil_' + trackingID);
+          if (hasil) {
+            r.fileHasil = [{ url: hasil, name: 'File' }];
+          }
+        }
+      }
+    });
+
     if (semuaRiwayat.length === 0) {
       box.innerHTML = "<i>Belum ada data.</i>";
       return;
@@ -1367,77 +1440,167 @@ function tampilkanRiwayat(data) {
     let downloadBtn = '-';
     if (status.includes("selesai")) {
       function universalDownloadBtn(url, name, icon) {
-        // Untuk file cross-origin, download attribute tidak selalu berfungsi di mobile, jadi gunakan window.open
-        return `<button type="button" class="btn" style="padding:4px 12px;font-size:0.95rem;margin-bottom:2px;display:inline-flex;align-items:center;gap:6px;" onclick="downloadFileUniversal('${encodeURIComponent(url)}','${encodeURIComponent(name)}')">${icon} ${name}</button>`;
+        // Tombol download modern dan responsif, fix encoding & escaping for all devices
+        const urlEsc = encodeURIComponent(url);
+        const nameEsc = encodeURIComponent(name);
+        return `<button type=\"button\" class=\"btn btn-download\" onclick=\"downloadFileUniversal('${urlEsc}','${nameEsc}')\">`
+          + `<span class=\"download-icon\">${icon}</span>`
+          + `<span class=\"download-label\">${name.replace(/'/g, '&apos;')}</span>`
+          + `</button>`;
       }
-      if (r.fileHasil && Array.isArray(r.fileHasil) && r.fileHasil.length > 0) {
-        downloadBtn = r.fileHasil.map((file, idx) => {
-          let url = file.url || file;
-          let name = file.name || `File_${idx+1}`;
-          let ext = name.split('.').pop().toLowerCase();
-          let icon = (ext === 'pdf') ? '📄' : (['png','jpg','jpeg','gif','bmp','webp'].includes(ext) ? '🖼️' : '📦');
-          return universalDownloadBtn(url, name, icon);
-        }).join('<br>');
-        let i = 0;
-        while (localStorage.getItem('hasil_' + r.trackingID + '_' + i)) {
-          localStorage.removeItem('hasil_' + r.trackingID + '_' + i);
+      // Jika admin mengirim file hasil (API/fileHasil), langsung tampilkan tombol download
+      // Pengecekan lebih ketat dan fallback multi sumber
+      // Selalu prioritaskan file hasil yang diupload admin (dari localStorage hasil_{NPM}_N atau hasil_{NPM})
+      let npm = (r.npm || (window.user && window.user.npm)) || '';
+      let hasilFiles = [];
+      let i = 0;
+      while (true) {
+        const hasil = localStorage.getItem('hasil_' + npm + '_' + i);
+        if (hasil) {
+          hasilFiles.push({ url: hasil, name: `File_${i+1}` });
           i++;
-        }
-      } else if (r.fileHasil && typeof r.fileHasil === 'string' && r.fileHasil.startsWith('http')) {
-        let url = r.fileHasil;
-        let name = url.split('/').pop().split('?')[0] || 'File';
-        let ext = name.split('.').pop().toLowerCase();
-        let icon = (ext === 'pdf') ? '📄' : (['png','jpg','jpeg','gif','bmp','webp'].includes(ext) ? '🖼️' : '📦');
-        downloadBtn = universalDownloadBtn(url, name, icon);
-        localStorage.removeItem('hasil_' + r.trackingID);
+        } else break;
+      }
+      if (hasilFiles.length > 0) {
+        downloadBtn = hasilFiles.map((file, idx) => {
+          let url = file.url;
+          let name = file.name;
+          let ext = '';
+          if (url.startsWith('data:')) {
+            const match = url.match(/^data:([^;]+);/);
+            if (match) {
+              const mime = match[1];
+              if (mime.includes('pdf')) ext = '📄';
+              else if (mime.match(/image/)) ext = '🖼️';
+              else ext = '📦';
+            } else {
+              ext = '📦';
+            }
+          } else {
+            let e = name.split('.').pop().toLowerCase();
+            ext = (e === 'pdf') ? '📄' : (['png','jpg','jpeg','gif','bmp','webp'].includes(e) ? '🖼️' : '📦');
+          }
+          return `<button type='button' class='btn btn-download custom-download-btn' onclick="downloadFileUniversal('${encodeURIComponent(url)}','${encodeURIComponent(name)}')">
+            <span class='download-icon' style='font-size:1.3em;margin-right:6px;'>${ext}</span>
+            <span class='download-label' style='font-weight:600;'>Ambil Tugas</span>
+            <span class='download-filename' style='display:block;font-size:0.85em;color:#888;margin-top:2px;'>${name}</span>
+          </button>`;
+        }).join('<br>');
       } else {
-        let found = false;
-        let btns = [];
-        let i = 0;
-        while (true) {
-          const hasilLocal = localStorage.getItem('hasil_' + r.trackingID + '_' + i);
-          if (hasilLocal) {
-            let name = `File_${i+1}`;
-            let icon = '📦';
-            btns.push(universalDownloadBtn(hasilLocal, name, icon));
-            found = true;
-            i++;
+        const hasil = localStorage.getItem('hasil_' + npm);
+        if (hasil) {
+          let name = 'File';
+          let ext = '';
+          if (hasil.startsWith('data:')) {
+            const match = hasil.match(/^data:([^;]+);/);
+            if (match) {
+              const mime = match[1];
+              if (mime.includes('pdf')) ext = '📄';
+              else if (mime.match(/image/)) ext = '🖼️';
+              else ext = '📦';
+            } else {
+              ext = '📦';
+            }
           } else {
-            break;
+            ext = '📦';
           }
-        }
-        if (found) {
-          downloadBtn = btns.join('<br>');
+          downloadBtn = `<button type='button' class='btn btn-download custom-download-btn' onclick="downloadFileUniversal('${encodeURIComponent(hasil)}','${encodeURIComponent(name)}')">
+            <span class='download-icon' style='font-size:1.3em;margin-right:6px;'>${ext}</span>
+            <span class='download-label' style='font-weight:600;'>Ambil Tugas</span>
+            <span class='download-filename' style='display:block;font-size:0.85em;color:#888;margin-top:2px;'>${name}</span>
+          </button>`;
         } else {
-          const hasilLocal = localStorage.getItem('hasil_' + r.trackingID);
-          if (hasilLocal) {
-            let name = `File`;
-            let icon = '📦';
-            downloadBtn = universalDownloadBtn(hasilLocal, name, icon);
-          } else {
-            downloadBtn = `<span style='color:#aaa'>Belum Ada</span>`;
-          }
+          downloadBtn = `<span style='color:#aaa'>Belum Ada</span>`;
         }
       }
     }
 // Fungsi download universal agar tombol download bisa digunakan di semua perangkat
 function downloadFileUniversal(urlEnc, nameEnc) {
-  const url = decodeURIComponent(urlEnc);
-  const name = decodeURIComponent(nameEnc);
-  // Cek apakah file dari domain yang sama (bisa pakai download attribute)
-  const sameOrigin = url.startsWith(window.location.origin) || url.startsWith('/') || url.startsWith('data:');
-  if (sameOrigin) {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => a.remove(), 500);
-  } else {
-    // Untuk file cross-origin, buka di tab baru (user bisa save manual)
-    window.open(url, '_blank');
+  try {
+    const url = decodeURIComponent(urlEnc);
+    let name = decodeURIComponent(nameEnc);
+    let ext = '';
+    // 1. Validasi data URL dan tambahkan ekstensi otomatis
+    if (url.startsWith('data:')) {
+      const match = url.match(/^data:([^;]+);/);
+      if (match) {
+        const mime = match[1];
+        if (mime.includes('pdf')) ext = '.pdf';
+        else if (mime.includes('png')) ext = '.png';
+        else if (mime.includes('jpeg')) ext = '.jpg';
+        else if (mime.includes('jpg')) ext = '.jpg';
+        else if (mime.includes('gif')) ext = '.gif';
+        else if (mime.includes('bmp')) ext = '.bmp';
+        else if (mime.includes('webp')) ext = '.webp';
+        else if (mime.includes('zip')) ext = '.zip';
+        else if (mime.includes('msword')) ext = '.doc';
+        else if (mime.includes('vnd.openxmlformats-officedocument.wordprocessingml.document')) ext = '.docx';
+        else if (mime.includes('vnd.ms-excel')) ext = '.xls';
+        else if (mime.includes('vnd.openxmlformats-officedocument.spreadsheetml.sheet')) ext = '.xlsx';
+        else if (mime.includes('plain')) ext = '.txt';
+      }
+      if (!name.match(/\.[a-z0-9]+$/i) && ext) name += ext;
+      // 2. Validasi base64 dan download dengan Blob
+      try {
+        const arr = url.split(",");
+        if (arr.length > 1) {
+          const mime = (arr[0].match(/:(.*?);/)||[])[1]||'';
+          const bstr = atob(arr[1]);
+          let n = bstr.length;
+          const u8arr = new Uint8Array(n);
+          while(n--){u8arr[n]=bstr.charCodeAt(n);}
+          const blob = new Blob([u8arr], {type: mime});
+          const blobUrl = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.setAttribute('download', name);
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            a.remove();
+            window.URL.revokeObjectURL(blobUrl);
+          }, 500);
+          return;
+        } else {
+          Swal.fire({icon:'error',title:'Download gagal',text:'File base64 tidak valid. Silakan hubungi admin.'});
+          return;
+        }
+      } catch (err) {
+        Swal.fire({icon:'error',title:'Download gagal',text:'File tidak dapat diunduh. Silakan hubungi admin.'});
+        return;
+      }
+    }
+    // 3. Untuk file link (http/https), download dengan fetch blob
+    if (url.startsWith('http')) {
+      fetch(url)
+        .then(resp => {
+          if (!resp.ok) throw new Error('HTTP error');
+          return resp.blob();
+        })
+        .then(blob => {
+          const blobUrl = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.setAttribute('download', name);
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            a.remove();
+            window.URL.revokeObjectURL(blobUrl);
+          }, 500);
+        })
+        .catch(() => {
+          Swal.fire({icon:'error',title:'Download gagal',text:'File tidak dapat diunduh. Silakan hubungi admin.'});
+        });
+      return;
+    }
+    // 4. Fallback jika format tidak dikenali
+    Swal.fire({icon:'error',title:'Download gagal',text:'Format file tidak dikenali atau rusak. Silakan hubungi admin.'});
+  } catch (e) {
+    Swal.fire({icon:'error',title:'Download gagal',text:'Terjadi error saat memproses file. Silakan hubungi admin.'});
   }
 }
+window.downloadFileUniversal = downloadFileUniversal;
 
     html += `<tr>
       <td>${r.trackingID || '-'}</td>
@@ -1529,6 +1692,16 @@ function filterRiwayat() {
       document.getElementById("nomorDana").textContent = "";
     }
   });
+// Sinkronisasi riwayat jika file hasil dihapus oleh admin (atau tab lain)
+window.addEventListener('storage', function(e) {
+  // Jika key hasil_ dihapus, reload riwayat
+  if (e.key && e.key.startsWith('hasil_')) {
+    // Hanya reload jika tabel riwayat ada di halaman
+    if (document.getElementById('tabelRiwayat')) {
+      loadRiwayat();
+    }
+  }
+});
 </script>
 <!-- End Chatbot -->
 </body>
