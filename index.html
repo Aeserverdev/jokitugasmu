@@ -1,3 +1,44 @@
+<style>
+/* Responsive improvements for all devices */
+@media (max-width: 1200px) {
+  .content { padding: 1.5rem 1vw 1.2rem 1vw; }
+  .section { padding: 1.2rem 1vw; }
+}
+@media (max-width: 900px) {
+  .sidebar {
+    width: 210px;
+    padding: 1.2rem 0.7rem 1rem 0.7rem;
+    border-radius: 0 24px 24px 0;
+  }
+  .sidebar h2 { font-size: 1.1rem; margin-bottom: 1.2rem; }
+  .sidebar button { font-size: 0.98rem; padding: 0.7rem 0.7rem; border-radius: 10px; }
+  .content { padding: 1.1rem 1vw 1rem 1vw; }
+  .section { padding: 1rem 0.5rem; border-radius: 12px; }
+  .card-profile { padding: 1.2rem 0.7rem; border-radius: 18px; }
+  .card-profile-img-wrap img { width: 90px; height: 90px; }
+  .card-profile-img-glow { width: 100px; height: 100px; }
+}
+@media (max-width: 600px) {
+  .sidebar { width: 100vw; left: 0; border-radius: 0 0 24px 24px; min-height: unset; height: auto; position: fixed; top: 0; }
+  .sidebar.visible { transform: translateY(0); }
+  .sidebar { transform: translateY(-100%); transition: transform 0.3s; }
+  .menu-toggle { display: block !important; position: fixed; top: 10px; left: 10px; z-index: 2000; }
+  .content { padding: 0.7rem 0.5vw 0.7rem 0.5vw; }
+  .section, .card-profile, .info-box, input, textarea, select { padding: 0.6rem !important; border-radius: 8px !important; }
+  .topbar h1 { font-size: 1rem; }
+  .toggle-dark { font-size: 0.95rem; padding: 0.4rem 0.7rem; }
+  table, th, td { font-size: 0.95rem !important; }
+  .btn, .btn-download { font-size: 0.95rem !important; padding: 0.7rem 1.2rem !important; border-radius: 8px !important; }
+  .card-profile-img-wrap img { width: 60px; height: 60px; }
+  .card-profile-img-glow { width: 70px; height: 70px; }
+}
+/* Make tables scrollable on small screens */
+@media (max-width: 700px) {
+  table { display: block; overflow-x: auto; width: 100%; }
+  thead, tbody, tr { display: table; width: 100%; table-layout: fixed; }
+  th, td { word-break: break-word; }
+}
+</style>
 <!DOCTYPE html>
 <html lang="id">
 <head>
