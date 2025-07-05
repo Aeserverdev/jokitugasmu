@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; }
+    .admin-dashboard {
+      max-width: 1200px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 32px #4f8cff22, 0 1.5px 8px #0001;
+      overflow: hidden;
+    }
+    .dashboard-header {
+      background: #2563eb;
+      color: #fff;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dashboard-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+    .dashboard-icon {
+      font-size: 1.8rem;
+      margin-right: 8px;
+    }
+    .dashboard-stats {
+      display: flex;
+      gap: 16px;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 12px #0002;
+      flex: 1;
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #2563eb;
+    }
+    .dashboard-main {
+      display: flex;
+      padding: 24px;
+      gap: 24px;
+    }
+    .dashboard-left {
+      flex: 2;
+    }
+    .dashboard-right {
+      flex: 1;
+      max-height: 400px;
+      overflow: auto;
+    }
+    h2 {
+      text-align: center;
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: #2563eb;
+      margin-bottom: 28px;
+      letter-spacing: 1px;
+    }
+    .info-box {
+      margin-bottom: 22px;
+      background: #f7faff;
+      border-radius: 10px;
+      padding: 14px 18px 10px 18px;
+      box-shadow: 0 1px 4px #4f8cff11;
+    }
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 600;
+      color: #232946;
+      font-size: 1.08rem;
+    }
+    input[type="file"], input[type="text"], textarea, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 7px;
+      border: 1.5px solid #cfd8dc;
+      font-size: 1.05rem;
+      background: #f7faff;
+      margin-bottom: 2px;
+      transition: border 0.2s;
+    }
+    input[type="file"] {
+      background: #fff;
+    }
+    input:focus, textarea:focus, select:focus {
+      border: 1.5px solid #4f8cff;
+      outline: none;
+    }
+    button {
+      padding: 12px 26px;
+      border: none;
+      background: linear-gradient(90deg,#4f8cff 60%,#7fffd4 100%);
+      color: #fff;
+      border-radius: 7px;
+      font-size: 1.08rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #4f8cff22;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+    }
+    button:hover {
+      background: linear-gradient(90deg,#2563eb 60%,#4f8cff 100%);
+      box-shadow: 0 4px 16px #4f8cff33;
+      transform: translateY(-2px) scale(1.03);
+    }
+    .file-list {
+      margin-top: 28px;
+    }
+    .file-item {
+      background: #f7faff;
+      padding: 18px 18px 14px 18px;
+      border-radius: 13px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 12px #4f8cff11;
+      border: 1.5px solid #e3e8f0;
+      transition: box-shadow 0.2s, border 0.2s;
+    }
+    .file-item:hover {
+      box-shadow: 0 4px 24px #4f8cff22;
+      border: 1.5px solid #4f8cff44;
+    }
+    .file-item span { word-break: break-all; }
+    .file-icon {
+      font-size: 2.2em !important;
+      margin-right: 10px;
+      filter: drop-shadow(0 2px 8px #4f8cff33);
+    }
+    .btn-download {
+      background: linear-gradient(90deg,#22c55e 60%,#7fffd4 100%) !important;
+      color: #fff !important;
+      font-weight: 700;
+      font-size: 1.08rem;
+      border-radius: 7px;
+      padding: 10px 22px;
+      margin-right: 8px;
+      box-shadow: 0 2px 8px #22c55e33;
+      transition: background .2s, box-shadow .2s;
+    }
+    .btn-download:hover {
+      background: linear-gradient(90deg,#16a34a 60%,#22c55e 100%) !important;
+      box-shadow:0 4px 16px #22c55e44;
+    }
+    .btn-delete {
+      background: linear-gradient(90deg,#f44336 60%,#fca5a5 100%) !important;
+      color: #fff !important;
+      font-weight: 700;
+      font-size: 1.08rem;
+      border-radius: 7px;
+      padding: 10px 22px;
+      box-shadow:0 2px 8px #f4433633;
+      transition: background .2s, box-shadow .2s;
+    }
+    .btn-delete:hover {
+      background: linear-gradient(90deg,#b91c1c 60%,#f44336 100%) !important;
+      box-shadow:0 4px 16px #f4433644;
+    }
+    @media (max-width: 600px) {
+      .admin-container { padding: 12px 2vw 18px 2vw; }
+      .file-item { flex-direction: column; align-items: flex-start; }
+      .file-item > div:last-child { margin-top: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-dashboard">
+    <script>
+      // Fetch data mahasiswa dari endpoint Google Apps Script
+      let semuaMahasiswa = [];
+      let npmToNama = {};
+      async function fetchMahasiswa() {
+        try {
+          const res = await fetch('https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec?action=getSemuaPesanan');
+          const data = await res.json();
+          semuaMahasiswa = data;
+          npmToNama = {};
+          data.forEach(m => { if(m.npm) npmToNama[m.npm] = m.nama; });
+          setupNpmAutocomplete();
+        } catch(e) { console.log('Gagal fetch data mahasiswa', e); }
+      }
+      // Autocomplete NPM
+      function setupNpmAutocomplete() {
+        const npmInput = document.getElementById('npm');
+        if (!npmInput) return;
+        npmInput.setAttribute('list', 'npmList');
+        let datalist = document.getElementById('npmList');
+        if (!datalist) {
+          datalist = document.createElement('datalist');
+          datalist.id = 'npmList';
+          npmInput.parentNode.appendChild(datalist);
+        }
+        datalist.innerHTML = semuaMahasiswa.map(m => `<option value="${m.npm}">${m.nama ? m.nama : ''}</option>`).join('');
+      }
+      // Tampilkan nama mahasiswa jika NPM ditemukan
+      function showNamaMahasiswa() {
+        const npm = document.getElementById('npm').value.trim();
+        const namaDiv = document.getElementById('namaMahasiswaInfo');
+        if (npmToNama[npm]) {
+          namaDiv.textContent = 'Nama: ' + npmToNama[npm];
+        } else {
+          namaDiv.textContent = '';
+        }
+      }
+      window.addEventListener('DOMContentLoaded', fetchMahasiswa);
+    </script>
+    <header class="dashboard-header">
+      <div class="dashboard-title">
+        <span class="dashboard-icon">📊</span>
+        <span>Upload File Hasil</span>
+      </div>
+      <div class="dashboard-stats">
+        <div class="stat-card" id="statTotalFile">
+          <div class="stat-label">Total File Hasil</div>
+          <div class="stat-value" id="totalFileHasil">0</div>
+        </div>
+      </div>
+    </header>
+    <main class="dashboard-main">
+      <section class="dashboard-left">
+        <div class="info-box">
+          <label for="npm">Cari Berdasarkan NPM Mahasiswa</label>
+          <input type="text" id="npm" placeholder="Masukkan NPM Mahasiswa" oninput="updateTrackingIDList();showNamaMahasiswa()">
+          <div id="namaMahasiswaInfo" style="color:#2563eb;font-weight:600;margin-bottom:6px;"></div>
+        </div>
+        <div class="info-box" id="trackingIdBox" style="display:none">
+          <label for="trackingID">Pilih Tracking ID Pesanan</label>
+          <select id="trackingID"></select>
+        </div>
+        <div class="info-box">
+          <label for="hasilFile">Upload File Hasil (PDF/Gambar/ZIP)</label>
+          <input type="file" id="hasilFile" accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.webp,.zip,.doc,.docx,.xls,.xlsx,.txt">
+        </div>
+        <button onclick="uploadHasil()">Upload & Simpan</button>
+        <div id="uploadStatus" style="margin-top:16px;color:#4f8cff;"></div>
+        <div class="file-list" id="fileList"></div>
+      </section>
+  <section class="dashboard-right">
+    <div class="info-box" style="margin-top:0;">
+      <h3 style="margin:0 0 12px 0;font-size:1.2em;color:#2563eb;">Riwayat Upload File Hasil</h3>
+      <div id="riwayatUpload" style="max-height:400px;overflow:auto;"></div>
+      <button id="btnHapusSemuaRiwayat" style="margin-top:16px;background:#ccc;color:#888;cursor:not-allowed;" disabled>🗑️ Hapus Semua Riwayat</button>
+    </div>
+  </section>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </main>
+  </div>
+  <script>
+    // Hapus semua riwayat file hasil (key hasil_*)
+    function hapusSemuaRiwayat() {
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: 'Hapus Semua Riwayat?',
+          text: 'Semua file hasil akan dihapus permanen dari browser ini!',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, hapus!',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            hapusSemuaRiwayatEksekusi();
+          }
+        });
+      } else {
+        if (confirm('Hapus semua file hasil?')) hapusSemuaRiwayatEksekusi();
+      }
+    }
+    function hapusSemuaRiwayatEksekusi() {
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('hasil_')) keysToRemove.push(key);
+      }
+      keysToRemove.forEach(k => localStorage.removeItem(k));
+      showFileList();
+      showRiwayatUpload();
+      if (typeof updateDashboardStats === 'function') updateDashboardStats();
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({icon:'success',title:'Semua riwayat file hasil dihapus!'});
+      } else {
+        alert('Semua riwayat file hasil dihapus!');
+      }
+    }
+    // Cari semua Tracking ID berdasarkan NPM
+    function findTrackingIDsByNPM(npm) {
+      const ids = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('riwayat_')) {
+          try {
+            const data = JSON.parse(localStorage.getItem(key));
+            if (data && data.npm && data.npm === npm && data.trackingID) {
+              ids.push(data.trackingID);
+            }
+          } catch {}
+        }
+      }
+      return ids;
+    }
+
+    // Update select Tracking ID berdasarkan NPM
+    function updateTrackingIDList() {
+      const npm = document.getElementById('npm').value.trim();
+      const trackingIdBox = document.getElementById('trackingIdBox');
+      const select = document.getElementById('trackingID');
+      select.innerHTML = '';
+      if (!npm) {
+        trackingIdBox.style.display = 'none';
+        showFileList();
+        return;
+      }
+      const ids = findTrackingIDsByNPM(npm);
+      if (ids.length === 0) {
+        trackingIdBox.style.display = 'none';
+        showFileList();
+        return;
+      }
+      ids.forEach(id => {
+        const opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = id;
+        select.appendChild(opt);
+      });
+      trackingIdBox.style.display = '';
+      showFileList();
+    }
+
+    document.getElementById('npm').addEventListener('input', updateTrackingIDList);
+    document.getElementById('trackingID').addEventListener('change', showFileList);
+
+    // Tampilkan file hasil yang sudah diupload untuk tracking ID tertentu
+    function showFileList() {
+      const npm = document.getElementById('npm').value.trim();
+      const fileListDiv = document.getElementById('fileList');
+      fileListDiv.innerHTML = '';
+      if (!npm) {
+        fileListDiv.innerHTML = '<i>Masukkan NPM mahasiswa.</i>';
+        return;
+      }
+      let i = 0, found = false;
+      let html = '';
+      while (true) {
+        const hasil = localStorage.getItem('hasil_' + npm + '_' + i);
+        if (hasil) {
+          // Deteksi ekstensi dan ikon
+          let ext = '';
+          let icon = '📦';
+          const match = hasil.match(/^data:([^;]+);/);
+          if (match) {
+            const mime = match[1];
+            if (mime.includes('pdf')) { ext = 'PDF'; icon = '📄'; }
+            else if (mime.match(/image/)) { ext = 'IMG'; icon = '🖼️'; }
+            else if (mime.includes('zip')) { ext = 'ZIP'; icon = '🗜️'; }
+            else if (mime.includes('msword') || mime.includes('doc')) { ext = 'DOC'; icon = '📃'; }
+            else if (mime.includes('excel') || mime.includes('sheet')) { ext = 'XLS'; icon = '📊'; }
+            else if (mime.includes('plain')) { ext = 'TXT'; icon = '📄'; }
+          }
+          html += `<div class='file-item file-animate'>
+            <div style='display:flex;align-items:center;gap:12px;'>
+              <span class='file-icon' style='font-size:2em;'>${icon}</span>
+              <div>
+                <span class='file-name' style='font-weight:600;'>File_${i+1}.${ext}</span><br>
+                <span class='file-type' style='font-size:0.9em;color:#888;'>${ext}</span>
+              </div>
+            </div>
+            <div style='display:flex;gap:8px;'>
+              <button class='btn btn-download' style='background:#22c55e;' onclick="downloadFileAdminPanel('hasil_${npm}_${i}','File_${i+1}.${ext}')">⬇️ Download</button>
+              <button class='btn btn-delete' style='background:#f44336;' onclick="hapusFile('${npm}',${i})">🗑️ Hapus</button>
+            </div>
+          </div>`;
+          found = true;
+          i++;
+        } else break;
+      }
+      if (!found) {
+        const hasil = localStorage.getItem('hasil_' + npm);
+        if (hasil) {
+          let ext = '';
+          let icon = '📦';
+          const match = hasil.match(/^data:([^;]+);/);
+          if (match) {
+            const mime = match[1];
+            if (mime.includes('pdf')) { ext = 'PDF'; icon = '📄'; }
+            else if (mime.match(/image/)) { ext = 'IMG'; icon = '🖼️'; }
+            else if (mime.includes('zip')) { ext = 'ZIP'; icon = '🗜️'; }
+            else if (mime.includes('msword') || mime.includes('doc')) { ext = 'DOC'; icon = '📃'; }
+            else if (mime.includes('excel') || mime.includes('sheet')) { ext = 'XLS'; icon = '📊'; }
+            else if (mime.includes('plain')) { ext = 'TXT'; icon = '📄'; }
+          }
+          html = `<div class='file-item file-animate'>
+            <div style='display:flex;align-items:center;gap:12px;'>
+              <span class='file-icon' style='font-size:2em;'>${icon}</span>
+              <div>
+                <span class='file-name' style='font-weight:600;'>File.${ext}</span><br>
+                <span class='file-type' style='font-size:0.9em;color:#888;'>${ext}</span>
+              </div>
+            </div>
+            <div style='display:flex;gap:8px;'>
+              <button class='btn btn-download' style='background:#22c55e;' onclick="downloadFileAdminPanel('hasil_${npm}','File.${ext}')">⬇️ Download</button>
+              <button class='btn btn-delete' style='background:#f44336;' onclick="hapusFile('${npm}')">🗑️ Hapus</button>
+            </div>
+          </div>`;
+        } else {
+          html = '<i>Belum ada file hasil untuk NPM ini.</i>';
+        }
+      }
+      fileListDiv.innerHTML = html;
+      showRiwayatUpload();
+      updateDashboardStats();
+    }
+
+    // Tampilkan riwayat upload file hasil
+    function showRiwayatUpload() {
+      let rows = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        // Cari key hasil_{npm}_{i} dan hasil_{trackingID}_{i}
+        let match = key.match(/^hasil_([A-Za-z0-9]+)_(\d+)$/);
+        if (match) {
+          const id = match[1];
+          const idx = match[2];
+          const data = localStorage.getItem(key);
+          let waktu = '';
+          try {
+            waktu = new Date(parseInt(idx) * 1000).toLocaleString('id-ID');
+          } catch {}
+          let nama = `File_${idx}`;
+          let ext = '';
+          const m = data.match(/^data:([^;]+);/);
+          if (m) {
+            const mime = m[1];
+            if (mime.includes('pdf')) ext = '.pdf';
+            else if (mime.includes('png')) ext = '.png';
+            else if (mime.includes('jpeg')) ext = '.jpg';
+            else if (mime.includes('jpg')) ext = '.jpg';
+            else if (mime.includes('gif')) ext = '.gif';
+            else if (mime.includes('bmp')) ext = '.bmp';
+            else if (mime.includes('webp')) ext = '.webp';
+            else if (mime.includes('zip')) ext = '.zip';
+            else if (mime.includes('msword')) ext = '.doc';
+            else if (mime.includes('vnd.openxmlformats-officedocument.wordprocessingml.document')) ext = '.docx';
+            else if (mime.includes('vnd.ms-excel')) ext = '.xls';
+            else if (mime.includes('vnd.openxmlformats-officedocument.spreadsheetml.sheet')) ext = '.xlsx';
+            else if (mime.includes('plain')) ext = '.txt';
+          }
+          rows.push(`<tr><td>${id}</td><td>${nama+ext}</td><td><button class='btn btn-download' onclick="downloadFileAdminPanel('${key}','${nama+ext}')">⬇️</button></td></tr>`);
+        }
+      }
+      if (rows.length === 0) {
+        document.getElementById('riwayatUpload').innerHTML = '<i>Belum ada riwayat upload file hasil.</i>';
+      } else {
+        document.getElementById('riwayatUpload').innerHTML = `<div style='overflow-x:auto'><table style='width:100%;border-collapse:collapse;font-size:0.98em'><thead><tr style='background:#e3e8f0;'><th style='padding:6px 8px'>NPM/ID</th><th style='padding:6px 8px'>Nama File</th><th style='padding:6px 8px'>Download</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+      }
+      showDataPesanan();
+      showDataPembayaran();
+    }
+
+    // Tampilkan data pesanan
+    function showDataPesanan() {
+      let rows = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('riwayat_')) {
+          try {
+            const data = JSON.parse(localStorage.getItem(key));
+            rows.push(`<tr><td>${data.npm || '-'}</td><td>${data.trackingID || '-'}</td><td>${data.status || '-'}</td></tr>`);
+          } catch {}
+        }
+      }
+      if (rows.length === 0) {
+        document.getElementById('dataPesananBox').innerHTML = '<i>Belum ada data pesanan.</i>';
+      } else {
+        document.getElementById('dataPesananBox').innerHTML = `<div style='overflow-x:auto'><table style='width:100%;border-collapse:collapse;font-size:0.97em'><thead><tr style='background:#e3e8f0;'><th style='padding:6px 8px'>NPM</th><th style='padding:6px 8px'>Tracking ID</th><th style='padding:6px 8px'>Status</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+      }
+    }
+
+    // Tampilkan data pembayaran
+    function showDataPembayaran() {
+      let rows = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('pembayaran_')) {
+          try {
+            const data = JSON.parse(localStorage.getItem(key));
+            rows.push(`<tr><td>${data.npm || '-'}</td><td>${data.trackingID || '-'}</td><td>${data.jumlah || '-'}</td><td>${data.status || '-'}</td></tr>`);
+          } catch {}
+        }
+      }
+      if (rows.length === 0) {
+        document.getElementById('dataPembayaranBox').innerHTML = '<i>Belum ada data pembayaran.</i>';
+      } else {
+        document.getElementById('dataPembayaranBox').innerHTML = `<div style='overflow-x:auto'><table style='width:100%;border-collapse:collapse;font-size:0.97em'><thead><tr style='background:#e3e8f0;'><th style='padding:6px 8px'>NPM</th><th style='padding:6px 8px'>Tracking ID</th><th style='padding:6px 8px'>Jumlah</th><th style='padding:6px 8px'>Status</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+      }
+    }
+    // Fungsi download khusus admin panel
+    function downloadFileAdminPanel(key, name) {
+      const data = localStorage.getItem(key);
+      if (!data) {
+        alert('File tidak ditemukan!');
+        return;
+      }
+      let ext = '';
+      const match = data.match(/^data:([^;]+);/);
+      if (match) {
+        const mime = match[1];
+        if (mime.includes('pdf')) ext = '.pdf';
+        else if (mime.includes('png')) ext = '.png';
+        else if (mime.includes('jpeg')) ext = '.jpg';
+        else if (mime.includes('jpg')) ext = '.jpg';
+        else if (mime.includes('gif')) ext = '.gif';
+        else if (mime.includes('bmp')) ext = '.bmp';
+        else if (mime.includes('webp')) ext = '.webp';
+        else if (mime.includes('zip')) ext = '.zip';
+        else if (mime.includes('msword')) ext = '.doc';
+        else if (mime.includes('vnd.openxmlformats-officedocument.wordprocessingml.document')) ext = '.docx';
+        else if (mime.includes('vnd.ms-excel')) ext = '.xls';
+        else if (mime.includes('vnd.openxmlformats-officedocument.spreadsheetml.sheet')) ext = '.xlsx';
+        else if (mime.includes('plain')) ext = '.txt';
+      }
+      if (!name.match(/\.[a-z0-9]+$/i) && ext) name += ext;
+      try {
+        const arr = data.split(",");
+        if (arr.length > 1) {
+          const mime = (arr[0].match(/:(.*?);/)||[])[1]||'';
+          const bstr = atob(arr[1]);
+          let n = bstr.length;
+          const u8arr = new Uint8Array(n);
+          while(n--){u8arr[n]=bstr.charCodeAt(n);}
+          const blob = new Blob([u8arr], {type: mime});
+          const blobUrl = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.setAttribute('download', name);
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            a.remove();
+            window.URL.revokeObjectURL(blobUrl);
+          }, 500);
+          return;
+        }
+      } catch {}
+      // Fallback biasa
+      const a = document.createElement('a');
+      a.href = data;
+      a.setAttribute('download', name);
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => a.remove(), 500);
+    }
+    
+    function uploadHasil() {
+      const npm = document.getElementById('npm').value.trim();
+      const fileInput = document.getElementById('hasilFile');
+      const statusDiv = document.getElementById('uploadStatus');
+      if (!npm) { statusDiv.textContent = 'Masukkan NPM!'; return; }
+      if (!fileInput.files[0]) { statusDiv.textContent = 'Pilih file hasil!'; return; }
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        // Simpan ke localStorage, multi file support
+        let i = 0;
+        while (localStorage.getItem('hasil_' + npm + '_' + i)) i++;
+        localStorage.setItem('hasil_' + npm + '_' + i, e.target.result);
+        // Juga simpan dengan key hasil_{trackingID}_{i} agar bisa diakses user
+        // Ambil trackingID dari select jika ada
+        const trackingID = document.getElementById('trackingID') && document.getElementById('trackingID').value;
+        if (trackingID) {
+          localStorage.setItem('hasil_' + trackingID + '_' + i, e.target.result);
+        }
+        statusDiv.textContent = 'File berhasil diupload!';
+        fileInput.value = '';
+        showFileList();
+        window.dispatchEvent(new Event('storage'));
+      };
+      reader.onerror = function() { statusDiv.textContent = 'Gagal membaca file!'; };
+      reader.readAsDataURL(file);
+    }
+    function hapusFile(trackingID, idx) {
+      if (typeof idx === 'number') {
+        localStorage.removeItem('hasil_' + trackingID + '_' + idx);
+      } else {
+        localStorage.removeItem('hasil_' + trackingID);
+      }
+      showFileList();
+      window.dispatchEvent(new Event('storage'));
+    }
+    // Update statistik dashboard (total file hasil & total mahasiswa)
+function updateDashboardStats() {
+  // Ambil NPM yang sedang diinput
+  const npm = document.getElementById('npm') ? document.getElementById('npm').value.trim() : '';
+  let totalFile = 0;
+  if (npm) {
+    // Hitung file hasil milik NPM ini saja
+    let i = 0;
+    while (true) {
+      if (localStorage.getItem('hasil_' + npm + '_' + i)) {
+        totalFile++;
+        i++;
+      } else {
+        break;
+      }
+    }
+    // Cek single file lama
+    if (totalFile === 0 && localStorage.getItem('hasil_' + npm)) totalFile = 1;
+  }
+  // Total Mahasiswa tetap dari endpoint (atau fallback)
+  let totalMahasiswa = 0;
+  if (typeof semuaMahasiswa !== 'undefined' && semuaMahasiswa.length > 0) {
+    const npmList = semuaMahasiswa.map(m => m.npm).filter(Boolean);
+    totalMahasiswa = new Set(npmList).size;
+  } else {
+    // Fallback: NPM unik dari localStorage
+    let npmSet = new Set();
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      let match = key.match(/^hasil_([A-Za-z0-9]+)_(\d+)$/);
+      if (match) npmSet.add(match[1]);
+    }
+    totalMahasiswa = npmSet.size;
+  }
+  // Update semua elemen statistik
+  if (document.getElementById('totalFileHasil')) document.getElementById('totalFileHasil').innerText = totalFile;
+  if (document.getElementById('totalNpm')) document.getElementById('totalNpm').innerText = totalMahasiswa;
+  if (document.getElementById('totalFileHasil2')) document.getElementById('totalFileHasil2').innerText = totalFile;
+  if (document.getElementById('totalNpm2')) document.getElementById('totalNpm2').innerText = totalMahasiswa;
+}
+
+// Panggil updateDashboardStats setiap kali file hasil berubah
+// Sudah dipanggil di showFileList, hapus, upload, dan hapus semua riwayat
+// Pastikan juga dipanggil setelah fetchMahasiswa selesai
+window.addEventListener('DOMContentLoaded', function() {
+  fetchMahasiswa();
+  setTimeout(updateDashboardStats, 800);
+});
+// Inisialisasi jika sudah ada NPM
+window.onload = function() {
+  showFileList();
+  updateDashboardStats();
+};
+    // Animasi file-item
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .file-animate { animation: fadeInUp .5s cubic-bezier(.23,1.02,.32,1) both; }
+      @keyframes fadeInUp {
+        0% { opacity:0; transform:translateY(30px) scale(.95); }
+        100% { opacity:1; transform:translateY(0) scale(1); }
+      }
+      .btn-download { transition: background .2s, box-shadow .2s; box-shadow:0 2px 8px #22c55e33; }
+      .btn-download:hover { background:#16a34a !important; box-shadow:0 4px 16px #22c55e44; }
+      .btn-delete { transition: background .2s, box-shadow .2s; box-shadow:0 2px 8px #f4433633; }
+      .btn-delete:hover { background:#b91c1c !important; box-shadow:0 4px 16px #f4433644; }
+      .file-icon { filter: drop-shadow(0 2px 8px #0002); }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
