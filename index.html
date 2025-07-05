@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Dashboard Mahasiswa</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="style.css">
   <style>
@@ -22,13 +22,14 @@
       --glass-dark: rgba(35,41,70,0.7);
     }
     body {
-      font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+      font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
       background: var(--bg);
       color: #232946;
       margin: 0;
       display: flex;
       min-height: 100vh;
       transition: background 0.5s, color 0.5s;
+      letter-spacing: 0.01em;
     }
     body.dark-mode {
       background: var(--dark-bg);
@@ -198,53 +199,90 @@
     }
     
     .sidebar {
-      width: 260px;
+      width: 250px;
       background: linear-gradient(135deg, #232946 60%, #4f8cff 100%);
       color: #fff;
-      padding: 2.5rem 1.2rem 1.2rem 1.2rem;
+      padding: 2.2rem 1rem 1.2rem 1rem;
       display: flex;
       flex-direction: column;
       border-top-right-radius: 36px;
       border-bottom-right-radius: 36px;
-      box-shadow: 0 8px 32px var(--card-shadow);
+      box-shadow: 0 12px 40px 0 rgba(79,140,255,0.18);
       min-height: 100vh;
       position: relative;
       z-index: 10;
       transition: background 0.5s;
       gap: 0.5rem;
+      animation: sidebarPop 0.8s cubic-bezier(.4,2,.6,1);
+      border-left: 4px solid var(--accent);
+    }
+    @keyframes sidebarPop {
+      0% { transform: translateX(-60px) scale(0.95); opacity: 0; }
+      100% { transform: translateX(0) scale(1); opacity: 1; }
     }
     .sidebar h2 {
       color: var(--accent);
-      margin-bottom: 2.5rem;
-      font-size: 2.2rem;
+      margin-bottom: 2.2rem;
+      font-size: 1.3rem;
       letter-spacing: 2px;
       text-shadow: 0 2px 12px rgba(0,0,0,0.10);
       text-align: center;
+      font-family: 'Montserrat',sans-serif;
+      font-weight: 700;
+      transition: color 0.3s;
     }
     .sidebar button {
       background: rgba(255,255,255,0.07);
       border: none;
       color: #e0e7ff;
-      padding: 1.1rem 1.2rem;
+      padding: 1rem 1.1rem;
       text-align: left;
       cursor: pointer;
       border-radius: 16px;
       font-weight: 500;
-      font-size: 1.13rem;
-      margin-bottom: 0.2rem;
-      transition: all 0.25s;
+      font-size: 1.08rem;
+      margin-bottom: 0.18rem;
+      transition: background 0.25s, color 0.25s, box-shadow 0.25s, transform 0.18s;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 13px;
       box-shadow: 0 1px 4px rgba(79,140,255,0.04);
       outline: none;
+      position: relative;
+      overflow: hidden;
+    }
+    .sidebar button::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      border-radius: 16px 0 0 16px;
+      transition: width 0.3s cubic-bezier(.4,2,.6,1);
+      z-index: 0;
+      opacity: 0.18;
+    }
+    .sidebar button.active::before, .sidebar button:hover::before {
+      width: 100%;
+      opacity: 0.28;
+    }
+    .sidebar button span {
+      position: relative;
+      z-index: 1;
+      transition: color 0.2s;
     }
     .sidebar button.active, .sidebar button:hover {
-      background: linear-gradient(45deg, var(--primary), var(--accent));
+      background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
       color: #232946;
-      box-shadow: 0 4px 16px var(--card-shadow);
-      transform: translateX(7px) scale(1.06);
+      box-shadow: 0 6px 20px var(--card-shadow);
+      transform: translateX(6px) scale(1.06);
       font-weight: bold;
+    }
+    .sidebar button.active span, .sidebar button:hover span {
+      color: #232946;
+    }
+    .sidebar button:active {
+      transform: scale(0.98);
     }
     .content {
       flex: 1;
@@ -291,10 +329,11 @@
       padding: 2.2rem 1.7rem;
       border-radius: var(--border-radius);
       margin-bottom: 2.7rem;
-      box-shadow: 0 8px 32px var(--card-shadow);
-      transition: transform 0.3s, box-shadow 0.3s;
-      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 40px 0 rgba(79,140,255,0.13), 0 2px 12px 0 rgba(127,255,212,0.14);
+      transition: transform 0.3s, box-shadow 0.3s, background 0.4s;
+      backdrop-filter: blur(16px) saturate(1.2);
       animation: fadeIn 0.7s;
+      border: 2px solid var(--accent);
     }
     .section.active {
       display: block;
@@ -310,8 +349,8 @@
       margin: auto;
       padding: 2.7rem 2.2rem 2.2rem 2.2rem;
       text-align: center;
-      box-shadow: 0 8px 32px 0 rgba(79,140,255,0.13), 0 1.5px 8px 0 rgba(127,255,212,0.12);
-      backdrop-filter: blur(20px) saturate(1.2);
+      box-shadow: 0 16px 48px 0 rgba(79,140,255,0.18), 0 2px 12px 0 rgba(127,255,212,0.16);
+      backdrop-filter: blur(24px) saturate(1.3);
       transition: all 0.4s cubic-bezier(.4,2,.6,1);
       position: relative;
       overflow: visible;
@@ -372,23 +411,25 @@
       font-size: 1.08rem;
     }
     .btn {
-      background: linear-gradient(45deg, var(--primary), var(--accent));
+      background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
       color: #fff;
       padding: 1rem 2.3rem;
       font-size: 1.13rem;
       border: none;
-      border-radius: 16px;
+      border-radius: 24px;
       font-weight: bold;
       cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 2px 8px var(--card-shadow);
+      transition: all 0.3s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px var(--card-shadow);
       outline: none;
+      letter-spacing: 0.03em;
     }
     .btn:hover, .btn:focus {
-      filter: brightness(1.08);
-      transform: scale(1.06);
-      background: linear-gradient(45deg, var(--accent), var(--primary));
+      filter: brightness(1.10);
+      transform: scale(1.07);
+      background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
       color: #232946;
+      box-shadow: 0 8px 32px var(--card-shadow);
     }
     table {
       width: 100%;
@@ -617,15 +658,30 @@
 </head>
 <body>
   <div class="sidebar" id="sidebar">
-    <h2>👨‍🎓 Mahasiswa</h2>
-    <button onclick="showSection('profil')" class="active">📄 Profil</button>
-    <button onclick="showSection('riwayat')">📚 Riwayat</button>
-    <button onclick="showSection('pesanan')">📝 Pesanan</button>
-    <button onclick="showSection('pembayaran')">💳 Pembayaran</button>
-    <button onclick="showSection('pengaturan')">⚙️ Pengaturan</button>
-    <button onclick="logout()">🚪 Logout</button>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.5rem;">
+      <div style="background:linear-gradient(135deg,#4f8cff,#7fffd4);width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:50%;box-shadow:0 2px 10px #4f8cff44;animation: sidebarLogoPop 1s cubic-bezier(.4,2,.6,1);">
+        <span style="font-size:1.5rem;">👨‍🎓</span>
+      </div>
+      <h2 style="font-family:'Montserrat',sans-serif;letter-spacing:1.5px;margin:0;font-size:1.2rem;color:var(--accent);text-shadow:0 1px 6px #0001;animation: sidebarLogoPop 1.2s cubic-bezier(.4,2,.6,1);">Mahasiswa</h2>
+    </div>
+    <nav style="display:flex;flex-direction:column;gap:0.7rem;">
+      <button onclick="showSection('profil')" class="active"><span>📄</span> <span>Profil</span></button>
+      <button onclick="showSection('riwayat')"><span>📚</span> <span>Riwayat</span></button>
+      <button onclick="showSection('pesanan')"><span>📝</span> <span>Pesanan</span></button>
+      <button onclick="showSection('pembayaran')"><span>💳</span> <span>Pembayaran</span></button>
+      <button onclick="showSection('pengaturan')"><span>⚙️</span> <span>Pengaturan</span></button>
+      <button onclick="logout()"><span>🚪</span> <span>Logout</span></button>
+    </nav>
     <button class="menu-toggle" onclick="toggleSidebar()" style="display:none;margin-top:2rem;background:var(--primary);color:#fff;font-size:1.3rem;">☰ Menu</button>
+    <div style="margin-top:2.5rem;text-align:center;font-size:0.98em;color:#b3c2e0;opacity:0.7;">by <b>Renaldi 2025</b></div>
   </div>
+  <style>
+    @keyframes sidebarLogoPop {
+      0% { transform: scale(0.7) rotate(-10deg); opacity: 0; }
+      80% { transform: scale(1.08) rotate(2deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+  </style>
 <script>
 // Navbar pindah ke atas jika mobile
 function isTouchDevice() {
@@ -695,12 +751,14 @@ window.addEventListener('resize', moveNavbarToTop);
 @media (max-width: 600px) {
   .section, .card-profile, .info-box, input, textarea, select {
     padding: 0.8rem !important;
-    border-radius: 10px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 16px var(--card-shadow) !important;
   }
   .sidebar h2 { font-size: 1.3rem; }
   .sidebar button { font-size: 1rem; padding: 0.7rem 1rem; }
   .topbar h1 { font-size: 1.2rem; }
   .toggle-dark { font-size: 1rem; padding: 0.5rem 1rem; }
+  .btn { font-size: 1rem; padding: 0.7rem 1.2rem; border-radius: 18px; }
 }
 .sidebar .menu-toggle { display: none; }
 </style>
@@ -761,7 +819,6 @@ document.addEventListener('click', function(e) {
   </div>
 </div>
     <div class="topbar">
-      <h1>Dashboard</h1>
       <div class="toggle-dark" onclick="toggleTheme()">🌙 Mode</div>
     </div>
     <div id="profil" class="section active">
