@@ -7,98 +7,119 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f4; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #e0e7ff 0%, #f0fdfa 100%);
+      min-height: 100vh;
+    }
     .admin-dashboard {
       max-width: 1200px;
       margin: 40px auto;
       background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 4px 32px #4f8cff22, 0 1.5px 8px #0001;
+      border-radius: 22px;
+      box-shadow: 0 8px 40px #4f8cff33, 0 2px 12px #0001;
       overflow: hidden;
+      position: relative;
     }
     .dashboard-header {
-      background: #2563eb;
+      background: linear-gradient(90deg, #2563eb 60%, #4f8cff 100%);
       color: #fff;
-      padding: 18px 24px;
+      padding: 28px 32px 22px 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 2px 16px #2563eb22;
     }
     .dashboard-title {
-      font-size: 1.5rem;
-      font-weight: 700;
+      font-size: 2rem;
+      font-weight: 800;
       display: flex;
       align-items: center;
+      letter-spacing: 1px;
+      gap: 8px;
     }
     .dashboard-icon {
-      font-size: 1.8rem;
-      margin-right: 8px;
+      font-size: 2.2rem;
+      margin-right: 10px;
+      filter: drop-shadow(0 2px 8px #fff8);
     }
     .dashboard-stats {
       display: flex;
-      gap: 16px;
+      gap: 24px;
     }
     .stat-card {
-      background: #fff;
-      border-radius: 10px;
-      padding: 12px 16px;
-      box-shadow: 0 2px 12px #0002;
+      background: #f7faff;
+      border-radius: 14px;
+      padding: 18px 28px;
+      box-shadow: 0 2px 16px #4f8cff11;
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 140px;
+      border: 1.5px solid #e3e8f0;
     }
     .stat-label {
-      font-size: 0.9rem;
-      color: #666;
-      margin-bottom: 4px;
+      font-size: 1.05rem;
+      color: #2563eb;
+      margin-bottom: 6px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
     .stat-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #2563eb;
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: #0e1726;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px #4f8cff22;
     }
     .dashboard-main {
       display: flex;
-      padding: 24px;
-      gap: 24px;
+      padding: 32px 32px 28px 32px;
+      gap: 32px;
     }
     .dashboard-left {
       flex: 2;
     }
     .dashboard-right {
       flex: 1;
-      max-height: 400px;
+      max-height: 440px;
       overflow: auto;
     }
     h2 {
       text-align: center;
-      font-size: 2.1rem;
-      font-weight: 700;
+      font-size: 2.2rem;
+      font-weight: 800;
       color: #2563eb;
-      margin-bottom: 28px;
-      letter-spacing: 1px;
+      margin-bottom: 32px;
+      letter-spacing: 1.5px;
     }
     .info-box {
-      margin-bottom: 22px;
-      background: #f7faff;
-      border-radius: 10px;
-      padding: 14px 18px 10px 18px;
-      box-shadow: 0 1px 4px #4f8cff11;
+      margin-bottom: 26px;
+      background: linear-gradient(90deg, #f7faff 80%, #e0f2fe 100%);
+      border-radius: 14px;
+      padding: 18px 22px 14px 22px;
+      box-shadow: 0 2px 8px #4f8cff11;
+      border: 1.5px solid #e3e8f0;
     }
     label {
       display: block;
-      margin-bottom: 7px;
-      font-weight: 600;
+      margin-bottom: 9px;
+      font-weight: 700;
       color: #232946;
-      font-size: 1.08rem;
+      font-size: 1.13rem;
+      letter-spacing: 0.2px;
     }
     input[type="file"], input[type="text"], textarea, select {
       width: 100%;
-      padding: 10px 12px;
-      border-radius: 7px;
+      padding: 12px 14px;
+      border-radius: 9px;
       border: 1.5px solid #cfd8dc;
-      font-size: 1.05rem;
+      font-size: 1.09rem;
       background: #f7faff;
-      margin-bottom: 2px;
-      transition: border 0.2s;
+      margin-bottom: 4px;
+      transition: border 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 4px #4f8cff08;
     }
     input[type="file"] {
       background: #fff;
@@ -106,82 +127,106 @@
     input:focus, textarea:focus, select:focus {
       border: 1.5px solid #4f8cff;
       outline: none;
+      box-shadow: 0 2px 8px #4f8cff22;
     }
     button {
-      padding: 12px 26px;
+      padding: 14px 32px;
       border: none;
       background: linear-gradient(90deg,#4f8cff 60%,#7fffd4 100%);
       color: #fff;
-      border-radius: 7px;
-      font-size: 1.08rem;
-      font-weight: 600;
+      border-radius: 9px;
+      font-size: 1.13rem;
+      font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 2px 8px #4f8cff22;
+      box-shadow: 0 2px 12px #4f8cff22;
       transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+      letter-spacing: 0.5px;
     }
     button:hover {
       background: linear-gradient(90deg,#2563eb 60%,#4f8cff 100%);
-      box-shadow: 0 4px 16px #4f8cff33;
-      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 4px 24px #4f8cff33;
+      transform: translateY(-2px) scale(1.04);
     }
     .file-list {
-      margin-top: 28px;
+      margin-top: 32px;
     }
     .file-item {
-      background: #f7faff;
-      padding: 18px 18px 14px 18px;
-      border-radius: 13px;
-      margin-bottom: 16px;
+      background: linear-gradient(90deg, #f7faff 80%, #e0f2fe 100%);
+      padding: 22px 22px 16px 22px;
+      border-radius: 16px;
+      margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 12px #4f8cff11;
+      box-shadow: 0 2px 16px #4f8cff11;
       border: 1.5px solid #e3e8f0;
-      transition: box-shadow 0.2s, border 0.2s;
+      transition: box-shadow 0.2s, border 0.2s, transform 0.15s;
+      gap: 12px;
     }
     .file-item:hover {
-      box-shadow: 0 4px 24px #4f8cff22;
+      box-shadow: 0 6px 32px #4f8cff22;
       border: 1.5px solid #4f8cff44;
+      transform: translateY(-2px) scale(1.02);
     }
     .file-item span { word-break: break-all; }
     .file-icon {
-      font-size: 2.2em !important;
-      margin-right: 10px;
-      filter: drop-shadow(0 2px 8px #4f8cff33);
+      font-size: 2.6em !important;
+      margin-right: 14px;
+      filter: drop-shadow(0 2px 12px #4f8cff33);
     }
     .btn-download {
       background: linear-gradient(90deg,#22c55e 60%,#7fffd4 100%) !important;
       color: #fff !important;
       font-weight: 700;
-      font-size: 1.08rem;
-      border-radius: 7px;
-      padding: 10px 22px;
+      font-size: 1.13rem;
+      border-radius: 9px;
+      padding: 12px 28px;
       margin-right: 8px;
-      box-shadow: 0 2px 8px #22c55e33;
-      transition: background .2s, box-shadow .2s;
+      box-shadow: 0 2px 12px #22c55e33;
+      transition: background .2s, box-shadow .2s, transform 0.1s;
+      letter-spacing: 0.5px;
     }
     .btn-download:hover {
       background: linear-gradient(90deg,#16a34a 60%,#22c55e 100%) !important;
-      box-shadow:0 4px 16px #22c55e44;
+      box-shadow:0 4px 24px #22c55e44;
+      transform: translateY(-2px) scale(1.04);
     }
     .btn-delete {
       background: linear-gradient(90deg,#f44336 60%,#fca5a5 100%) !important;
       color: #fff !important;
       font-weight: 700;
-      font-size: 1.08rem;
-      border-radius: 7px;
-      padding: 10px 22px;
-      box-shadow:0 2px 8px #f4433633;
-      transition: background .2s, box-shadow .2s;
+      font-size: 1.13rem;
+      border-radius: 9px;
+      padding: 12px 28px;
+      box-shadow:0 2px 12px #f4433633;
+      transition: background .2s, box-shadow .2s, transform 0.1s;
+      letter-spacing: 0.5px;
     }
     .btn-delete:hover {
       background: linear-gradient(90deg,#b91c1c 60%,#f44336 100%) !important;
-      box-shadow:0 4px 16px #f4433644;
+      box-shadow:0 4px 24px #f4433644;
+      transform: translateY(-2px) scale(1.04);
+    }
+    @media (max-width: 900px) {
+      .dashboard-main {
+        flex-direction: column;
+        padding: 18px 6vw 18px 6vw;
+        gap: 18px;
+      }
+      .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+        padding: 22px 6vw 16px 6vw;
+      }
     }
     @media (max-width: 600px) {
-      .admin-container { padding: 12px 2vw 18px 2vw; }
-      .file-item { flex-direction: column; align-items: flex-start; }
+      .admin-dashboard { border-radius: 0; box-shadow: none; margin: 0; }
+      .dashboard-main { padding: 10px 2vw 16px 2vw; }
+      .dashboard-header { padding: 12px 2vw 12px 2vw; }
+      .file-item { flex-direction: column; align-items: flex-start; gap: 10px; }
       .file-item > div:last-child { margin-top: 12px; }
+      .info-box { padding: 12px 8px 10px 8px; }
     }
   </style>
 </head>
@@ -203,16 +248,14 @@
       }
       // Autocomplete NPM
       function setupNpmAutocomplete() {
-        const npmInput = document.getElementById('npm');
-        if (!npmInput) return;
-        npmInput.setAttribute('list', 'npmList');
-        let datalist = document.getElementById('npmList');
-        if (!datalist) {
-          datalist = document.createElement('datalist');
-          datalist.id = 'npmList';
-          npmInput.parentNode.appendChild(datalist);
+        const npmSelect = document.getElementById('npm');
+        if (!npmSelect) return;
+        const currentValue = npmSelect.value;
+        npmSelect.innerHTML = '<option value="">Pilih NPM Mahasiswa</option>' +
+          semuaMahasiswa.map(m => `<option value="${m.npm}">${m.npm} - ${m.nama ? m.nama : ''}</option>`).join('');
+        if (currentValue && semuaMahasiswa.some(m => m.npm === currentValue)) {
+          npmSelect.value = currentValue;
         }
-        datalist.innerHTML = semuaMahasiswa.map(m => `<option value="${m.npm}">${m.nama ? m.nama : ''}</option>`).join('');
       }
       // Tampilkan nama mahasiswa jika NPM ditemukan
       function showNamaMahasiswa() {
@@ -242,7 +285,9 @@
       <section class="dashboard-left">
         <div class="info-box">
           <label for="npm">Cari Berdasarkan NPM Mahasiswa</label>
-          <input type="text" id="npm" placeholder="Masukkan NPM Mahasiswa" oninput="updateTrackingIDList();showNamaMahasiswa()">
+          <select id="npm" onchange="updateTrackingIDList();showNamaMahasiswa()">
+            <option value="">Pilih NPM Mahasiswa</option>
+          </select>
           <div id="namaMahasiswaInfo" style="color:#2563eb;font-weight:600;margin-bottom:6px;"></div>
         </div>
         <div class="info-box" id="trackingIdBox" style="display:none">
@@ -261,7 +306,8 @@
     <div class="info-box" style="margin-top:0;">
       <h3 style="margin:0 0 12px 0;font-size:1.2em;color:#2563eb;">Riwayat Upload File Hasil</h3>
       <div id="riwayatUpload" style="max-height:400px;overflow:auto;"></div>
-      <button id="btnHapusSemuaRiwayat" style="margin-top:16px;background:#ccc;color:#888;cursor:not-allowed;" disabled>🗑️ Hapus Semua Riwayat</button>
+      <button id="btnHapusSemuaRiwayat" style="margin-top:16px;background:#f44336;color:#fff;cursor:pointer;" onclick="hapusSemuaRiwayat()">🗑️ Hapus Semua Riwayat</button>
+      <button id="btnHapusRiwayatNpm" style="margin-top:12px;background:#f44336;color:#fff;" onclick="hapusRiwayatNpm()">🗑️ Hapus Riwayat NPM Ini</button>
     </div>
   </section>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -347,7 +393,7 @@
       showFileList();
     }
 
-    document.getElementById('npm').addEventListener('input', updateTrackingIDList);
+    document.getElementById('npm').addEventListener('change', updateTrackingIDList);
     document.getElementById('trackingID').addEventListener('change', showFileList);
 
     // Tampilkan file hasil yang sudah diupload untuk tracking ID tertentu
@@ -364,9 +410,7 @@
       while (true) {
         const hasil = localStorage.getItem('hasil_' + npm + '_' + i);
         if (hasil) {
-          // Deteksi ekstensi dan ikon
-          let ext = '';
-          let icon = '📦';
+         
           const match = hasil.match(/^data:([^;]+);/);
           if (match) {
             const mime = match[1];
@@ -599,10 +643,20 @@
       reader.readAsDataURL(file);
     }
     function hapusFile(trackingID, idx) {
+      // Hapus file hasil secara permanen (termasuk semua key terkait trackingID/NPM)
       if (typeof idx === 'number') {
+        localStorage.removeItem('hasil_' + trackingID + '_' + idx);
+        // Juga hapus jika ada hasil_{trackingID}_{idx} (akses user)
         localStorage.removeItem('hasil_' + trackingID + '_' + idx);
       } else {
         localStorage.removeItem('hasil_' + trackingID);
+      }
+      // Hapus juga semua key lain yang mengandung trackingID ini (jika ada duplikat)
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key && key.includes(trackingID)) {
+          localStorage.removeItem(key);
+        }
       }
       showFileList();
       window.dispatchEvent(new Event('storage'));
