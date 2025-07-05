@@ -553,70 +553,36 @@
       background: var(--accent);
       color: var(--primary);
     }
-    /* Download Button Modern Style */
-    .btn-download {
-      background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 0.98rem;
-      padding: 7px 18px;
-      margin: 2px 0 2px 0;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 2px 8px var(--card-shadow);
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s, transform 0.15s;
-      outline: none;
-      position: relative;
-      overflow: hidden;
+    @media (max-width: 900px) {
+      .content { padding: 1.3rem 2vw 1.1rem 2vw; }
+      .statistics { flex-direction: column; gap: 1.7rem; }
+      .stat-card { margin: 0; }
     }
-    .btn-download:hover, .btn-download:focus {
-      background: linear-gradient(90deg, var(--accent) 60%, var(--primary) 100%);
-      color: #232946;
-      transform: scale(1.04);
-      box-shadow: 0 4px 16px var(--card-shadow);
-    }
-    .btn-download .download-icon {
-      font-size: 1.15em;
-      margin-right: 4px;
-      display: flex;
-      align-items: center;
-    }
-    .btn-download .download-label {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 120px;
-      display: inline-block;
-      vertical-align: middle;
-    }
-    @media (max-width: 600px) {
-      .btn-download .download-label {
-        max-width: 70px;
-        font-size: 0.93em;
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        gap: 0.2rem;
+        overflow-x: auto;
+        justify-content: space-around;
+        border-radius: 0 0 36px 36px;
+        min-height: unset;
+        padding: 1.1rem 0.5rem;
       }
-      .btn-download {
-        padding: 7px 10px;
-        font-size: 0.93rem;
+      .sidebar button {
+        flex: 1;
+        text-align: center;
+        padding: 1.1rem 0.5rem;
+        font-size: 1.05rem;
       }
-    }
-    .dark-mode .btn-download {
-      background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
-      color: #232946;
-      border: none;
-      box-shadow: 0 2px 8px rgba(79,140,255,0.18);
-    }
-    .dark-mode .btn-download:hover, .dark-mode .btn-download:focus {
-      background: linear-gradient(90deg, var(--accent) 60%, var(--primary) 100%);
-      color: #e0e7ff;
+      .content { padding: 1.1rem 2vw; }
+      .card-profile { padding: 1.3rem 0.5rem; }
     }
   </style>
 </head>
 <body>
-  <div class="sidebar" id="sidebar">
+  <div class="sidebar">
     <h2>👨‍🎓 Mahasiswa</h2>
     <button onclick="showSection('profil')" class="active">📄 Profil</button>
     <button onclick="showSection('riwayat')">📚 Riwayat</button>
@@ -624,74 +590,8 @@
     <button onclick="showSection('pembayaran')">💳 Pembayaran</button>
     <button onclick="showSection('pengaturan')">⚙️ Pengaturan</button>
     <button onclick="logout()">🚪 Logout</button>
-    <button class="menu-toggle" onclick="toggleSidebar()" style="display:none;margin-top:2rem;background:var(--primary);color:#fff;font-size:1.3rem;">☰ Menu</button>
-    <div style="margin-top:2.5rem;text-align:center;font-size:0.98em;color:#b3c2e0;opacity:0.7;">by <b>Renaldi 2025</b></div>
   </div>
-  <script>
-// Sidebar mobile toggle
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  sidebar.classList.toggle('visible');
-}
-// Tutup sidebar jika klik di luar sidebar pada mobile
-document.addEventListener('click', function(e) {
-  const sidebar = document.getElementById('sidebar');
-  if (window.innerWidth <= 700 && sidebar.classList.contains('visible')) {
-    if (!sidebar.contains(e.target) && !e.target.classList.contains('menu-toggle')) {
-      sidebar.classList.remove('visible');
-    }
-  }
-});
-</script>
-  <div class="content" id="mainContent">
-<style>
-@media (max-width: 900px) {
-  .sidebar {
-    position: fixed;
-    left: 0; top: 0; bottom: 0;
-    z-index: 1000;
-    height: 100vh;
-    transform: translateX(-100%);
-    border-radius: 0 36px 36px 0;
-    transition: transform 0.3s;
-    box-shadow: 0 8px 32px var(--card-shadow);
-  }
-  .sidebar.visible { transform: translateX(0); }
-  .menu-toggle { display: block !important; }
-  .content { padding: 1.2rem 2vw 1rem 2vw; }
-}
-@media (max-width: 600px) {
-  .section, .card-profile, .info-box, input, textarea, select {
-    padding: 0.8rem !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 16px var(--card-shadow) !important;
-  }
-  .sidebar h2 { font-size: 1.3rem; }
-  .sidebar button { font-size: 1rem; padding: 0.7rem 1rem; }
-  .topbar h1 { font-size: 1.2rem; }
-  .toggle-dark { font-size: 1rem; padding: 0.5rem 1rem; }
-  .btn { font-size: 1rem; padding: 0.7rem 1.2rem; border-radius: 18px; }
-}
-.sidebar .menu-toggle { display: none; }
-</style>
-<script>
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const main = document.getElementById('mainContent');
-  sidebar.classList.toggle('visible');
-  main.classList.toggle('open');
-}
-// Tutup sidebar jika klik di luar sidebar pada mobile
-document.addEventListener('click', function(e) {
-  const sidebar = document.getElementById('sidebar');
-  if (window.innerWidth <= 900 && sidebar.classList.contains('visible')) {
-    if (!sidebar.contains(e.target) && !e.target.classList.contains('menu-toggle')) {
-      sidebar.classList.remove('visible');
-      document.getElementById('mainContent').classList.remove('open');
-    }
-  }
-});
-</script>
+  <div class="content">
     <div id="pengaturan" class="section">
   <h2>⚙️ Pengaturan</h2>
   <label for="temaWarna">Warna Tema</label>
@@ -731,6 +631,7 @@ document.addEventListener('click', function(e) {
   </div>
 </div>
     <div class="topbar">
+      <h1>Dashboard</h1>
       <div class="toggle-dark" onclick="toggleTheme()">🌙 Mode</div>
     </div>
     <div id="profil" class="section active">
@@ -746,54 +647,11 @@ document.addEventListener('click', function(e) {
       </div>
     </div>
 
-<div id="riwayat" class="section">
-  <h2>📚 Riwayat Joki Tugas</h2>
-  <input type="text" placeholder="🔍 Cari tugas..." class="info-box" oninput="filterRiwayat()" id="searchRiwayat">
-  <div class="info-box" id="tabelRiwayat">Memuat data...</div>
-</div>
-<script>
-// Deteksi mobile dan update tampilan otomatis
-function isMobile() {
-  return window.innerWidth <= 700 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-}
-
-function updateMobileRiwayatTable() {
-  // Jika di mobile, ubah tabel riwayat menjadi card list
-  if (!isMobile()) return;
-  const box = document.getElementById('tabelRiwayat');
-  const table = box.querySelector('table');
-  if (!table) return;
-  const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent);
-  const rows = Array.from(table.querySelectorAll('tbody tr'));
-  let cards = '';
-  rows.forEach(tr => {
-    const tds = Array.from(tr.querySelectorAll('td'));
-    cards += `<div class='riwayat-card' style='margin-bottom:1.2rem;padding:1.1rem 1rem;background:var(--glass);border-radius:16px;box-shadow:0 2px 10px var(--card-shadow);display:flex;flex-direction:column;gap:0.5rem;'>`;
-    for (let i = 0; i < tds.length; i++) {
-      let label = headers[i];
-      let val = tds[i].innerHTML;
-      cards += `<div style='display:flex;align-items:center;gap:0.7em;'><span style='font-weight:600;min-width:70px;color:var(--primary);'>${label}:</span> <span>${val}</span></div>`;
-    }
-    cards += `</div>`;
-  });
-  box.innerHTML = cards;
-}
-
-// Jalankan saat halaman dimuat dan saat resize
-window.addEventListener('DOMContentLoaded', function() {
-  if (isMobile()) setTimeout(updateMobileRiwayatTable, 400);
-});
-window.addEventListener('resize', function() {
-  if (isMobile()) setTimeout(updateMobileRiwayatTable, 400);
-});
-
-// Jika riwayat diubah, update juga jika mobile
-const origTampilkanRiwayat = window.tampilkanRiwayat;
-window.tampilkanRiwayat = function(data) {
-  origTampilkanRiwayat(data);
-  if (isMobile()) setTimeout(updateMobileRiwayatTable, 100);
-};
-</script>
+    <div id="riwayat" class="section">
+      <h2>📚 Riwayat Joki Tugas</h2>
+      <input type="text" placeholder="🔍 Cari tugas..." class="info-box" oninput="filterRiwayat()" id="searchRiwayat">
+      <div class="info-box" id="tabelRiwayat">Memuat data...</div>
+    </div>
 
     <div id="pesanan" class="section">
       <h2>📝 Tambah Pesanan</h2>
@@ -1589,9 +1447,9 @@ function tampilkanRiwayat(data) {
             ext = (e === 'pdf') ? '📄' : (['png','jpg','jpeg','gif','bmp','webp'].includes(e) ? '🖼️' : '📦');
           }
           return `<button type='button' class='btn btn-download custom-download-btn' onclick="downloadFileUniversal('${encodeURIComponent(url)}','${encodeURIComponent(name)}')">
-            <span class='download-icon' style='font-size:1.3em;margin-right:6px;'>${ext}</span>
-            <span class='download-label' style='font-weight:600;'>Ambil Tugas</span>
-            <span class='download-filename' style='display:block;font-size:0.85em;color:#888;margin-top:2px;'>${name}</span>
+            <span class='download-icon' style='font-size:1.5em;margin-right:10px;transition:transform 0.2s;'>⬇️</span>
+            <span class='download-label' style='font-weight:700;font-size:1.08em;letter-spacing:0.5px;'>Ambil Tugas</span>
+            <span class='download-filename' style='display:block;font-size:0.90em;color:#4f8cff;margin-top:4px;'>${name}</span>
           </button>`;
         }).join('<br>');
       } else {
@@ -1613,16 +1471,62 @@ function tampilkanRiwayat(data) {
             ext = '📦';
           }
           downloadBtn = `<button type='button' class='btn btn-download custom-download-btn' onclick="downloadFileUniversal('${encodeURIComponent(hasil)}','${encodeURIComponent(name)}')">
-            <span class='download-icon' style='font-size:1.3em;margin-right:6px;'>${ext}</span>
-            <span class='download-label' style='font-weight:600;'>Ambil Tugas</span>
-            <span class='download-filename' style='display:block;font-size:0.85em;color:#888;margin-top:2px;'>${name}</span>
+            <span class='download-icon' style='font-size:1.5em;margin-right:10px;transition:transform 0.2s;'>⬇️</span>
+            <span class='download-label' style='font-weight:700;font-size:1.08em;letter-spacing:0.5px;'>Ambil Tugas</span>
+            <span class='download-filename' style='display:block;font-size:0.90em;color:#4f8cff;margin-top:4px;'>${name}</span>
           </button>`;
         } else {
           downloadBtn = `<span style='color:#aaa'>Belum Ada</span>`;
         }
       }
     }
-// Fungsi download universal agar tombol download bisa digunakan di semua perangkat
+// Tambahan efek animasi dan style modern untuk tombol ambil tugas
+const style = document.createElement('style');
+style.innerHTML = `
+.custom-download-btn {
+  background: linear-gradient(90deg, #4f8cff 60%, #7fffd4 100%) !important;
+  color: #232946 !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 0.45em 1em !important;
+  font-size: 0.93em !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(79,140,255,0.10) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  margin: 0.18em 0 !important;
+  min-width: 0;
+  min-height: 0;
+  transition: background 0.22s, transform 0.14s, box-shadow 0.14s;
+}
+.custom-download-btn:hover, .custom-download-btn:focus {
+  background: linear-gradient(90deg, #7fffd4 60%, #4f8cff 100%) !important;
+  color: #232946 !important;
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 8px 32px rgba(79,140,255,0.18) !important;
+}
+.custom-download-btn .download-icon {
+  font-size: 1.1em !important;
+  margin-right: 6px !important;
+  transition: transform 0.18s;
+}
+.custom-download-btn:hover .download-icon {
+  transform: scale(1.10) rotate(-10deg);
+}
+body.dark-mode .custom-download-btn {
+  background: linear-gradient(90deg, #232946 60%, #4f8cff 100%) !important;
+  color: #e0e7ff !important;
+  font-size: 0.93em !important;
+  padding: 0.45em 1em !important;
+  border-radius: 12px !important;
+}
+body.dark-mode .custom-download-btn:hover, body.dark-mode .custom-download-btn:focus {
+  background: linear-gradient(90deg, #4f8cff 60%, #7fffd4 100%) !important;
+  color: #232946 !important;
+}
+`;
+document.head.appendChild(style);
 function downloadFileUniversal(urlEnc, nameEnc) {
   try {
     const url = decodeURIComponent(urlEnc);
@@ -1813,4 +1717,17 @@ window.addEventListener('storage', function(e) {
 </script>
 <!-- End Chatbot -->
 </body>
+<script>
+// Update sidebar avatar and name from user data
+window.addEventListener('DOMContentLoaded', function() {
+  try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+      document.getElementById('sidebarNama').textContent = user.nama || 'Mahasiswa';
+      document.getElementById('sidebarAvatar').src = user.foto || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nama||'Mahasiswa')}`;
+    }
+  } catch(e) {}
+});
+</script>
 </html>
+
