@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard - Joki Tugas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    :root {
+      --primary: #4f8cff;
+      --secondary: #7fffd4;
+      --success: #28a745;
+      --danger: #dc3545;
+      --warning: #ffc107;
+      --info: #17a2b8;
+      --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --dark-bg: linear-gradient(135deg, #232946 0%, #121629 100%);
+      --glass: rgba(255,255,255,0.85);
+      --glass-dark: rgba(35,41,70,0.85);
+      --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', 'Roboto', 'Inter', Arial, sans-serif;
+      background: var(--bg);
+      color: #232946;
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: all 0.5s ease;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(180deg, var(--primary) 0%, #2563eb 100%);
+      color: white;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      border-top-right-radius: 32px;
+      border-bottom-right-radius: 32px;
+      box-shadow: 0 20px 60px rgba(79, 140, 255, 0.3);
+      min-height: 100vh;
+      position: relative;
+      z-index: 10;
+      transition: all 0.5s ease;
+    }
+
+    .sidebar h2 {
+      color: #fff;
+      margin-bottom: 2.5rem;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar h2::before {
+      content: '🚀';
+      font-size: 2.5rem;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      border-radius: 16px;
+      margin-bottom: 1.2rem;
+      font-size: 1.15rem;
+      font-weight: 600;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      transform: translateX(8px) scale(1.02);
+    }
+
+    .nav-item i {
+      margin-right: 16px;
+      font-size: 1.3rem;
+      width: 24px;
+      text-align: center;
+    }
+
+    .main {
+      flex: 1;
+      padding: 2.5rem 3vw;
+      overflow-y: auto;
+      background: transparent;
+      transition: all 0.3s ease;
+      min-height: 100vh;
+    }
+
+    .dark-mode {
+      background: var(--dark-bg) !important;
+      color: #eaeaea !important;
+    }
+
+    .dark-mode .sidebar {
+      background: linear-gradient(180deg, #121629 0%, #232946 100%) !important;
+    }
+
+    .dark-mode .sidebar h2 {
+      color: var(--secondary) !important;
+    }
+
+    .dark-mode .section, .dark-mode .stat-card {
+      background: var(--glass-dark) !important;
+      color: #eaeaea !important;
+      box-shadow: 0 20px 60px rgba(35,41,70,0.3) !important;
+    }
+
+    .dark-mode h1, .dark-mode h2 {
+      color: var(--secondary) !important;
+    }
+
+    .dark-mode input, .dark-mode select, .dark-mode textarea {
+      background: rgba(35,41,70,0.8) !important;
+      color: #eaeaea !important;
+      border-color: rgba(127,255,212,0.3) !important;
+    }
+
+    .dark-mode table {
+      background: var(--glass-dark) !important;
+    }
+
+    .dark-mode th {
+      background: linear-gradient(135deg, #121629 0%, #232946 100%) !important;
+      color: var(--secondary) !important;
+    }
+
+    .dark-mode td {
+      color: #eaeaea !important;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 3rem;
+      font-size: 3.2rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--primary) 0%, #2563eb 50%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 2px;
+      position: relative;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: var(--gradient-3);
+      border-radius: 2px;
+    }
+
+    .statistics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: var(--glass);
+      padding: 2.5rem 2rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(79, 140, 255, 0.15);
+      text-align: center;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-3);
+    }
+
+    .stat-card:nth-child(1)::before { background: var(--gradient-1); }
+    .stat-card:nth-child(2)::before { background: var(--gradient-2); }
+    .stat-card:nth-child(3)::before { background: var(--gradient-3); }
+    .stat-card:nth-child(4)::before { background: var(--gradient-4); }
+
+    .stat-card:hover {
+      transform: translateY(-8px) scale(1.05);
+      box-shadow: 0 30px 80px rgba(79, 140, 255, 0.25);
+    }
+
+    .stat-card .icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .stat-card:nth-child(1) .icon { color: #667eea; }
+    .stat-card:nth-child(2) .icon { color: #f5576c; }
+    .stat-card:nth-child(3) .icon { color: #00f2fe; }
+    .stat-card:nth-child(4) .icon { color: #38f9d7; }
+
+    .stat-card h3 {
+      margin: 0;
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card p {
+      margin: 0;
+      font-size: 1.2rem;
+      color: #666;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .section {
+      background: var(--glass);
+      padding: 2.5rem;
+      border-radius: 20px;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 20px 60px rgba(79, 140, 255, 0.15);
+      transition: all 0.4s ease;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.2);
+      position: relative;
+    }
+
+    .section:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 30px 80px rgba(79, 140, 255, 0.2);
+    }
+
+    h2 {
+      margin-top: 0;
+      margin-bottom: 2rem;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      border-left: 5px solid var(--primary);
+      padding-left: 20px;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dark-toggle {
+      margin-bottom: 2rem;
+      background: linear-gradient(135deg, #232946 0%, #121629 100%);
+      color: #fff;
+      padding: 14px 24px;
+      border-radius: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255,255,255,0.1);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .dark-toggle:hover {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: #232946;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(79, 140, 255, 0.3);
+    }
+
+    input[type="text"], input[type="file"], select, textarea {
+      width: 100%;
+      padding: 16px 20px;
+      margin: 0.8rem 0 1.5rem 0;
+      border: 2px solid rgba(79, 140, 255, 0.2);
+      border-radius: 12px;
+      font-size: 1.1rem;
+      background: rgba(255,255,255,0.9);
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    input[type="text"]:focus, input[type="file"]:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      background: #fff;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      margin: 4px;
+      position: relative;
+      overflow: hidden;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, #2563eb 100%);
+      color: white;
+      box-shadow: 0 8px 25px rgba(79, 140, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 15px 40px rgba(79, 140, 255, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success) 0%, #20c997 100%);
+      color: white;
+      box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-success:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 15px 40px rgba(40, 167, 69, 0.4);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger) 0%, #e74c3c 100%);
+      color: white;
+      box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 15px 40px rgba(220, 53, 69, 0.4);
+    }
+
+    .btn-download {
+      background: linear-gradient(135deg, var(--info) 0%, #20c997 100%);
+      color: white;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 1.5rem;
+      background: var(--glass);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 16px 20px;
+      font-size: 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    th {
+      background: linear-gradient(135deg, var(--primary) 0%, #2563eb 100%);
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    tr:hover {
+      background: rgba(79, 140, 255, 0.05);
+      transform: scale(1.01);
+      transition: all 0.2s ease;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin: 2px;
+    }
+
+    .badge-primary { background: rgba(79, 140, 255, 0.1); color: var(--primary); }
+    .badge-success { background: rgba(40, 167, 69, 0.1); color: var(--success); }
+    .badge-danger { background: rgba(220, 53, 69, 0.1); color: var(--danger); }
+    .badge-warning { background: rgba(255, 193, 7, 0.1); color: var(--warning); }
+    .badge-info { background: rgba(23, 162, 184, 0.1); color: var(--info); }
+
+    .file-item {
+      background: var(--glass);
+      padding: 2rem;
+      border-radius: 16px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .file-item:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 20px 50px rgba(79, 140, 255, 0.15);
+    }
+
+    .file-icon {
+      font-size: 3rem;
+      margin-right: 20px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+    }
+
+    .spinner {
+      border: 4px solid rgba(79, 140, 255, 0.1);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .revenue-breakdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .revenue-item {
+      background: var(--glass);
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .revenue-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: linear-gradient(135deg, var(--primary) 0%, #2563eb 100%);
+      color: white;
+      padding: 16px 24px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-bottom: 2rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      box-shadow: 0 8px 25px rgba(79, 140, 255, 0.3);
+    }
+
+    @media(max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        z-index: 1000;
+        height: 100vh;
+        transform: translateX(-100%);
+        border-radius: 0 32px 32px 0;
+      }
+
+      .sidebar.visible {
+        transform: translateX(0);
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 1.5rem 4vw;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      .statistics {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .file-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar" id="sidebar">
+    <h2>Dashboard</h2>
+    <div class="nav-item active" onclick="showSection('overview')">
+      <i class="fas fa-chart-line"></i> <span>Overview</span>
+    </div>
+    <div class="nav-item" onclick="showSection('pesanan')">
+      <i class="fas fa-box"></i> <span>Data Pesanan</span>
+    </div>
+    <div class="nav-item" onclick="showSection('pembayaran')">
+      <i class="fas fa-credit-card"></i> <span>Data Pembayaran</span>
+    </div>
+    <div class="nav-item" onclick="showSection('upload')">
+      <i class="fas fa-upload"></i> <span>Upload Hasil</span>
+    </div>
+    <div class="nav-item" onclick="showSection('revenue')">
+      <i class="fas fa-chart-pie"></i> <span>Analisis Pendapatan</span>
+    </div>
+    <div class="dark-toggle" onclick="toggleDark()">
+      <i class="fas fa-moon"></i> Dark Mode
+    </div>
+  </div>
+
+  <div class="main" id="main">
+    <button class="menu-toggle" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i> Menu
+    </button>
+
+    <h1><i class="fas fa-rocket"></i> Admin Dashboard - Joki Tugas</h1>
+
+    <!-- Overview Section -->
+    <div id="overview-section" class="fade-in">
+      <div class="statistics">
+        <div class="stat-card">
+          <i class="fas fa-box icon"></i>
+          <h3 id="totalOrders">0</h3>
+          <p>Total Pesanan</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-credit-card icon"></i>
+          <h3 id="totalPayments">0</h3>
+          <p>Total Pembayaran</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-file-alt icon"></i>
+          <h3 id="totalFiles">0</h3>
+          <p>Total File Hasil</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-money-bill-wave icon"></i>
+          <h3 id="totalRevenue">Rp 0</h3>
+          <p>Total Pendapatan</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><i class="fas fa-chart-bar"></i> Ringkasan Aktivitas</h2>
+        <div class="revenue-breakdown">
+          <div class="revenue-item">
+            <h4>Pembayaran Terverifikasi</h4>
+            <h3 id="verifiedRevenue" style="color: var(--success);">Rp 0</h3>
+          </div>
+          <div class="revenue-item">
+            <h4>Pembayaran Pending</h4>
+            <h3 id="pendingRevenue" style="color: var(--warning);">Rp 0</h3>
+          </div>
+          <div class="revenue-item">
+            <h4>Pembayaran Gagal</h4>
+            <h3 id="failedRevenue" style="color: var(--danger);">Rp 0</h3>
+          </div>
+          <div class="revenue-item">
+            <h4>Pesanan Selesai</h4>
+            <h3 id="completedOrders" style="color: var(--info);">0</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pesanan Section -->
+    <div id="pesanan-section" class="section" style="display:none;">
+      <h2><i class="fas fa-box"></i> Data Pesanan</h2>
+      <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+        <input type="text" placeholder="🔍 Cari pesanan..." oninput="filterPesanan()" id="searchPesanan" style="flex: 1; min-width: 250px;">
+        <select onchange="filterPesanan()" id="filterStatus" style="min-width: 200px;">
+          <option value="">📂 Semua Status</option>
+          <option value="Menunggu">⏳ Menunggu</option>
+          <option value="Proses">⚙️ Proses</option>
+          <option value="Selesai">✅ Selesai</option>
+          <option value="Batal">❌ Batal</option>
+        </select>
+      </div>
+      <div id="tabelPesanan"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- Pembayaran Section -->
+    <div id="pembayaran-section" class="section" style="display:none;">
+      <h2><i class="fas fa-credit-card"></i> Data Pembayaran</h2>
+      <input type="text" placeholder="🔍 Cari pembayaran..." oninput="filterPembayaran()" id="searchPembayaran" style="margin-bottom: 2rem;">
+      <div id="tabelPembayaran"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- Upload Section -->
+    <div id="upload-section" class="section" style="display:none;">
+      <h2><i class="fas fa-upload"></i> Upload File Hasil</h2>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <div>
+          <label for="npm"><i class="fas fa-user"></i> Cari Berdasarkan NPM Mahasiswa</label>
+          <select id="npm" onchange="updateTrackingIDList();showNamaMahasiswa()">
+            <option value="">Pilih NPM Mahasiswa</option>
+          </select>
+          <div id="namaMahasiswaInfo" style="color:var(--primary);font-weight:600;margin-top:8px;"></div>
+        </div>
+        
+        <div id="trackingIdBox" style="display:none">
+          <label for="trackingID"><i class="fas fa-barcode"></i> Pilih Tracking ID Pesanan</label>
+          <select id="trackingID" onchange="showFileList()"></select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 2rem;">
+        <label for="hasilFile"><i class="fas fa-file-upload"></i> Upload File Hasil (PDF/Gambar/ZIP/DOC)</label>
+        <input type="file" id="hasilFile" accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.webp,.zip,.doc,.docx,.xls,.xlsx,.txt">
+      </div>
+
+      <button class="btn-primary" onclick="uploadHasil()">
+        <i class="fas fa-cloud-upload-alt"></i> Upload & Simpan
+      </button>
+
+      <div id="uploadStatus" style="margin-top:1rem;color:var(--primary);font-weight:600;"></div>
+
+      <div class="file-list" id="fileList" style="margin-top: 2rem;"></div>
+
+      <div style="margin-top: 3rem;">
+        <h3><i class="fas fa-history"></i> Riwayat Upload File Hasil</h3>
+        <div id="riwayatUpload" style="max-height:400px;overflow:auto;margin-top:1rem;"></div>
+        <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="btn-danger" onclick="hapusSemuaRiwayat()">
+            <i class="fas fa-trash-alt"></i> Hapus Semua Riwayat
+          </button>
+          <button class="btn-danger" onclick="hapusRiwayatNpm()">
+            <i class="fas fa-user-times"></i> Hapus Riwayat NPM Ini
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue Analysis Section -->
+    <div id="revenue-section" class="section" style="display:none;">
+      <h2><i class="fas fa-chart-pie"></i> Analisis Pendapatan</h2>
+      
+      <div class="statistics">
+        <div class="stat-card">
+          <i class="fas fa-money-bill-wave icon"></i>
+          <h3 id="totalRevenueDetail">Rp 0</h3>
+          <p>Total Pendapatan</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-check-circle icon"></i>
+          <h3 id="verifiedRevenueDetail">Rp 0</h3>
+          <p>Pendapatan Terverifikasi</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-clock icon"></i>
+          <h3 id="pendingRevenueDetail">Rp 0</h3>
+          <p>Pendapatan Pending</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-percentage icon"></i>
+          <h3 id="revenueGrowth">+15%</h3>
+          <p>Pertumbuhan Bulanan</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><i class="fas fa-chart-line"></i> Tren Pendapatan</h2>
+        <div class="revenue-breakdown">
+          <div class="revenue-item">
+            <h4>Rata-rata per Pesanan</h4>
+            <h3 id="avgOrderValue" style="color: var(--info);">Rp 0</h3>
+          </div>
+          <div class="revenue-item">
+            <h4>Pesanan Bulan Ini</h4>
+            <h3 id="monthlyOrders" style="color: var(--primary);">0</h3>
+          </div>
+          <div class="revenue-item">
+            <h4>Pendapatan Bulan Ini</h4>
+            <h3 id="monthlyRevenue" style="color: var(--success);">Rp 0</h3>
+          </div>
+          <div class="revenue-item">
+            <h4>Tingkat Konversi</h4>
+            <h3 id="conversionRate" style="color: var(--warning);">0%</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const BASE_URL = "https://script.google.com/macros/s/AKfycbzvm0RO0IdDk9dgowz7d56ZjOQUejBxjkiUzyOBaRAq5bbmQuLKoGa55sx_DCVW-ghd/exec";
+
+    // Global variables
+    let semuaPesanan = [];
+    let semuaPembayaran = [];
+    let semuaMahasiswa = [];
+    let npmToNama = {};
+
+    // Dark mode toggle
+    function toggleDark() {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+      
+      const toggle = document.querySelector('.dark-toggle');
+      if (document.body.classList.contains("dark-mode")) {
+        toggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+      } else {
+        toggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+      }
+    }
+
+    // Load saved theme
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark-mode");
+      document.querySelector('.dark-toggle').innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+    }
+
+    // Sidebar toggle for mobile
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("visible");
+    }
+
+    // Section navigation
+    function showSection(sectionName) {
+      // Hide all sections
+      const sections = ['overview-section', 'pesanan-section', 'pembayaran-section', 'upload-section', 'revenue-section'];
+      sections.forEach(section => {
+        document.getElementById(section).style.display = 'none';
+      });
+
+      // Remove active class from all nav items
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      // Show selected section
+      document.getElementById(sectionName + '-section').style.display = 'block';
+      
+      // Add active class to clicked nav item
+      event.target.closest('.nav-item').classList.add('active');
+
+      // Load data for specific sections
+      if (sectionName === 'pesanan') {
+        loadPesanan();
+      } else if (sectionName === 'pembayaran') {
+        loadPembayaran();
+      } else if (sectionName === 'upload') {
+        fetchMahasiswa();
+      } else if (sectionName === 'revenue') {
+        calculateRevenue();
+      }
+    }
+
+    // Load orders data
+    async function loadPesanan() {
+      document.getElementById("tabelPesanan").innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+      try {
+        const res = await fetch(`${BASE_URL}?action=getSemuaPesanan`);
+        const data = await res.json();
+        semuaPesanan = data;
+        tampilkanPesanan(data);
+        updateDashboardStats();
+      } catch (e) {
+        document.getElementById("tabelPesanan").innerHTML = "❌ Gagal memuat data pesanan.";
+      }
+    }
+
+    // Display orders table
+    function tampilkanPesanan(data) {
+      let html = `<p style="margin-bottom: 1rem; color: var(--primary); font-weight: 600;">Menampilkan ${data.length} pesanan</p>`;
+      html += `<table>
+        <thead>
+          <tr>
+            <th><i class="fas fa-hashtag"></i> ID</th>
+            <th><i class="fas fa-user"></i> Nama</th>
+            <th><i class="fas fa-tag"></i> Jenis</th>
+            <th><i class="fas fa-calendar"></i> Deadline</th>
+            <th><i class="fas fa-info-circle"></i> Status</th>
+            <th><i class="fas fa-cogs"></i> Aksi</th>
+          </tr>
+        </thead>
+        <tbody>`;
+      
+      data.forEach(r => {
+        const statusClass = r.status === 'Selesai' ? 'badge-success' : 
+                           r.status === 'Proses' ? 'badge-warning' : 
+                           r.status === 'Batal' ? 'badge-danger' : 'badge-primary';
+        
+        html += `<tr>
+          <td><span class="badge badge-primary">${r.trackingID || 'N/A'}</span></td>
+          <td><span class="badge badge-success">${r.nama || 'N/A'}</span></td>
+          <td><span class="badge badge-warning">${r.jenis || 'N/A'}</span></td>
+          <td><span class="badge badge-danger">${r.deadline || 'N/A'}</span></td>
+          <td><span class="badge ${statusClass}">${r.status || 'Menunggu'}</span></td>
+          <td>
+            <select class="btn-primary" style="padding: 8px 12px; font-size: 0.9rem;" onchange="ubahStatus('${r.trackingID}', this.value)">
+              <option value="Menunggu" ${r.status === "Menunggu" ? "selected" : ""}>⏳ Menunggu</option>
+              <option value="Proses" ${r.status === "Proses" ? "selected" : ""}>⚙️ Proses</option>
+              <option value="Selesai" ${r.status === "Selesai" ? "selected" : ""}>✅ Selesai</option>
+              <option value="Batal" ${r.status === "Batal" ? "selected" : ""}>❌ Batal</option>
+            </select>
+          </td>
+        </tr>`;
+      });
+      html += `</tbody></table>`;
+      document.getElementById("tabelPesanan").innerHTML = html;
+    }
+
+    // Filter orders
+    function filterPesanan() {
+      const query = document.getElementById("searchPesanan").value.toLowerCase();
+      const status = document.getElementById("filterStatus").value;
+      
+      const filtered = semuaPesanan.filter(r => {
+        const matchesQuery = (r.trackingID && r.trackingID.toLowerCase().includes(query)) ||
+                            (r.nama && r.nama.toLowerCase().includes(query)) ||
+                            (r.jenis && r.jenis.toLowerCase().includes(query)) ||
+                            (r.status && r.status.toLowerCase().includes(query));
+        const matchesStatus = status === "" || r.status === status;
+        return matchesQuery && matchesStatus;
+      });
+      
+      tampilkanPesanan(filtered);
+    }
+
+    // Change order status
+    async function ubahStatus(id, status) {
+      try {
+        const konfirmasi = await Swal.fire({
+          title: 'Ubah Status?',
+          text: `Yakin ingin mengubah status menjadi "${status}"?`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, ubah!',
+          cancelButtonText: 'Batal',
+          confirmButtonColor: '#4f8cff',
+          cancelButtonColor: '#dc3545'
+        });
+        
+        if (konfirmasi.isConfirmed) {
+          await fetch(`${BASE_URL}?action=ubahStatusPesanan&trackingID=${id}&status=${status}`);
+          Swal.fire({
+            icon: 'success',
+            title: 'Status berhasil diperbarui!',
+            toast: true,
+            position: 'top-end',
+            timer: 3000,
+            showConfirmButton: false
+          });
+          loadPesanan();
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal mengubah status',
+          text: 'Terjadi kesalahan saat mengubah status pesanan.'
+        });
+      }
+    }
+
+    // Load payments data
+    async function loadPembayaran() {
+      document.getElementById("tabelPembayaran").innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+      try {
+        const res = await fetch(`${BASE_URL}?action=getSemuaPembayaran`);
+        const data = await res.json();
+        semuaPembayaran = data;
+        tampilkanPembayaran(data);
+        updateDashboardStats();
+      } catch (e) {
+        document.getElementById("tabelPembayaran").innerHTML = "❌ Gagal memuat data pembayaran.";
+      }
+    }
+
+    // Display payments table
+    function tampilkanPembayaran(data) {
+      let html = `<p style="margin-bottom: 1rem; color: var(--primary); font-weight: 600;">Menampilkan ${data.length} pembayaran</p>`;
+      html += `<table>
+        <thead>
+          <tr>
+            <th><i class="fas fa-hashtag"></i> ID</th>
+            <th><i class="fas fa-id-card"></i> NPM</th>
+            <th><i class="fas fa-money-bill"></i> Jumlah</th>
+            <th><i class="fas fa-credit-card"></i> Metode</th>
+            <th><i class="fas fa-info-circle"></i> Status</th>
+            <th><i class="fas fa-cogs"></i> Aksi</th>
+          </tr>
+        </thead>
+        <tbody>`;
+      
+      data.forEach(p => {
+        const statusClass = p.status === 'Terverifikasi' ? 'badge-success' : 
+                           p.status === 'Pending' ? 'badge-warning' : 'badge-danger';
+        
+        html += `<tr>
+          <td><span class="badge badge-primary">${p.id || 'N/A'}</span></td>
+          <td><span class="badge badge-info">${p.npm || 'N/A'}</span></td>
+          <td><span class="badge badge-success">Rp ${parseInt(p.jumlah || 0).toLocaleString('id-ID')}</span></td>
+          <td><span class="badge badge-warning">${p.metode || 'N/A'}</span></td>
+          <td><span class="badge ${statusClass}">${p.status || 'Pending'}</span></td>
+          <td>
+            <button class="btn-success" style="padding: 8px 16px; font-size: 0.9rem; margin: 2px;" onclick="verifikasi('${p.id}', 'Terverifikasi')">
+              <i class="fas fa-check"></i> Verifikasi
+            </button>
+            <button class="btn-danger" style="padding: 8px 16px; font-size: 0.9rem; margin: 2px;" onclick="verifikasi('${p.id}', 'Gagal')">
+              <i class="fas fa-times"></i> Tolak
+            </button>
+          </td>
+        </tr>`;
+      });
+      html += `</tbody></table>`;
+      document.getElementById("tabelPembayaran").innerHTML = html;
+    }
+
+    // Filter payments
+    function filterPembayaran() {
+      const query = document.getElementById("searchPembayaran").value.toLowerCase();
+      
+      const filtered = semuaPembayaran.filter(p => {
+        return (p.id && String(p.id).toLowerCase().includes(query)) ||
+               (p.npm && String(p.npm).toLowerCase().includes(query)) ||
+               (p.metode && String(p.metode).toLowerCase().includes(query)) ||
+               (p.status && String(p.status).toLowerCase().includes(query));
+      });
+      
+      tampilkanPembayaran(filtered);
+    }
+
+    // Verify payment
+    async function verifikasi(id, status) {
+      try {
+        const konfirmasi = await Swal.fire({
+          title: status === 'Terverifikasi' ? 'Verifikasi Pembayaran?' : 'Tolak Pembayaran?',
+          text: `Yakin ingin mengubah status pembayaran menjadi "${status}"?`,
+          icon: status === 'Terverifikasi' ? 'question' : 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, lanjutkan!',
+          cancelButtonText: 'Batal',
+          confirmButtonColor: status === 'Terverifikasi' ? '#28a745' : '#dc3545',
+          cancelButtonColor: '#6c757d'
+        });
+        
+        if (konfirmasi.isConfirmed) {
+          await fetch(`${BASE_URL}?action=verifikasiPembayaran&id=${id}&status=${status}`);
+          Swal.fire({
+            icon: 'success',
+            title: 'Pembayaran berhasil diperbarui!',
+            toast: true,
+            position: 'top-end',
+            timer: 3000,
+            showConfirmButton: false
+          });
+          loadPembayaran();
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal memperbarui pembayaran',
+          text: 'Terjadi kesalahan saat memperbarui status pembayaran.'
+        });
+      }
+    }
+
+    // Fetch student data
+    async function fetchMahasiswa() {
+      try {
+        const res = await fetch(`${BASE_URL}?action=getSemuaPesanan`);
+        const data = await res.json();
+        semuaMahasiswa = data;
+        npmToNama = {};
+        data.forEach(m => { 
+          if(m.npm) npmToNama[m.npm] = m.nama; 
+        });
+        setupNpmAutocomplete();
+      } catch(e) { 
+        console.log('Gagal fetch data mahasiswa', e); 
+      }
+    }
+
+    // Setup NPM autocomplete
+    function setupNpmAutocomplete() {
+      const npmSelect = document.getElementById('npm');
+      if (!npmSelect) return;
+      
+      const currentValue = npmSelect.value;
+      npmSelect.innerHTML = '<option value="">Pilih NPM Mahasiswa</option>' +
+        semuaMahasiswa.map(m => `<option value="${m.npm}">${m.npm} - ${m.nama || ''}</option>`).join('');
+      
+      if (currentValue && semuaMahasiswa.some(m => m.npm === currentValue)) {
+        npmSelect.value = currentValue;
+      }
+    }
+
+    // Show student name
+    function showNamaMahasiswa() {
+      const npm = document.getElementById('npm').value.trim();
+      const namaDiv = document.getElementById('namaMahasiswaInfo');
+      if (npmToNama[npm]) {
+        namaDiv.innerHTML = `<i class="fas fa-user"></i> Nama: ${npmToNama[npm]}`;
+      } else {
+        namaDiv.textContent = '';
+      }
+    }
+
+    // Update tracking ID list
+    function updateTrackingIDList() {
+      const npm = document.getElementById('npm').value.trim();
+      const trackingIdBox = document.getElementById('trackingIdBox');
+      const select = document.getElementById('trackingID');
+      
+      select.innerHTML = '';
+      
+      if (!npm) {
+        trackingIdBox.style.display = 'none';
+        showFileList();
+        return;
+      }
+      
+      const ids = findTrackingIDsByNPM(npm);
+      if (ids.length === 0) {
+        trackingIdBox.style.display = 'none';
+        showFileList();
+        return;
+      }
+      
+      ids.forEach(id => {
+        const opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = id;
+        select.appendChild(opt);
+      });
+      
+      trackingIdBox.style.display = 'block';
+      showFileList();
+    }
+
+    // Find tracking IDs by NPM
+    function findTrackingIDsByNPM(npm) {
+      const ids = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('riwayat_')) {
+          try {
+            const data = JSON.parse(localStorage.getItem(key));
+            if (data && data.npm && data.npm === npm && data.trackingID) {
+              ids.push(data.trackingID);
+            }
+          } catch {}
+        }
+      }
+      return [...new Set(ids)];
+    }
+
+    // Upload file
+    function uploadHasil() {
+      const npm = document.getElementById('npm').value.trim();
+      const fileInput = document.getElementById('hasilFile');
+      const statusDiv = document.getElementById('uploadStatus');
+      
+      if (!npm) { 
+        statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Masukkan NPM terlebih dahulu!'; 
+        return; 
+      }
+      
+      if (!fileInput.files[0]) { 
+        statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Pilih file hasil terlebih dahulu!'; 
+        return; 
+      }
+      
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        let i = 0;
+        while (localStorage.getItem('hasil_' + npm + '_' + i)) i++;
+        localStorage.setItem('hasil_' + npm + '_' + i, e.target.result);
+        
+        const trackingID = document.getElementById('trackingID') && document.getElementById('trackingID').value;
+        if (trackingID) {
+          localStorage.setItem('hasil_' + trackingID + '_' + i, e.target.result);
+        }
+        
+        statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> File berhasil diupload!';
+        fileInput.value = '';
+        showFileList();
+        showRiwayatUpload();
+        updateDashboardStats();
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'File berhasil diupload!',
+          toast: true,
+          position: 'top-end',
+          timer: 3000,
+          showConfirmButton: false
+        });
+      };
+      
+      reader.onerror = function() { 
+        statusDiv.innerHTML = '<i class="fas fa-times-circle"></i> Gagal membaca file!'; 
+      };
+      
+      reader.readAsDataURL(file);
+    }
+
+    // Show file list
+    function showFileList() {
+      const npm = document.getElementById('npm').value.trim();
+      const fileListDiv = document.getElementById('fileList');
+      
+      fileListDiv.innerHTML = '';
+      
+      if (!npm) {
+        fileListDiv.innerHTML = '<p style="text-align: center; color: #666; font-style: italic;"><i class="fas fa-info-circle"></i> Pilih NPM mahasiswa untuk melihat file hasil.</p>';
+        return;
+      }
+      
+      let i = 0, found = false;
+      let html = '';
+      
+      while (true) {
+        const hasil = localStorage.getItem('hasil_' + npm + '_' + i);
+        if (hasil) {
+          let ext = 'FILE', icon = '📦';
+          const match = hasil.match(/^data:([^;]+);/);
+          if (match) {
+            const mime = match[1];
+            if (mime.includes('pdf')) { ext = 'PDF'; icon = '📄'; }
+            else if (mime.match(/image/)) { ext = 'IMG'; icon = '🖼️'; }
+            else if (mime.includes('zip')) { ext = 'ZIP'; icon = '🗜️'; }
+            else if (mime.includes('msword') || mime.includes('doc')) { ext = 'DOC'; icon = '📃'; }
+            else if (mime.includes('excel') || mime.includes('sheet')) { ext = 'XLS'; icon = '📊'; }
+            else if (mime.includes('plain')) { ext = 'TXT'; icon = '📄'; }
+          }
+          
+          html += `<div class='file-item fade-in'>
+            <div style='display:flex;align-items:center;gap:12px;'>
+              <span class='file-icon'>${icon}</span>
+              <div>
+                <div style='font-weight:700;font-size:1.1rem;color:var(--primary);'>File_${i+1}.${ext}</div>
+                <div style='font-size:0.9rem;color:#666;margin-top:4px;'>
+                  <i class="fas fa-calendar"></i> ${new Date().toLocaleDateString('id-ID')}
+                </div>
+              </div>
+            </div>
+            <div style='display:flex;gap:8px;'>
+              <button class='btn-download' onclick="downloadFile('hasil_${npm}_${i}','File_${i+1}.${ext}')">
+                <i class="fas fa-download"></i> Download
+              </button>
+              <button class='btn-danger' onclick="hapusFile('${npm}',${i})">
+                <i class="fas fa-trash"></i> Hapus
+              </button>
+            </div>
+          </div>`;
+          found = true;
+          i++;
+        } else break;
+      }
+      
+      if (!found) {
+        html = '<p style="text-align: center; color: #666; font-style: italic; padding: 2rem;"><i class="fas fa-folder-open"></i> Belum ada file hasil untuk NPM ini.</p>';
+      }
+      
+      fileListDiv.innerHTML = html;
+      showRiwayatUpload();
+    }
+
+    // Show upload history
+    function showRiwayatUpload() {
+      let rows = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        let match = key.match(/^hasil_([A-Za-z0-9]+)_(\d+)$/);
+        if (match) {
+          const id = match[1];
+          const idx = match[2];
+          const data = localStorage.getItem(key);
+          
+          let nama = `File_${parseInt(idx) + 1}`;
+          let ext = '';
+          const m = data.match(/^data:([^;]+);/);
+          if (m) {
+            const mime = m[1];
+            if (mime.includes('pdf')) ext = '.pdf';
+            else if (mime.includes('png')) ext = '.png';
+            else if (mime.includes('jpeg')) ext = '.jpg';
+            else if (mime.includes('zip')) ext = '.zip';
+            else if (mime.includes('msword')) ext = '.doc';
+            else if (mime.includes('vnd.openxmlformats-officedocument.wordprocessingml.document')) ext = '.docx';
+            else if (mime.includes('plain')) ext = '.txt';
+          }
+          
+          rows.push(`<tr>
+            <td><span class="badge badge-primary">${id}</span></td>
+            <td><span class="badge badge-info">${nama + ext}</span></td>
+            <td>
+              <button class='btn-download' onclick="downloadFile('${key}','${nama + ext}')">
+                <i class="fas fa-download"></i>
+              </button>
+            </td>
+          </tr>`);
+        }
+      }
+      
+      if (rows.length === 0) {
+        document.getElementById('riwayatUpload').innerHTML = '<p style="text-align: center; color: #666; font-style: italic;"><i class="fas fa-history"></i> Belum ada riwayat upload file hasil.</p>';
+      } else {
+        document.getElementById('riwayatUpload').innerHTML = `
+          <table style="font-size: 0.95rem;">
+            <thead>
+              <tr>
+                <th><i class="fas fa-id-card"></i> NPM/ID</th>
+                <th><i class="fas fa-file"></i> Nama File</th>
+                <th><i class="fas fa-download"></i> Download</th>
+              </tr>
+            </thead>
+            <tbody>${rows.join('')}</tbody>
+          </table>`;
+      }
+    }
+
+    // Download file
+    function downloadFile(key, name) {
+      const data = localStorage.getItem(key);
+      if (!data) {
+        Swal.fire({
+          icon: 'error',
+          title: 'File tidak ditemukan!',
+          text: 'File yang diminta tidak ada atau telah dihapus.'
+        });
+        return;
+      }
+      
+      try {
+        const arr = data.split(",");
+        if (arr.length > 1) {
+          const mime = (arr[0].match(/:(.*?);/)||[])[1]||'';
+          const bstr = atob(arr[1]);
+          let n = bstr.length;
+          const u8arr = new Uint8Array(n);
+          while(n--){u8arr[n]=bstr.charCodeAt(n);}
+          const blob = new Blob([u8arr], {type: mime});
+          const blobUrl = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.setAttribute('download', name);
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            a.remove();
+            window.URL.revokeObjectURL(blobUrl);
+          }, 500);
+          return;
+        }
+      } catch {}
+      
+      const a = document.createElement('a');
+      a.href = data;
+      a.setAttribute('download', name);
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => a.remove(), 500);
+    }
+
+    // Delete file
+    function hapusFile(npm, idx) {
+      Swal.fire({
+        title: 'Hapus File?',
+        text: 'File yang dihapus tidak dapat dikembalikan!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if (typeof idx === 'number') {
+            localStorage.removeItem('hasil_' + npm + '_' + idx);
+          } else {
+            localStorage.removeItem('hasil_' + npm);
+          }
+          
+          showFileList();
+          updateDashboardStats();
+          
+          Swal.fire({
+            icon: 'success',
+            title: 'File berhasil dihapus!',
+            toast: true,
+            position: 'top-end',
+            timer: 3000,
+            showConfirmButton: false
+          });
+        }
+      });
+    }
+
+    // Delete all history
+    function hapusSemuaRiwayat() {
+      Swal.fire({
+        title: 'Hapus Semua Riwayat?',
+        text: 'Semua file hasil akan dihapus permanen!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, hapus semua!',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const keysToRemove = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('hasil_')) keysToRemove.push(key);
+          }
+          keysToRemove.forEach(k => localStorage.removeItem(k));
+          
+          showFileList();
+          showRiwayatUpload();
+          updateDashboardStats();
+          
+          Swal.fire({
+            icon: 'success',
+            title: 'Semua riwayat berhasil dihapus!',
+            toast: true,
+            position: 'top-end',
+            timer: 3000,
+            showConfirmButton: false
+          });
+        }
+      });
+    }
+
+    // Delete NPM history
+    function hapusRiwayatNpm() {
+      const npm = document.getElementById('npm').value.trim();
+      if (!npm) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Pilih NPM terlebih dahulu!',
+          text: 'Silakan pilih NPM mahasiswa yang ingin dihapus riwayatnya.'
+        });
+        return;
+      }
+
+      Swal.fire({
+        title: `Hapus Riwayat NPM ${npm}?`,
+        text: 'Semua file hasil untuk NPM ini akan dihapus permanen!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const keysToRemove = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('hasil_' + npm)) keysToRemove.push(key);
+          }
+          keysToRemove.forEach(k => localStorage.removeItem(k));
+          
+          showFileList();
+          showRiwayatUpload();
+          updateDashboardStats();
+          
+          Swal.fire({
+            icon: 'success',
+            title: `Riwayat NPM ${npm} berhasil dihapus!`,
+            toast: true,
+            position: 'top-end',
+            timer: 3000,
+            showConfirmButton: false
+          });
+        }
+      });
+    }
+
+    // Calculate revenue
+    function calculateRevenue() {
+      let totalRevenue = 0;
+      let verifiedRevenue = 0;
+      let pendingRevenue = 0;
+      let failedRevenue = 0;
+
+      semuaPembayaran.forEach(payment => {
+        const amount = parseInt(payment.jumlah || 0);
+        totalRevenue += amount;
+        
+        if (payment.status === 'Terverifikasi') {
+          verifiedRevenue += amount;
+        } else if (payment.status === 'Pending') {
+          pendingRevenue += amount;
+        } else {
+          failedRevenue += amount;
+        }
+      });
+
+      document.getElementById('totalRevenueDetail').textContent = `Rp ${totalRevenue.toLocaleString('id-ID')}`;
+      document.getElementById('verifiedRevenueDetail').textContent = `Rp ${verifiedRevenue.toLocaleString('id-ID')}`;
+      document.getElementById('pendingRevenueDetail').textContent = `Rp ${pendingRevenue.toLocaleString('id-ID')}`;
+
+      // Calculate additional metrics
+      const avgOrderValue = semuaPembayaran.length > 0 ? totalRevenue / semuaPembayaran.length : 0;
+      const conversionRate = semuaPesanan.length > 0 ? (semuaPembayaran.filter(p => p.status === 'Terverifikasi').length / semuaPesanan.length * 100) : 0;
+
+      document.getElementById('avgOrderValue').textContent = `Rp ${Math.round(avgOrderValue).toLocaleString('id-ID')}`;
+      document.getElementById('conversionRate').textContent = `${conversionRate.toFixed(1)}%`;
+      document.getElementById('monthlyOrders').textContent = semuaPesanan.length;
+      document.getElementById('monthlyRevenue').textContent = `Rp ${verifiedRevenue.toLocaleString('id-ID')}`;
+    }
+
+    // Update dashboard statistics
+    function updateDashboardStats() {
+      // Count files
+      let totalFiles = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('hasil_')) totalFiles++;
+      }
+
+      // Calculate revenue
+      let totalRevenue = 0;
+      let verifiedRevenue = 0;
+      let pendingRevenue = 0;
+      let failedRevenue = 0;
+      let completedOrders = 0;
+
+      semuaPembayaran.forEach(payment => {
+        const amount = parseInt(payment.jumlah || 0);
+        totalRevenue += amount;
+        
+        if (payment.status === 'Terverifikasi') {
+          verifiedRevenue += amount;
+        } else if (payment.status === 'Pending') {
+          pendingRevenue += amount;
+        } else {
+          failedRevenue += amount;
+        }
+      });
+
+      semuaPesanan.forEach(order => {
+        if (order.status === 'Selesai') {
+          completedOrders++;
+        }
+      });
+
+      // Update all stat elements
+      document.getElementById('totalOrders').textContent = semuaPesanan.length;
+      document.getElementById('totalPayments').textContent = semuaPembayaran.length;
+      document.getElementById('totalFiles').textContent = totalFiles;
+      document.getElementById('totalRevenue').textContent = `Rp ${totalRevenue.toLocaleString('id-ID')}`;
+      
+      document.getElementById('verifiedRevenue').textContent = `Rp ${verifiedRevenue.toLocaleString('id-ID')}`;
+      document.getElementById('pendingRevenue').textContent = `Rp ${pendingRevenue.toLocaleString('id-ID')}`;
+      document.getElementById('failedRevenue').textContent = `Rp ${failedRevenue.toLocaleString('id-ID')}`;
+      document.getElementById('completedOrders').textContent = completedOrders;
+    }
+
+    // Initialize dashboard
+    async function initDashboard() {
+      try {
+        // Load all data
+        await loadPesanan();
+        await loadPembayaran();
+        await fetchMahasiswa();
+        
+        // Update stats
+        updateDashboardStats();
+        calculateRevenue();
+        
+        // Show file list if on upload section
+        showFileList();
+        showRiwayatUpload();
+      } catch (error) {
+        console.error('Error initializing dashboard:', error);
+      }
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      initDashboard();
+      
+      // Close sidebar when clicking outside on mobile
+      document.addEventListener('click', function(event) {
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.querySelector('.menu-toggle');
+        
+        if (window.innerWidth <= 768 && 
+            !sidebar.contains(event.target) && 
+            !menuToggle.contains(event.target) && 
+            sidebar.classList.contains('visible')) {
+          sidebar.classList.remove('visible');
+        }
+      });
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+      const sidebar = document.getElementById('sidebar');
+      if (window.innerWidth > 768) {
+        sidebar.classList.remove('visible');
+      }
+    });
+
+    // Storage event listener for real-time updates
+    window.addEventListener('storage', function() {
+      updateDashboardStats();
+      showFileList();
+      showRiwayatUpload();
+    });
+  </script>
+</body>
+</html>
