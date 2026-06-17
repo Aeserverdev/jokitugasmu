@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ GHOST PROTOCOL ] — World Class Hacker Gallery</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #060610;
+    --matrix: #00ff41;
+    --matrix-dim: #00aa2b;
+    --matrix-glow: rgba(0,255,65,0.15);
+    --breach: #ff0040;
+    --breach-dim: #aa0028;
+    --silver: #c0c0d0;
+    --navy: #0d0d1a;
+    --glass: rgba(0,255,65,0.04);
+    --border: rgba(0,255,65,0.2);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--void);
+    color: var(--matrix);
+    font-family: 'JetBrains Mono', monospace;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed;
+    width: 20px; height: 20px;
+    border: 1px solid var(--matrix);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s;
+    mix-blend-mode: difference;
+  }
+  .cursor-dot {
+    position: fixed;
+    width: 4px; height: 4px;
+    background: var(--matrix);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* MATRIX RAIN CANVAS */
+  #matrix-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    opacity: 0.06;
+  }
+
+  /* SCANLINE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* NOISE */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.4;
+  }
+
+  /* LAYOUT */
+  .page { position: relative; z-index: 2; }
+
+  /* ======= NAV ======= */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background: rgba(6,6,16,0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+  }
+
+  .nav-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    color: var(--matrix);
+    text-shadow: 0 0 20px var(--matrix);
+  }
+  .nav-logo span { color: var(--breach); }
+
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    color: var(--matrix-dim);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: color 0.3s, text-shadow 0.3s;
+  }
+  .nav-links a:hover {
+    color: var(--matrix);
+    text-shadow: 0 0 10px var(--matrix);
+  }
+
+  .nav-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    color: var(--matrix-dim);
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    background: var(--matrix);
+    border-radius: 50%;
+    animation: pulse-dot 1.5s infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--matrix); }
+    50% { opacity: 0.3; box-shadow: none; }
+  }
+
+  /* ======= HERO ======= */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.5em;
+    color: var(--breach);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    animation: flicker 3s infinite;
+  }
+
+  .hero-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: 0.05em;
+    color: var(--matrix);
+    text-shadow:
+      0 0 20px rgba(0,255,65,0.8),
+      0 0 60px rgba(0,255,65,0.3),
+      0 0 120px rgba(0,255,65,0.1);
+    margin-bottom: 1rem;
+  }
+
+  .hero-title .glitch {
+    position: relative;
+    display: inline-block;
+  }
+  .hero-title .glitch::before,
+  .hero-title .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+  }
+  .hero-title .glitch::before {
+    color: var(--breach);
+    animation: glitch1 2.5s infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+  }
+  .hero-title .glitch::after {
+    color: #00ffff;
+    animation: glitch2 2.5s infinite;
+    clip-path: polygon(0 66%, 100% 66%, 100% 100%, 0 100%);
+  }
+
+  @keyframes glitch1 {
+    0%, 90%, 100% { transform: translate(0); }
+    92% { transform: translate(-3px, 1px); }
+    94% { transform: translate(3px, -1px); }
+    96% { transform: translate(-2px, 2px); }
+    98% { transform: translate(2px, -2px); }
+  }
+  @keyframes glitch2 {
+    0%, 90%, 100% { transform: translate(0); }
+    92% { transform: translate(3px, -1px); }
+    94% { transform: translate(-3px, 1px); }
+    96% { transform: translate(2px, -2px); }
+    98% { transform: translate(-2px, 2px); }
+  }
+
+  .hero-subtitle {
+    font-size: clamp(0.8rem, 2vw, 1rem);
+    color: var(--silver);
+    letter-spacing: 0.15em;
+    max-width: 600px;
+    margin: 0 auto 2.5rem;
+    opacity: 0.7;
+  }
+
+  .terminal-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0,255,65,0.05);
+    border: 1px solid var(--border);
+    padding: 0.5rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--matrix);
+    margin-bottom: 3rem;
+  }
+  .terminal-prompt { color: var(--breach); }
+  .terminal-cursor {
+    display: inline-block;
+    width: 8px; height: 14px;
+    background: var(--matrix);
+    animation: blink 0.8s step-end infinite;
+    vertical-align: middle;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 3rem;
+  }
+  .stat {
+    text-align: center;
+    border-left: 1px solid var(--border);
+    padding-left: 2rem;
+  }
+  .stat:first-child { border-left: none; padding-left: 0; }
+  .stat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--matrix);
+    text-shadow: 0 0 20px var(--matrix-glow);
+    display: block;
+  }
+  .stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--matrix-dim);
+    text-transform: uppercase;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--matrix-dim);
+    animation: float 2s ease-in-out infinite;
+  }
+  .scroll-arrow {
+    width: 20px; height: 20px;
+    border-right: 1px solid var(--matrix-dim);
+    border-bottom: 1px solid var(--matrix-dim);
+    transform: rotate(45deg);
+  }
+  @keyframes float { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(6px); } }
+
+  /* ======= SECTION HEADER ======= */
+  .section { padding: 5rem 2rem; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+  .section-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    color: var(--breach);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--breach), var(--border), transparent);
+  }
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: var(--matrix);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+  .section-desc {
+    font-size: 0.8rem;
+    color: var(--matrix-dim);
+    letter-spacing: 0.1em;
+    max-width: 600px;
+  }
+
+  /* ======= HACKERS SECTION ======= */
+  #hackers { background: var(--navy); }
+
+  .hackers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hacker-card {
+    background: rgba(0,255,65,0.02);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, background 0.3s;
+    cursor: default;
+  }
+  .hacker-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(to right, transparent, var(--matrix), transparent);
+    transform: scaleX(0);
+    transition: transform 0.4s;
+  }
+  .hacker-card:hover::before { transform: scaleX(1); }
+  .hacker-card:hover {
+    border-color: var(--matrix);
+    background: rgba(0,255,65,0.04);
+    box-shadow: 0 0 30px rgba(0,255,65,0.08), inset 0 0 30px rgba(0,255,65,0.02);
+  }
+
+  .hacker-rank {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    color: var(--breach);
+    letter-spacing: 0.2em;
+    background: rgba(255,0,64,0.1);
+    border: 1px solid rgba(255,0,64,0.3);
+    padding: 0.2rem 0.5rem;
+  }
+
+  .hacker-handle {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--matrix);
+    margin-bottom: 0.25rem;
+    text-shadow: 0 0 10px rgba(0,255,65,0.3);
+  }
+  .hacker-nation {
+    font-size: 0.65rem;
+    color: var(--matrix-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .hacker-desc {
+    font-size: 0.72rem;
+    color: var(--silver);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+    opacity: 0.7;
+  }
+  .hacker-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .tag {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--matrix-dim);
+    border: 1px solid var(--border);
+    padding: 0.15rem 0.5rem;
+    text-transform: uppercase;
+  }
+  .tag.red { color: var(--breach); border-color: rgba(255,0,64,0.3); }
+  .tag.cyan { color: #00ffff; border-color: rgba(0,255,255,0.3); }
+
+  .hacker-bar {
+    margin-top: 1rem;
+    height: 2px;
+    background: rgba(0,255,65,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .hacker-bar-fill {
+    height: 100%;
+    background: var(--matrix);
+    box-shadow: 0 0 8px var(--matrix);
+    animation: bar-load 1.5s ease-out forwards;
+  }
+  @keyframes bar-load { from { width: 0; } }
+
+  /* ======= GALLERY SECTION ======= */
+  #gallery { background: var(--void); }
+
+  .gallery-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .gallery-count {
+    font-size: 0.7rem;
+    color: var(--matrix-dim);
+    letter-spacing: 0.2em;
+  }
+  .gallery-count span { color: var(--matrix); font-weight: 600; }
+
+  .upload-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: 1px solid var(--matrix);
+    color: var(--matrix);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .upload-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: rgba(0,255,65,0.1);
+    transition: left 0.3s;
+  }
+  .upload-btn:hover::before { left: 0; }
+  .upload-btn:hover {
+    box-shadow: 0 0 15px rgba(0,255,65,0.2);
+    text-shadow: 0 0 8px var(--matrix);
+  }
+  #file-input { display: none; }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .gallery-item {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: rgba(0,255,65,0.02);
+    cursor: pointer;
+    transition: border-color 0.3s;
+  }
+  .gallery-item:hover { border-color: var(--matrix); }
+
+  .gallery-item img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s, filter 0.4s;
+    filter: saturate(0.8) contrast(1.05);
+  }
+  .gallery-item:hover img {
+    transform: scale(1.05);
+    filter: saturate(1) contrast(1.1) brightness(0.9);
+  }
+
+  .gallery-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(6,6,16,0.9) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1rem;
+  }
+  .gallery-item:hover .gallery-overlay { opacity: 1; }
+
+  .gallery-item-meta {
+    font-size: 0.65rem;
+    color: var(--matrix-dim);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.25rem;
+  }
+  .gallery-item-name {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--matrix);
+  }
+
+  .gallery-item-delete {
+    position: absolute;
+    top: 0.5rem; right: 0.5rem;
+    background: rgba(255,0,64,0.8);
+    border: none;
+    color: white;
+    width: 24px; height: 24px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .gallery-item:hover .gallery-item-delete {
+    display: flex;
+    opacity: 1;
+  }
+
+  /* SCANLINE on gallery items */
+  .gallery-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 3px,
+      rgba(0,255,65,0.015) 3px, rgba(0,255,65,0.015) 4px
+    );
+    pointer-events: none;
+  }
+
+  .gallery-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 5rem 2rem;
+    border: 1px dashed var(--border);
+    color: var(--matrix-dim);
+  }
+  .gallery-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+  }
+  .gallery-empty p { font-size: 0.8rem; letter-spacing: 0.1em; }
+
+  /* ======= LIGHTBOX ======= */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(6,6,16,0.95);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+  }
+  .lightbox.active { display: flex; }
+
+  .lightbox-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    border: 1px solid var(--border);
+    box-shadow: 0 0 60px rgba(0,255,65,0.1);
+  }
+  .lightbox-content img {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    display: block;
+    filter: saturate(0.9);
+  }
+  .lightbox-close {
+    position: absolute;
+    top: -2.5rem; right: 0;
+    background: none;
+    border: none;
+    color: var(--breach);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+  .lightbox-info {
+    position: absolute;
+    bottom: -2rem; left: 0;
+    font-size: 0.65rem;
+    color: var(--matrix-dim);
+    letter-spacing: 0.1em;
+  }
+
+  /* ======= FEATURES SECTION ======= */
+  #features { background: var(--navy); }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .feature-card {
+    border: 1px solid var(--border);
+    padding: 2rem;
+    position: relative;
+    background: var(--glass);
+    transition: all 0.3s;
+    overflow: hidden;
+  }
+  .feature-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 1px;
+    background: var(--matrix);
+    transition: width 0.4s;
+  }
+  .feature-card:hover::after { width: 100%; }
+  .feature-card:hover {
+    border-color: var(--matrix-dim);
+    box-shadow: 0 0 20px rgba(0,255,65,0.05);
+  }
+
+  .feature-icon {
+    font-size: 1.5rem;
+    margin-bottom: 1.2rem;
+    filter: drop-shadow(0 0 10px var(--matrix));
+  }
+  .feature-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--matrix);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+  }
+  .feature-desc {
+    font-size: 0.72rem;
+    color: var(--silver);
+    line-height: 1.8;
+    opacity: 0.7;
+  }
+  .feature-badge {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--breach);
+    border: 1px solid rgba(255,0,64,0.3);
+    padding: 0.2rem 0.5rem;
+    text-transform: uppercase;
+  }
+
+  /* ======= TICKER ======= */
+  .ticker-wrap {
+    background: rgba(255,0,64,0.08);
+    border-top: 1px solid rgba(255,0,64,0.2);
+    border-bottom: 1px solid rgba(255,0,64,0.2);
+    padding: 0.6rem 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .ticker-label {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: var(--breach);
+    color: white;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    font-weight: 600;
+    z-index: 2;
+  }
+  .ticker-track {
+    display: flex;
+    gap: 3rem;
+    animation: ticker 30s linear infinite;
+    padding-left: 8rem;
+    white-space: nowrap;
+  }
+  .ticker-item {
+    font-size: 0.7rem;
+    color: var(--breach);
+    letter-spacing: 0.15em;
+  }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ======= FOOTER ======= */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--matrix-dim);
+    letter-spacing: 0.2em;
+  }
+  footer span { color: var(--matrix); }
+
+  /* ======= ADMIN PANEL ======= */
+  .admin-indicator {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    z-index: 150;
+  }
+  .admin-btn {
+    background: rgba(255,0,64,0.1);
+    border: 1px solid rgba(255,0,64,0.4);
+    color: var(--breach);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.3s;
+  }
+  .admin-btn:hover {
+    background: rgba(255,0,64,0.2);
+    box-shadow: 0 0 15px rgba(255,0,64,0.3);
+  }
+
+  .admin-panel {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: var(--navy);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    z-index: 300;
+    width: 90%;
+    max-width: 500px;
+    display: none;
+    opacity: 0;
+    transition: all 0.3s;
+    box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 30px rgba(0,255,65,0.05);
+  }
+  .admin-panel.active {
+    display: block;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .admin-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(6,6,16,0.8);
+    z-index: 250;
+    display: none;
+    backdrop-filter: blur(4px);
+  }
+  .admin-overlay.active { display: block; }
+
+  .admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .admin-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    color: var(--breach);
+    letter-spacing: 0.1em;
+  }
+  .admin-close {
+    background: none;
+    border: none;
+    color: var(--matrix-dim);
+    cursor: pointer;
+    font-size: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .admin-close:hover { color: var(--breach); }
+
+  .admin-input-group { margin-bottom: 1rem; }
+  .admin-label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--matrix-dim);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .admin-input, .admin-textarea {
+    width: 100%;
+    background: rgba(0,255,65,0.03);
+    border: 1px solid var(--border);
+    color: var(--matrix);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .admin-input:focus, .admin-textarea:focus { border-color: var(--matrix); }
+  .admin-textarea { height: 80px; resize: vertical; }
+
+  .admin-upload-zone {
+    border: 1px dashed var(--border);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .admin-upload-zone:hover {
+    border-color: var(--matrix);
+    background: rgba(0,255,65,0.03);
+  }
+  .admin-upload-zone input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%; height: 100%;
+  }
+  .upload-zone-text { font-size: 0.7rem; color: var(--matrix-dim); letter-spacing: 0.15em; }
+  .upload-zone-text span { color: var(--matrix); }
+
+  .admin-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-top: 1rem;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+  .admin-preview-img {
+    aspect-ratio: 1;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    filter: saturate(0.7);
+  }
+
+  .admin-submit {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(0,255,65,0.1), rgba(0,255,65,0.05));
+    border: 1px solid var(--matrix);
+    color: var(--matrix);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 1rem;
+  }
+  .admin-submit:hover {
+    background: rgba(0,255,65,0.15);
+    box-shadow: 0 0 20px rgba(0,255,65,0.2);
+    text-shadow: 0 0 8px var(--matrix);
+  }
+
+  /* ======= ANIMATIONS ======= */
+  @keyframes flicker {
+    0%, 97%, 100% { opacity: 1; }
+    98% { opacity: 0.3; }
+    99% { opacity: 0.8; }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Toast notification */
+  .toast {
+    position: fixed;
+    bottom: 2rem; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(0,255,65,0.1);
+    border: 1px solid var(--matrix);
+    color: var(--matrix);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    padding: 0.7rem 1.5rem;
+    z-index: 500;
+    transition: transform 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .hero-stats { gap: 1.5rem; }
+    .stat { padding-left: 1rem; }
+    .hackers-grid, .gallery-grid, .features-grid { grid-template-columns: 1fr; }
+    nav { padding: 1rem; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursor-dot"></div>
+
+<!-- Matrix Rain -->
+<canvas id="matrix-canvas"></canvas>
+
+<div class="page">
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">[ <span>GHOST</span> PROTOCOL ]</div>
+    <ul class="nav-links">
+      <li><a href="#hackers">Hackers</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#features">Features</a></li>
+    </ul>
+    <div class="nav-status">
+      <div class="status-dot"></div>
+      <span>SISTEM AKTIF</span>
+    </div>
+  </nav>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap" style="position:fixed;top:60px;left:0;right:0;z-index:90;">
+    <div class="ticker-label">BREACH</div>
+    <div class="ticker-track" id="ticker">
+      <span class="ticker-item">⚠ ZERO-DAY EXPLOIT DETECTED — CVE-2024-9999</span>
+      <span class="ticker-item">◈ ANONYMOUS GROUP MENCURI 2.3TB DATA PENTAGON</span>
+      <span class="ticker-item">⚡ OPERATION BLACKOUT — 47 SERVER DOWN</span>
+      <span class="ticker-item">◈ HACKER INDONESIA MASUK DAFTAR TOP 100 DUNIA</span>
+      <span class="ticker-item">⚠ RANSOMWARE BARU MENYERANG 150 NEGARA</span>
+      <span class="ticker-item">◈ FBI GAGAL TANGKAP PHANTOM HACKER SELAMA 8 TAHUN</span>
+      <span class="ticker-item">⚡ NSA FIREWALL BERHASIL DI-BYPASS</span>
+      <!-- duplicate for seamless loop -->
+      <span class="ticker-item">⚠ ZERO-DAY EXPLOIT DETECTED — CVE-2024-9999</span>
+      <span class="ticker-item">◈ ANONYMOUS GROUP MENCURI 2.3TB DATA PENTAGON</span>
+      <span class="ticker-item">⚡ OPERATION BLACKOUT — 47 SERVER DOWN</span>
+      <span class="ticker-item">◈ HACKER INDONESIA MASUK DAFTAR TOP 100 DUNIA</span>
+      <span class="ticker-item">⚠ RANSOMWARE BARU MENYERANG 150 NEGARA</span>
+      <span class="ticker-item">◈ FBI GAGAL TANGKAP PHANTOM HACKER SELAMA 8 TAHUN</span>
+      <span class="ticker-item">⚡ NSA FIREWALL BERHASIL DI-BYPASS</span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">// classified — level omega clearance required</div>
+    <h1 class="hero-title">
+      <span class="glitch" data-text="GHOST">GHOST</span><br>
+      <span style="font-size:0.6em;letter-spacing:0.3em;color:var(--silver);opacity:0.6">PROTOCOL</span>
+    </h1>
+    <p class="hero-subtitle">Arsip rahasia para peretas kelas dunia. Identitas terenkripsi. Aksi tercatat. Sejarah tersembunyi.</p>
+
+    <div class="terminal-line">
+      <span class="terminal-prompt">root@ghost:~$</span>
+      <span id="typed-text"></span>
+      <span class="terminal-cursor"></span>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num" data-target="1337">0</span>
+        <span class="stat-label">Operasi</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-target="47">0</span>
+        <span class="stat-label">Negara Target</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-target="99">0</span>
+        <span class="stat-label">% Anonim</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-target="0">0</span>
+        <span class="stat-label">Tertangkap</span>
+      </div>
+    </div>
+
+    <div class="scroll-hint">
+      <span>SCROLL</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- HACKERS SECTION -->
+  <section class="section fade-in" id="hackers">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div class="section-header">
+        <span class="section-tag">// Daftar Target</span>
+        <div class="section-line"></div>
+      </div>
+      <h2 class="section-title">Hacker Kelas Dunia</h2>
+      <p class="section-desc">Individu-individu yang telah mengubah sejarah dunia digital melalui keahlian mereka.</p>
+    </div>
+
+    <div class="hackers-grid" style="margin-top:2rem;">
+
+      <div class="hacker-card fade-in">
+        <div class="hacker-rank">RANK #01</div>
+        <div class="hacker-handle">Kevin Mitnick</div>
+        <div class="hacker-nation">🇺🇸 Amerika Serikat</div>
+        <div class="hacker-desc">Dijuluki "The World's Most Wanted Computer Criminal" oleh FBI. Ahli social engineering dan phone phreaking yang pernah menyusup sistem Pentagon, Nokia, dan Motorola.</div>
+        <div class="hacker-tags">
+          <span class="tag red">MOST WANTED</span>
+          <span class="tag">Social Eng</span>
+          <span class="tag">Phreaking</span>
+        </div>
+        <div class="hacker-bar"><div class="hacker-bar-fill" style="width:98%"></div></div>
+      </div>
+
+      <div class="hacker-card fade-in">
+        <div class="hacker-rank">RANK #02</div>
+        <div class="hacker-handle">Anonymous</div>
+        <div class="hacker-nation">🌐 Global Collective</div>
+        <div class="hacker-desc">Hacktivist group tanpa pemimpin yang dikenal dengan serangan DDoS masif terhadap pemerintah, korporasi, dan institusi yang dianggap korup di seluruh dunia.</div>
+        <div class="hacker-tags">
+          <span class="tag red">HACKTIVIST</span>
+          <span class="tag cyan">DDoS</span>
+          <span class="tag">Doxing</span>
+        </div>
+        <div class="hacker-bar"><div class="hacker-bar-fill" style="width:95%"></div></div>
+      </div>
+
+      <div class="hacker-card fade-in">
+        <div class="hacker-rank">RANK #03</div>
+        <div class="hacker-handle">Adrian Lamo</div>
+        <div class="hacker-nation">🇺🇸 Amerika Serikat</div>
+        <div class="hacker-desc">"The Homeless Hacker" yang berhasil menyusup jaringan Microsoft, Yahoo, dan New York Times hanya menggunakan koneksi WiFi di kedai kopi.</div>
+        <div class="hacker-tags">
+          <span class="tag">Network Pen</span>
+          <span class="tag cyan">SQL Inject</span>
+        </div>
+        <div class="hacker-bar"><div class="hacker-bar-fill" style="width:87%"></div></div>
+      </div>
+
+      <div class="hacker-card fade-in">
+        <div class="hacker-rank">RANK #04</div>
+        <div class="hacker-handle">Gary McKinnon</div>
+        <div class="hacker-nation">🇬🇧 Inggris</div>
+        <div class="hacker-desc">Melakukan "the biggest military computer hack of all time" — menyusup ke 97 komputer militer AS termasuk NASA, mencari bukti UFO dan teknologi energi bebas.</div>
+        <div class="hacker-tags">
+          <span class="tag red">MILITARY</span>
+          <span class="tag">Remote Access</span>
+        </div>
+        <div class="hacker-bar"><div class="hacker-bar-fill" style="width:92%"></div></div>
+      </div>
+
+      <div class="hacker-card fade-in">
+        <div class="hacker-rank">RANK #05</div>
+        <div class="hacker-handle">Lazarus Group</div>
+        <div class="hacker-nation">🇰🇵 Korea Utara</div>
+        <div class="hacker-desc">APT yang disponsori negara. Bertanggung jawab atas perampokan Bank Bangladesh $81M, serangan Sony Pictures, dan WannaCry ransomware yang menginfeksi 200.000 komputer.</div>
+        <div class="hacker-tags">
+          <span class="tag red">STATE-SPONSORED</span>
+          <span class="tag cyan">APT</span>
+          <span class="tag">Ransomware</span>
+        </div>
+        <div class="hacker-bar"><div class="hacker-bar-fill" style="width:99%"></div></div>
+      </div>
+
+      <div class="hacker-card fade-in">
+        <div class="hacker-rank">RANK #06</div>
+        <div class="hacker-handle">Phineas Fisher</div>
+        <div class="hacker-nation">🎭 Unknown / Anonim</div>
+        <div class="hacker-desc">Identitas masih misteri. Berhasil meretas Gamma Group dan Hacking Team — perusahaan yang menjual spyware kepada rezim otoriter — dan membocorkan semua datanya.</div>
+        <div class="hacker-tags">
+          <span class="tag">Ghost</span>
+          <span class="tag red">WHISTLEBLOWER</span>
+          <span class="tag cyan">0-day</span>
+        </div>
+        <div class="hacker-bar"><div class="hacker-bar-fill" style="width:94%"></div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- GALLERY SECTION -->
+  <section class="section fade-in" id="gallery">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div class="section-header">
+        <span class="section-tag">// Direktori Terenkripsi</span>
+        <div class="section-line"></div>
+      </div>
+      <h2 class="section-title">Galeri Operasi</h2>
+      <p class="section-desc">Arsip visual terklasifikasi. Upload foto operasi melalui panel admin.</p>
+    </div>
+
+    <div class="gallery-toolbar">
+      <div class="gallery-count">Menampilkan <span id="photo-count">0</span> file terenkripsi</div>
+      <button class="upload-btn" onclick="openAdmin()">
+        <span>⬆</span> Upload [ADMIN]
+      </button>
+    </div>
+
+    <div class="gallery-grid" id="gallery-grid">
+      <div class="gallery-empty" id="gallery-empty">
+        <div class="gallery-empty-icon">[ ▓▓░░░░ ]</div>
+        <p>// Direktori kosong. Tidak ada file terenkripsi.<br>Hubungi admin untuk upload konten.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES SECTION -->
+  <section class="section fade-in" id="features">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div class="section-header">
+        <span class="section-tag">// Kapabilitas Sistem</span>
+        <div class="section-line"></div>
+      </div>
+      <h2 class="section-title">Arsenal Digital</h2>
+      <p class="section-desc">Tools dan metode yang digunakan oleh para peretas kelas dunia.</p>
+    </div>
+
+    <div class="features-grid" style="margin-top:2rem;">
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🕷️</div>
+        <div class="feature-title">Zero-Day Exploit</div>
+        <div class="feature-desc">Kerentanan yang belum diketahui vendor. Window waktu antara ditemukannya bug hingga patch dirilis adalah golden opportunity bagi peretas elite.</div>
+        <span class="feature-badge">LEVEL: OMEGA</span>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🔐</div>
+        <div class="feature-title">Social Engineering</div>
+        <div class="feature-desc">Memanipulasi psikologi manusia adalah vektor serangan paling efektif. 91% cyberattack dimulai dari phishing yang berhasil mengeksploitasi human error.</div>
+        <span class="feature-badge">LEVEL: EXTREME</span>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-title">Dark Web Operations</div>
+        <div class="feature-desc">Jaringan Tor berlapis onion routing memastikan anonimitas sempurna. Marketplace underground menjadi ekosistem bagi perdagangan exploit dan data breach.</div>
+        <span class="feature-badge">LEVEL: CLASSIFIED</span>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">💀</div>
+        <div class="feature-title">Ransomware-as-a-Service</div>
+        <div class="feature-desc">Model bisnis kriminal yang memungkinkan siapapun menyebarkan ransomware tanpa keahlian teknis. Revenue sharing antara developer dan affiliates.</div>
+        <span class="feature-badge">LEVEL: HIGH</span>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">Advanced Persistent Threat</div>
+        <div class="feature-desc">APT groups tinggal dalam jaringan target selama berbulan-bulan atau bertahun-tahun, secara diam-diam mengekstrak data sensitif tanpa terdeteksi.</div>
+        <span class="feature-badge">LEVEL: STATE</span>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🎭</div>
+        <div class="feature-title">Anonimitas Absolut</div>
+        <div class="feature-desc">VPN chaining, proxy rotation, dan Tor network berlapis menciptakan digital footprint yang hampir mustahil dilacak bahkan oleh lembaga intelijen kelas dunia.</div>
+        <span class="feature-badge">LEVEL: GHOST</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>[ <span>GHOST PROTOCOL</span> ] — Semua informasi untuk tujuan edukasi dan dokumentasi. © 2024</p>
+    <p style="margin-top:0.5rem;opacity:0.4;">// Connection encrypted — AES-256 — Your IP has been logged.</p>
+  </footer>
+
+</div><!-- end .page -->
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <div class="lightbox-content">
+    <button class="lightbox-close" onclick="closeLightbox()">[ ESC ] TUTUP</button>
+    <img id="lightbox-img" src="" alt="">
+    <div class="lightbox-info" id="lightbox-info"></div>
+  </div>
+</div>
+
+<!-- ADMIN OVERLAY -->
+<div class="admin-overlay" id="admin-overlay" onclick="closeAdmin()"></div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-panel" id="admin-panel">
+  <div class="admin-header">
+    <div class="admin-title">// ADMIN UPLOAD PANEL</div>
+    <button class="admin-close" onclick="closeAdmin()">✕ TUTUP</button>
+  </div>
+
+  <div class="admin-upload-zone" id="upload-zone">
+    <input type="file" id="admin-file-input" multiple accept="image/*" onchange="handleAdminUpload(event)">
+    <div class="upload-zone-text">
+      <p style="font-size:1.5rem;margin-bottom:0.5rem;">[ ⬆ ]</p>
+      <p>Drag & Drop atau <span>klik untuk pilih foto</span></p>
+      <p style="margin-top:0.3rem;font-size:0.6rem;opacity:0.5;">Mendukung JPG, PNG, GIF, WebP</p>
+    </div>
+  </div>
+
+  <div class="admin-preview-grid" id="admin-previews"></div>
+
+  <div style="margin-top:1rem;">
+    <div class="admin-input-group">
+      <label class="admin-label">Nama Operasi (opsional)</label>
+      <input type="text" class="admin-input" id="admin-caption" placeholder="e.g. Operation Blackout">
+    </div>
+  </div>
+
+  <button class="admin-submit" onclick="submitPhotos()">[ ENKRIPSI & UPLOAD ] ▶</button>
+
+  <div id="admin-status" style="text-align:center;font-size:0.65rem;color:var(--matrix-dim);margin-top:0.8rem;letter-spacing:0.1em;"></div>
+</div>
+
+<!-- ADMIN BUTTON -->
+<div class="admin-indicator">
+  <a href="admin-panel.html" style="text-decoration:none;">
+    <button class="admin-btn">⚡ ADMIN PANEL</button>
+  </a>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// MATRIX RAIN
+// ═══════════════════════════════════════
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+let cols, drops;
+
+function initMatrix() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const fontSize = 14;
+  cols = Math.floor(canvas.width / fontSize);
+  drops = Array(cols).fill(1);
+}
+
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(6,6,16,0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00ff41';
+  ctx.font = '14px Share Tech Mono';
+  const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
+  drops.forEach((y, i) => {
+    const char = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillStyle = Math.random() > 0.97 ? '#ffffff' : '#00ff41';
+    ctx.fillText(char, i * 14, y * 14);
+    if (y * 14 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  });
+}
+
+initMatrix();
+setInterval(drawMatrix, 50);
+window.addEventListener('resize', initMatrix);
+
+// ═══════════════════════════════════════
+// CUSTOM CURSOR
+// ═══════════════════════════════════════
+const cursor = document.getElementById('cursor');
+const cursorDot = document.getElementById('cursor-dot');
+document.addEventListener('mousemove', (e) => {
+  cursor.style.left = (e.clientX - 10) + 'px';
+  cursor.style.top = (e.clientY - 10) + 'px';
+  cursorDot.style.left = (e.clientX - 2) + 'px';
+  cursorDot.style.top = (e.clientY - 2) + 'px';
+});
+
+// ═══════════════════════════════════════
+// TYPING ANIMATION
+// ═══════════════════════════════════════
+const phrases = [
+  'accessing classified database...',
+  'bypassing firewall — level 5...',
+  'decrypting ghost protocol files...',
+  'locating anonymous operatives...',
+  'establishing secure connection...',
+];
+let phraseIdx = 0, charIdx = 0, deleting = false;
+const typedEl = document.getElementById('typed-text');
+
+function typeEffect() {
+  const current = phrases[phraseIdx];
+  if (!deleting) {
+    typedEl.textContent = current.substring(0, charIdx + 1);
+    charIdx++;
+    if (charIdx === current.length) {
+      deleting = true;
+      setTimeout(typeEffect, 2000);
+      return;
+    }
+  } else {
+    typedEl.textContent = current.substring(0, charIdx - 1);
+    charIdx--;
+    if (charIdx === 0) {
+      deleting = false;
+      phraseIdx = (phraseIdx + 1) % phrases.length;
+    }
+  }
+  setTimeout(typeEffect, deleting ? 40 : 70);
+}
+typeEffect();
+
+// ═══════════════════════════════════════
+// COUNTER ANIMATION
+// ═══════════════════════════════════════
+function animateCounter(el) {
+  const target = parseInt(el.dataset.target);
+  const duration = 2000;
+  const start = performance.now();
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(eased * target);
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+// ═══════════════════════════════════════
+// INTERSECTION OBSERVER
+// ═══════════════════════════════════════
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      // trigger counters
+      entry.target.querySelectorAll('[data-target]').forEach(animateCounter);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+// hero counters
+document.querySelectorAll('[data-target]').forEach(el => {
+  const obs = new IntersectionObserver((ents) => {
+    if (ents[0].isIntersecting) { animateCounter(el); obs.disconnect(); }
+  }, { threshold: 0.5 });
+  obs.observe(el);
+});
+
+// ═══════════════════════════════════════
+// GALLERY SYSTEM
+// ═══════════════════════════════════════
+let photos = JSON.parse(localStorage.getItem('ghost_photos') || '[]');
+
+function renderGallery() {
+  const grid = document.getElementById('gallery-grid');
+  const empty = document.getElementById('gallery-empty');
+  const count = document.getElementById('photo-count');
+  count.textContent = photos.length;
+
+  // clear non-empty items
+  grid.querySelectorAll('.gallery-item').forEach(el => el.remove());
+
+  if (photos.length === 0) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  photos.forEach((photo, index) => {
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.innerHTML = `
+      <img src="${photo.src}" alt="${photo.name}" loading="lazy">
+      <div class="gallery-overlay">
+        <div class="gallery-item-meta">${photo.date} · FILE_${String(index+1).padStart(3,'0')}</div>
+        <div class="gallery-item-name">${photo.name || 'CLASSIFIED'}</div>
+      </div>
+      <button class="gallery-item-delete" onclick="deletePhoto(${index}, event)" title="Hapus">✕</button>
+    `;
+    item.addEventListener('click', (e) => {
+      if (e.target.classList.contains('gallery-item-delete')) return;
+      openLightbox(photo, index);
+    });
+    grid.appendChild(item);
+  });
+}
+
+function deletePhoto(index, event) {
+  event.stopPropagation();
+  photos.splice(index, 1);
+  localStorage.setItem('ghost_photos', JSON.stringify(photos));
+  renderGallery();
+  showToast('// File dihapus dari direktori');
+}
+
+renderGallery();
+
+// ═══════════════════════════════════════
+// LIGHTBOX
+// ═══════════════════════════════════════
+function openLightbox(photo, index) {
+  document.getElementById('lightbox-img').src = photo.src;
+  document.getElementById('lightbox-info').textContent = `FILE_${String(index+1).padStart(3,'0')} — ${photo.name || 'CLASSIFIED'} — ${photo.date}`;
+  document.getElementById('lightbox').classList.add('active');
+}
+
+function closeLightbox(e) {
+  if (!e || e.target === document.getElementById('lightbox') || e.currentTarget.classList.contains('lightbox-close')) {
+    document.getElementById('lightbox').classList.remove('active');
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('lightbox').classList.remove('active');
+    closeAdmin();
+  }
+});
+
+// ═══════════════════════════════════════
+// ADMIN PANEL
+// ═══════════════════════════════════════
+let pendingFiles = [];
+
+function openAdmin() {
+  document.getElementById('admin-panel').classList.add('active');
+  document.getElementById('admin-overlay').classList.add('active');
+  document.getElementById('admin-previews').innerHTML = '';
+  document.getElementById('admin-caption').value = '';
+  document.getElementById('admin-status').textContent = '';
+  pendingFiles = [];
+}
+
+function closeAdmin() {
+  document.getElementById('admin-panel').classList.remove('active');
+  document.getElementById('admin-overlay').classList.remove('active');
+}
+
+function handleAdminUpload(event) {
+  const files = Array.from(event.target.files);
+  pendingFiles = files;
+  const previewGrid = document.getElementById('admin-previews');
+  previewGrid.innerHTML = '';
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.className = 'admin-preview-img';
+      previewGrid.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('admin-status').textContent = `${files.length} file dipilih — siap untuk diupload`;
+}
+
+// Drag & Drop
+const uploadZone = document.getElementById('upload-zone');
+uploadZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  uploadZone.style.borderColor = 'var(--matrix)';
+  uploadZone.style.background = 'rgba(0,255,65,0.06)';
+});
+uploadZone.addEventListener('dragleave', () => {
+  uploadZone.style.borderColor = '';
+  uploadZone.style.background = '';
+});
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.style.borderColor = '';
+  uploadZone.style.background = '';
+  const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+  if (files.length) {
+    pendingFiles = files;
+    const previewGrid = document.getElementById('admin-previews');
+    previewGrid.innerHTML = '';
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = document.createElement('img');
+        img.src = ev.target.result;
+        img.className = 'admin-preview-img';
+        previewGrid.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+    document.getElementById('admin-status').textContent = `${files.length} file di-drop — siap untuk diupload`;
+  }
+});
+
+function submitPhotos() {
+  if (pendingFiles.length === 0) {
+    document.getElementById('admin-status').textContent = '// ERROR: Pilih file terlebih dahulu';
+    return;
+  }
+  const caption = document.getElementById('admin-caption').value.trim();
+  const status = document.getElementById('admin-status');
+  status.textContent = '// Mengenkripsi dan menyimpan...';
+
+  let processed = 0;
+  pendingFiles.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      photos.push({
+        src: e.target.result,
+        name: caption || file.name.replace(/\.[^/.]+$/, '').toUpperCase(),
+        date: new Date().toLocaleDateString('id-ID'),
+        size: (file.size / 1024).toFixed(1) + ' KB'
+      });
+      processed++;
+      if (processed === pendingFiles.length) {
+        localStorage.setItem('ghost_photos', JSON.stringify(photos));
+        renderGallery();
+        closeAdmin();
+        showToast(`// ${processed} file berhasil diupload ke direktori`);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ═══════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>

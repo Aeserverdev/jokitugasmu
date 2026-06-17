@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ GHOST PROTOCOL ] — Admin Terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #060610;
+    --matrix: #00ff41;
+    --matrix-dim: #00aa2b;
+    --matrix-glow: rgba(0,255,65,0.15);
+    --breach: #ff0040;
+    --silver: #c0c0d0;
+    --navy: #0d0d1a;
+    --glass: rgba(0,255,65,0.04);
+    --border: rgba(0,255,65,0.2);
+    --warn: #ffaa00;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--void);
+    color: var(--matrix);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  .cursor { position: fixed; width: 20px; height: 20px; border: 1px solid var(--matrix); border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: difference; transition: transform 0.1s; }
+  .cursor-dot { position: fixed; width: 4px; height: 4px; background: var(--matrix); border-radius: 50%; pointer-events: none; z-index: 9999; }
+
+  /* MATRIX RAIN */
+  #matrix-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.05; pointer-events: none; }
+
+  /* SCANLINE */
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none; z-index: 1;
+  }
+
+  .page { position: relative; z-index: 2; min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* ======= TOP BAR ======= */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.8rem 2rem;
+    background: rgba(6,6,16,0.9);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-logo { font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 900; letter-spacing: 0.3em; color: var(--matrix); text-shadow: 0 0 20px var(--matrix); }
+  .topbar-logo span { color: var(--breach); }
+  .topbar-right { display: flex; align-items: center; gap: 1.5rem; }
+  .topbar-user { display: flex; align-items: center; gap: 0.6rem; font-size: 0.7rem; color: var(--matrix-dim); letter-spacing: 0.15em; }
+  .user-avatar { width: 28px; height: 28px; border: 1px solid var(--matrix); background: rgba(0,255,65,0.05); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; }
+  .logout-btn {
+    background: rgba(255,0,64,0.08); border: 1px solid rgba(255,0,64,0.3);
+    color: var(--breach); font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.15em; padding: 0.35rem 0.8rem;
+    cursor: pointer; transition: all 0.3s; text-transform: uppercase;
+  }
+  .logout-btn:hover { background: rgba(255,0,64,0.18); box-shadow: 0 0 12px rgba(255,0,64,0.2); }
+  .back-link { font-size: 0.65rem; letter-spacing: 0.15em; color: var(--matrix-dim); text-decoration: none; text-transform: uppercase; transition: color 0.2s; }
+  .back-link:hover { color: var(--matrix); }
+
+  /* ======= STATUS BAR ======= */
+  .statusbar {
+    display: flex; align-items: center; gap: 2rem;
+    padding: 0.4rem 2rem;
+    background: rgba(0,255,65,0.03);
+    border-bottom: 1px solid rgba(0,255,65,0.08);
+    font-size: 0.62rem; color: var(--matrix-dim); letter-spacing: 0.1em;
+    flex-wrap: wrap;
+  }
+  .status-item { display: flex; align-items: center; gap: 0.4rem; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--matrix); animation: pulse-dot 1.5s infinite; }
+  .status-dot.red { background: var(--breach); }
+  .status-dot.warn { background: var(--warn); }
+  @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  /* ======= LAYOUT ======= */
+  .main { display: grid; grid-template-columns: 220px 1fr; flex: 1; }
+
+  /* ======= SIDEBAR ======= */
+  .sidebar {
+    background: rgba(13,13,26,0.8);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 0;
+    min-height: calc(100vh - 90px);
+  }
+  .sidebar-section { margin-bottom: 1.5rem; }
+  .sidebar-label { font-size: 0.58rem; letter-spacing: 0.35em; color: var(--breach); text-transform: uppercase; padding: 0 1.2rem; margin-bottom: 0.5rem; }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 0.7rem;
+    padding: 0.6rem 1.2rem; cursor: pointer;
+    font-size: 0.72rem; color: var(--matrix-dim); letter-spacing: 0.1em;
+    transition: all 0.2s; border-left: 2px solid transparent;
+    text-transform: uppercase;
+  }
+  .sidebar-item:hover { color: var(--matrix); background: rgba(0,255,65,0.04); }
+  .sidebar-item.active { color: var(--matrix); background: rgba(0,255,65,0.07); border-left-color: var(--matrix); }
+  .sidebar-icon { font-size: 0.9rem; width: 16px; text-align: center; }
+  .sidebar-divider { height: 1px; background: var(--border); margin: 0.75rem 1.2rem; }
+
+  .sidebar-stats { padding: 1rem 1.2rem; }
+  .sidebar-stat { margin-bottom: 0.8rem; }
+  .sidebar-stat-label { font-size: 0.6rem; color: var(--matrix-dim); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.3rem; }
+  .sidebar-stat-bar { height: 3px; background: rgba(0,255,65,0.1); position: relative; }
+  .sidebar-stat-fill { height: 100%; background: var(--matrix); box-shadow: 0 0 6px var(--matrix); transition: width 1s ease; }
+  .sidebar-stat-val { font-size: 0.65rem; color: var(--matrix); margin-top: 0.2rem; }
+
+  /* ======= CONTENT ======= */
+  .content { padding: 2rem; overflow-y: auto; }
+
+  /* TAB PANELS */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* PAGE HEADER */
+  .page-header { margin-bottom: 2rem; }
+  .page-tag { font-size: 0.62rem; letter-spacing: 0.4em; color: var(--breach); text-transform: uppercase; margin-bottom: 0.4rem; }
+  .page-title { font-family: 'Orbitron', monospace; font-size: 1.5rem; font-weight: 700; color: var(--matrix); letter-spacing: 0.05em; }
+  .page-desc { font-size: 0.72rem; color: var(--matrix-dim); letter-spacing: 0.1em; margin-top: 0.4rem; }
+
+  /* CARDS ROW */
+  .cards-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .card-stat {
+    background: rgba(0,255,65,0.03); border: 1px solid var(--border);
+    padding: 1.2rem; position: relative; overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .card-stat:hover { border-color: var(--matrix-dim); }
+  .card-stat::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(to right, var(--matrix), transparent); }
+  .card-stat-icon { font-size: 1.2rem; margin-bottom: 0.6rem; opacity: 0.8; }
+  .card-stat-num { font-family: 'Orbitron', monospace; font-size: 1.6rem; font-weight: 700; color: var(--matrix); text-shadow: 0 0 15px rgba(0,255,65,0.3); }
+  .card-stat-label { font-size: 0.62rem; color: var(--matrix-dim); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.3rem; }
+
+  /* ======= UPLOAD ZONE ======= */
+  .upload-section { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+
+  .upload-box {
+    border: 1px solid var(--border);
+    background: rgba(0,255,65,0.02);
+    padding: 1.5rem;
+  }
+  .upload-box-title { font-family: 'Orbitron', monospace; font-size: 0.8rem; letter-spacing: 0.1em; color: var(--matrix); margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+
+  .dropzone {
+    border: 2px dashed rgba(0,255,65,0.25);
+    padding: 3rem 2rem; text-align: center;
+    cursor: pointer; transition: all 0.3s; position: relative;
+    background: rgba(0,255,65,0.01);
+  }
+  .dropzone.drag-over { border-color: var(--matrix); background: rgba(0,255,65,0.06); }
+  .dropzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .dropzone-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.4; }
+  .dropzone-text { font-size: 0.75rem; color: var(--matrix-dim); letter-spacing: 0.1em; line-height: 1.7; }
+  .dropzone-text strong { color: var(--matrix); }
+  .dropzone-hint { font-size: 0.6rem; color: var(--matrix-dim); margin-top: 0.5rem; opacity: 0.6; }
+
+  .form-group { margin-bottom: 1rem; }
+  .form-label { display: block; font-size: 0.62rem; letter-spacing: 0.25em; color: var(--matrix-dim); text-transform: uppercase; margin-bottom: 0.4rem; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; background: rgba(0,255,65,0.03); border: 1px solid var(--border);
+    color: var(--matrix); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+    padding: 0.6rem 0.8rem; outline: none; transition: border-color 0.3s;
+    appearance: none;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--matrix); background: rgba(0,255,65,0.05); }
+  .form-input::placeholder, .form-textarea::placeholder { color: rgba(0,255,65,0.25); }
+  .form-textarea { height: 80px; resize: vertical; }
+  .form-select option { background: var(--void); color: var(--matrix); }
+
+  .preview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-top: 1rem; }
+  .preview-item { position: relative; aspect-ratio: 1; overflow: hidden; border: 1px solid var(--border); }
+  .preview-item img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(0.8); }
+  .preview-remove {
+    position: absolute; top: 2px; right: 2px;
+    background: rgba(255,0,64,0.85); border: none; color: white;
+    width: 18px; height: 18px; font-size: 0.6rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .preview-name { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(6,6,16,0.85); font-size: 0.45rem; color: var(--matrix-dim); padding: 2px 4px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+
+  .submit-btn {
+    width: 100%; background: linear-gradient(135deg, rgba(0,255,65,0.1), rgba(0,255,65,0.04));
+    border: 1px solid var(--matrix); color: var(--matrix);
+    font-family: 'Orbitron', monospace; font-size: 0.75rem;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 0.9rem; cursor: pointer; transition: all 0.3s; margin-top: 1rem;
+  }
+  .submit-btn:hover { background: rgba(0,255,65,0.15); box-shadow: 0 0 20px rgba(0,255,65,0.2); text-shadow: 0 0 8px var(--matrix); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .progress-bar { margin-top: 1rem; display: none; }
+  .progress-bar.active { display: block; }
+  .progress-track { height: 4px; background: rgba(0,255,65,0.1); position: relative; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--matrix); box-shadow: 0 0 8px var(--matrix); width: 0%; transition: width 0.3s; }
+  .progress-label { font-size: 0.62rem; color: var(--matrix-dim); letter-spacing: 0.15em; margin-top: 0.4rem; }
+
+  /* ======= GALLERY MANAGER ======= */
+  .manager-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.8rem;
+  }
+  .search-box { display: flex; align-items: center; gap: 0; }
+  .search-prefix {
+    background: rgba(0,255,65,0.08); border: 1px solid var(--border); border-right: none;
+    padding: 0.5rem 0.7rem; font-size: 0.65rem; color: var(--matrix-dim);
+  }
+  .search-input {
+    background: rgba(0,255,65,0.03); border: 1px solid var(--border);
+    color: var(--matrix); font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; padding: 0.5rem 0.8rem; outline: none; width: 220px;
+    transition: border-color 0.3s;
+  }
+  .search-input:focus { border-color: var(--matrix); }
+  .search-input::placeholder { color: rgba(0,255,65,0.25); }
+
+  .toolbar-actions { display: flex; gap: 0.5rem; }
+  .action-btn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--matrix-dim); font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.15em; padding: 0.4rem 0.8rem;
+    cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+  }
+  .action-btn:hover { border-color: var(--matrix-dim); color: var(--matrix); }
+  .action-btn.danger { border-color: rgba(255,0,64,0.3); color: var(--breach); }
+  .action-btn.danger:hover { background: rgba(255,0,64,0.1); }
+
+  .manager-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+
+  .mgr-item {
+    border: 1px solid var(--border); background: rgba(0,255,65,0.02);
+    position: relative; overflow: hidden; transition: border-color 0.25s;
+  }
+  .mgr-item:hover { border-color: var(--matrix-dim); }
+  .mgr-item.selected { border-color: var(--matrix); background: rgba(0,255,65,0.05); }
+
+  .mgr-checkbox {
+    position: absolute; top: 0.5rem; left: 0.5rem; z-index: 2;
+    width: 18px; height: 18px; background: rgba(6,6,16,0.8);
+    border: 1px solid var(--border); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; color: var(--matrix); transition: all 0.2s;
+  }
+  .mgr-item.selected .mgr-checkbox { background: var(--matrix); color: var(--void); border-color: var(--matrix); }
+
+  .mgr-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; filter: saturate(0.8); transition: filter 0.3s; }
+  .mgr-item:hover .mgr-img { filter: saturate(1); }
+
+  .mgr-scan {
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.012) 3px, rgba(0,255,65,0.012) 4px);
+    pointer-events: none;
+  }
+
+  .mgr-info { padding: 0.7rem; border-top: 1px solid var(--border); }
+  .mgr-name { font-size: 0.7rem; color: var(--matrix); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.2rem; }
+  .mgr-meta { font-size: 0.58rem; color: var(--matrix-dim); letter-spacing: 0.1em; }
+
+  .mgr-actions { display: flex; gap: 0.3rem; margin-top: 0.5rem; }
+  .mgr-btn {
+    flex: 1; background: transparent; border: 1px solid var(--border);
+    color: var(--matrix-dim); font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; padding: 0.25rem; cursor: pointer; transition: all 0.2s;
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .mgr-btn:hover { border-color: var(--matrix-dim); color: var(--matrix); }
+  .mgr-btn.del { border-color: rgba(255,0,64,0.2); color: rgba(255,0,64,0.6); }
+  .mgr-btn.del:hover { border-color: var(--breach); color: var(--breach); background: rgba(255,0,64,0.08); }
+
+  /* ======= LOG TERMINAL ======= */
+  .log-terminal {
+    background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+    padding: 1rem; font-size: 0.68rem; line-height: 1.8;
+    height: 220px; overflow-y: auto; font-family: 'Share Tech Mono', monospace;
+  }
+  .log-terminal::-webkit-scrollbar { width: 4px; }
+  .log-terminal::-webkit-scrollbar-track { background: transparent; }
+  .log-terminal::-webkit-scrollbar-thumb { background: var(--matrix-dim); }
+  .log-line { margin-bottom: 0.1rem; }
+  .log-time { color: var(--matrix-dim); margin-right: 0.5rem; }
+  .log-ok { color: var(--matrix); }
+  .log-err { color: var(--breach); }
+  .log-warn { color: var(--warn); }
+  .log-info { color: #00ffff; }
+
+  /* ======= SETTINGS ======= */
+  .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .settings-card { border: 1px solid var(--border); background: rgba(0,255,65,0.02); padding: 1.5rem; }
+  .settings-card-title { font-family: 'Orbitron', monospace; font-size: 0.8rem; color: var(--matrix); letter-spacing: 0.1em; margin-bottom: 1.2rem; padding-bottom: 0.7rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,255,65,0.06); }
+  .toggle-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .toggle-label { font-size: 0.7rem; color: var(--silver); opacity: 0.8; }
+  .toggle-sub { font-size: 0.58rem; color: var(--matrix-dim); margin-top: 0.2rem; }
+  .toggle {
+    width: 40px; height: 20px; background: rgba(0,255,65,0.1);
+    border: 1px solid var(--border); position: relative; cursor: pointer; transition: all 0.3s;
+  }
+  .toggle.on { background: rgba(0,255,65,0.2); border-color: var(--matrix); }
+  .toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 14px; height: 14px; background: var(--matrix-dim); transition: all 0.3s;
+  }
+  .toggle.on::after { left: 22px; background: var(--matrix); box-shadow: 0 0 6px var(--matrix); }
+
+  .save-btn {
+    background: transparent; border: 1px solid var(--matrix);
+    color: var(--matrix); font-family: 'Orbitron', monospace;
+    font-size: 0.65rem; letter-spacing: 0.2em; padding: 0.6rem 1.2rem;
+    cursor: pointer; transition: all 0.3s; text-transform: uppercase; margin-top: 1rem;
+  }
+  .save-btn:hover { background: rgba(0,255,65,0.1); box-shadow: 0 0 15px rgba(0,255,65,0.15); }
+
+  /* ======= LOGIN SCREEN ======= */
+  #login-screen {
+    position: fixed; inset: 0; background: var(--void);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 500; flex-direction: column;
+  }
+
+  .login-matrix { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+  .login-box {
+    position: relative; z-index: 2;
+    width: 100%; max-width: 420px;
+    border: 1px solid var(--border);
+    background: rgba(6,6,16,0.95);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 60px rgba(0,255,65,0.05), 0 0 120px rgba(0,0,0,0.8);
+  }
+
+  .login-header {
+    padding: 2rem 2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
+  .login-logo { font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 900; color: var(--matrix); text-shadow: 0 0 20px var(--matrix); letter-spacing: 0.3em; margin-bottom: 0.3rem; }
+  .login-logo span { color: var(--breach); }
+  .login-subtitle { font-size: 0.62rem; color: var(--matrix-dim); letter-spacing: 0.3em; text-transform: uppercase; }
+
+  .login-body { padding: 2rem; }
+
+  .login-alert {
+    background: rgba(255,0,64,0.08); border: 1px solid rgba(255,0,64,0.25);
+    padding: 0.6rem 0.8rem; font-size: 0.65rem; color: var(--breach);
+    letter-spacing: 0.1em; margin-bottom: 1.2rem; display: none;
+    animation: shake 0.4s ease;
+  }
+  .login-alert.show { display: flex; align-items: center; gap: 0.5rem; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)} 80%{transform:translateX(-3px)} }
+
+  .login-field { margin-bottom: 1.2rem; }
+  .login-label { display: block; font-size: 0.6rem; letter-spacing: 0.3em; color: var(--matrix-dim); text-transform: uppercase; margin-bottom: 0.5rem; }
+  .login-input-wrap { display: flex; align-items: center; border: 1px solid var(--border); transition: border-color 0.3s; }
+  .login-input-wrap:focus-within { border-color: var(--matrix); }
+  .login-prefix { background: rgba(0,255,65,0.05); padding: 0.7rem 0.8rem; font-size: 0.7rem; color: var(--breach); border-right: 1px solid var(--border); white-space: nowrap; }
+  .login-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--matrix); font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem; padding: 0.7rem 0.8rem;
+    letter-spacing: 0.1em;
+  }
+  .login-input::placeholder { color: rgba(0,255,65,0.2); }
+  .login-eye {
+    background: none; border: none; color: var(--matrix-dim); cursor: pointer;
+    padding: 0.7rem 0.8rem; font-size: 0.75rem; transition: color 0.2s;
+  }
+  .login-eye:hover { color: var(--matrix); }
+
+  .login-hint { font-size: 0.58rem; color: rgba(0,255,65,0.3); letter-spacing: 0.1em; margin-top: 0.3rem; }
+
+  .login-btn {
+    width: 100%; background: linear-gradient(135deg, rgba(0,255,65,0.12), rgba(0,255,65,0.05));
+    border: 1px solid var(--matrix); color: var(--matrix);
+    font-family: 'Orbitron', monospace; font-size: 0.75rem;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    padding: 0.85rem; cursor: pointer; transition: all 0.3s; margin-top: 0.5rem;
+    position: relative; overflow: hidden;
+  }
+  .login-btn::before {
+    content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+    background: rgba(0,255,65,0.1); transition: left 0.3s;
+  }
+  .login-btn:hover::before { left: 0; }
+  .login-btn:hover { box-shadow: 0 0 25px rgba(0,255,65,0.2); text-shadow: 0 0 8px var(--matrix); }
+  .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .login-loading { display: none; text-align: center; margin-top: 1rem; font-size: 0.65rem; color: var(--matrix-dim); letter-spacing: 0.2em; }
+  .login-loading.show { display: block; }
+  .dots span { animation: blink-dot 1.2s infinite; }
+  .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink-dot { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+
+  .login-footer {
+    padding: 1rem 2rem; border-top: 1px solid var(--border);
+    text-align: center; font-size: 0.58rem; color: rgba(0,255,65,0.25);
+    letter-spacing: 0.15em;
+  }
+
+  .attempt-counter { margin-top: 0.7rem; font-size: 0.6rem; color: var(--matrix-dim); text-align: center; letter-spacing: 0.1em; }
+  .attempt-counter.warn { color: var(--warn); }
+  .attempt-counter.danger { color: var(--breach); animation: flicker 2s infinite; }
+  @keyframes flicker { 0%,95%,100%{opacity:1} 96%{opacity:0.4} 98%{opacity:0.9} }
+
+  /* LOCKOUT */
+  .lockout-screen {
+    text-align: center; padding: 2rem;
+  }
+  .lockout-icon { font-size: 3rem; margin-bottom: 1rem; animation: flicker 1.5s infinite; }
+  .lockout-title { font-family: 'Orbitron', monospace; font-size: 1rem; color: var(--breach); letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .lockout-msg { font-size: 0.7rem; color: var(--matrix-dim); letter-spacing: 0.1em; line-height: 1.7; }
+  .lockout-timer { font-family: 'Orbitron', monospace; font-size: 1.5rem; color: var(--breach); margin: 1rem 0; }
+
+  /* ======= TOAST ======= */
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(80px);
+    border: 1px solid; padding: 0.7rem 1.5rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em;
+    z-index: 600; transition: transform 0.3s; pointer-events: none; white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { background: rgba(0,255,65,0.08); border-color: var(--matrix); color: var(--matrix); }
+  .toast.error { background: rgba(255,0,64,0.08); border-color: var(--breach); color: var(--breach); }
+  .toast.warn { background: rgba(255,170,0,0.08); border-color: var(--warn); color: var(--warn); }
+
+  /* ======= MODAL ======= */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(6,6,16,0.85); z-index: 400; display: none; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
+  .modal-overlay.active { display: flex; }
+  .modal { background: var(--navy); border: 1px solid var(--border); padding: 1.5rem; width: 90%; max-width: 400px; }
+  .modal-title { font-family: 'Orbitron', monospace; font-size: 0.85rem; color: var(--breach); letter-spacing: 0.1em; margin-bottom: 0.8rem; }
+  .modal-body { font-size: 0.72rem; color: var(--silver); line-height: 1.7; margin-bottom: 1.2rem; opacity: 0.8; }
+  .modal-actions { display: flex; gap: 0.8rem; justify-content: flex-end; }
+  .modal-cancel { background: transparent; border: 1px solid var(--border); color: var(--matrix-dim); font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; padding: 0.5rem 1rem; cursor: pointer; text-transform: uppercase; }
+  .modal-cancel:hover { border-color: var(--matrix-dim); color: var(--matrix); }
+  .modal-confirm { background: rgba(255,0,64,0.1); border: 1px solid var(--breach); color: var(--breach); font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; padding: 0.5rem 1rem; cursor: pointer; text-transform: uppercase; }
+  .modal-confirm:hover { background: rgba(255,0,64,0.2); }
+
+  /* LIGHTBOX */
+  .lightbox { position: fixed; inset: 0; background: rgba(6,6,16,0.96); z-index: 450; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+  .lightbox.active { display: flex; }
+  .lightbox-inner { position: relative; max-width: 90vw; max-height: 90vh; }
+  .lightbox-inner img { max-width: 90vw; max-height: 85vh; object-fit: contain; display: block; border: 1px solid var(--border); }
+  .lightbox-close { position: absolute; top: -2rem; right: 0; background: none; border: none; color: var(--breach); font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; cursor: pointer; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .cards-row { grid-template-columns: repeat(2, 1fr); }
+    .upload-section { grid-template-columns: 1fr; }
+    .settings-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .cards-row { grid-template-columns: 1fr 1fr; }
+    .content { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursor-dot"></div>
+<canvas id="matrix-canvas"></canvas>
+
+<!-- ═══════════════════════════════════ -->
+<!-- LOGIN SCREEN -->
+<!-- ═══════════════════════════════════ -->
+<div id="login-screen">
+  <canvas class="login-matrix" id="login-canvas"></canvas>
+  <div class="login-box">
+    <div class="login-header">
+      <div class="login-logo">[ <span>GHOST</span> ADMIN ]</div>
+      <div class="login-subtitle">// Akses Terenkripsi — Authorized Personnel Only</div>
+    </div>
+
+    <div class="login-body" id="login-body">
+      <div class="login-alert" id="login-alert">
+        <span>⚠</span> <span id="alert-msg">Kredensial tidak valid. Akses ditolak.</span>
+      </div>
+
+      <div class="login-field">
+        <label class="login-label">Username</label>
+        <div class="login-input-wrap">
+          <span class="login-prefix">user://</span>
+          <input type="text" class="login-input" id="username" placeholder="masukkan username" autocomplete="off" spellcheck="false">
+        </div>
+      </div>
+
+      <div class="login-field">
+        <label class="login-label">Password</label>
+        <div class="login-input-wrap">
+          <span class="login-prefix">pass://</span>
+          <input type="password" class="login-input" id="password" placeholder="••••••••" autocomplete="off">
+          <button class="login-eye" onclick="togglePassword()" id="eye-btn" title="Tampilkan">👁</button>
+        </div>
+        <div class="login-hint">// Default: admin / ghost2024</div>
+      </div>
+
+      <button class="login-btn" id="login-btn" onclick="doLogin()">
+        [ AKSES SISTEM ] ▶
+      </button>
+      <div class="login-loading" id="login-loading">
+        <span>Mengautentikasi</span><span class="dots"><span>.</span><span>.</span><span>.</span></span>
+      </div>
+
+      <div class="attempt-counter" id="attempt-counter"></div>
+    </div>
+
+    <!-- LOCKOUT -->
+    <div class="login-body lockout-screen" id="lockout-body" style="display:none;">
+      <div class="lockout-icon">🔒</div>
+      <div class="lockout-title">SISTEM TERKUNCI</div>
+      <div class="lockout-msg">Terlalu banyak percobaan login gagal.<br>Tunggu sebelum mencoba kembali.</div>
+      <div class="lockout-timer" id="lockout-timer">00:30</div>
+      <div class="lockout-msg" style="font-size:0.62rem;opacity:0.5;">IP Anda telah dicatat.</div>
+    </div>
+
+    <div class="login-footer">
+      GHOST PROTOCOL ADMIN v2.4.1 — ENKRIPSI AES-256
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!-- ADMIN DASHBOARD -->
+<!-- ═══════════════════════════════════ -->
+<div class="page" id="dashboard" style="display:none;">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-logo">[ <span>GHOST</span> ADMIN ]</div>
+    <div class="topbar-right">
+      <a href="hacker-gallery.html" class="back-link">← Kembali ke Gallery</a>
+      <div class="topbar-user">
+        <div class="user-avatar">⚡</div>
+        <span id="display-username">admin</span>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">[ Logout ]</button>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="statusbar">
+    <div class="status-item"><div class="status-dot"></div><span>SISTEM AKTIF</span></div>
+    <div class="status-item"><div class="status-dot warn"></div><span id="photo-storage-stat">Storage: 0 foto</span></div>
+    <div class="status-item"><div class="status-dot"></div><span id="session-time">Sesi: 00:00</span></div>
+    <div class="status-item" style="margin-left:auto;"><span id="current-time"></span></div>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="main">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">// Navigasi</div>
+        <div class="sidebar-item active" onclick="switchTab('dashboard-tab', this)">
+          <span class="sidebar-icon">◈</span> Dashboard
+        </div>
+        <div class="sidebar-item" onclick="switchTab('upload-tab', this)">
+          <span class="sidebar-icon">⬆</span> Upload Foto
+        </div>
+        <div class="sidebar-item" onclick="switchTab('gallery-tab', this)">
+          <span class="sidebar-icon">▣</span> Kelola Gallery
+        </div>
+        <div class="sidebar-item" onclick="switchTab('log-tab', this)">
+          <span class="sidebar-icon">▸</span> Activity Log
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-item" onclick="switchTab('settings-tab', this)">
+          <span class="sidebar-icon">⚙</span> Pengaturan
+        </div>
+      </div>
+
+      <div class="sidebar-stats">
+        <div class="sidebar-label">// Storage</div>
+        <div class="sidebar-stat">
+          <div class="sidebar-stat-label">Foto Tersimpan</div>
+          <div class="sidebar-stat-bar"><div class="sidebar-stat-fill" id="sb-photo-bar" style="width:0%"></div></div>
+          <div class="sidebar-stat-val" id="sb-photo-val">0 / 50 foto</div>
+        </div>
+        <div class="sidebar-stat">
+          <div class="sidebar-stat-label">Local Storage</div>
+          <div class="sidebar-stat-bar"><div class="sidebar-stat-fill" id="sb-storage-bar" style="width:0%"></div></div>
+          <div class="sidebar-stat-val" id="sb-storage-val">0 KB</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT AREA -->
+    <div class="content">
+
+      <!-- ── DASHBOARD TAB ── -->
+      <div class="tab-panel active" id="dashboard-tab">
+        <div class="page-header">
+          <div class="page-tag">// Overview</div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-desc">Selamat datang di Ghost Protocol Admin Panel.</div>
+        </div>
+
+        <div class="cards-row">
+          <div class="card-stat">
+            <div class="card-stat-icon">🖼️</div>
+            <div class="card-stat-num" id="stat-total">0</div>
+            <div class="card-stat-label">Total Foto</div>
+          </div>
+          <div class="card-stat">
+            <div class="card-stat-icon">📅</div>
+            <div class="card-stat-num" id="stat-today">0</div>
+            <div class="card-stat-label">Upload Hari Ini</div>
+          </div>
+          <div class="card-stat">
+            <div class="card-stat-icon">💾</div>
+            <div class="card-stat-num" id="stat-size">0 KB</div>
+            <div class="card-stat-label">Storage Digunakan</div>
+          </div>
+          <div class="card-stat">
+            <div class="card-stat-icon">⚡</div>
+            <div class="card-stat-num" id="stat-uploads">0</div>
+            <div class="card-stat-label">Total Upload Sesi</div>
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--border);padding:1.5rem;background:rgba(0,255,65,0.02);margin-bottom:1.5rem;">
+          <div class="upload-box-title">⚡ Aksi Cepat</div>
+          <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+            <button class="submit-btn" style="width:auto;padding:0.6rem 1.4rem;font-size:0.68rem;" onclick="switchTab('upload-tab', document.querySelector('[onclick*=upload-tab]'))">
+              ⬆ Upload Foto Baru
+            </button>
+            <button class="submit-btn" style="width:auto;padding:0.6rem 1.4rem;font-size:0.68rem;border-color:var(--breach);color:var(--breach);" onclick="confirmDeleteAll()">
+              ✕ Hapus Semua Foto
+            </button>
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--border);padding:1.5rem;background:rgba(0,255,65,0.02);">
+          <div class="upload-box-title">▸ Log Terbaru</div>
+          <div class="log-terminal" id="dash-log"></div>
+        </div>
+      </div>
+
+      <!-- ── UPLOAD TAB ── -->
+      <div class="tab-panel" id="upload-tab">
+        <div class="page-header">
+          <div class="page-tag">// Upload Center</div>
+          <div class="page-title">Upload Foto</div>
+          <div class="page-desc">Upload foto untuk ditampilkan di galeri publik.</div>
+        </div>
+
+        <div class="upload-section">
+          <!-- LEFT: DROPZONE -->
+          <div>
+            <div class="upload-box">
+              <div class="upload-box-title">⬆ Area Upload</div>
+              <div class="dropzone" id="dropzone">
+                <input type="file" id="file-input" multiple accept="image/*" onchange="handleFiles(event)">
+                <div class="dropzone-icon">[ ⬆ ]</div>
+                <div class="dropzone-text">
+                  <strong>Drag & Drop</strong> foto di sini<br>atau klik untuk pilih file
+                </div>
+                <div class="dropzone-hint">JPG, PNG, GIF, WebP — Multiple files didukung</div>
+              </div>
+
+              <!-- PREVIEW -->
+              <div class="preview-grid" id="preview-grid" style="display:none;"></div>
+
+              <div id="file-count" style="font-size:0.62rem;color:var(--matrix-dim);letter-spacing:0.1em;margin-top:0.7rem;display:none;"></div>
+
+              <div class="progress-bar" id="progress-bar">
+                <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+                <div class="progress-label" id="progress-label">Memproses...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: METADATA -->
+          <div>
+            <div class="upload-box">
+              <div class="upload-box-title">📋 Metadata Foto</div>
+
+              <div class="form-group">
+                <label class="form-label">Nama Operasi / Judul</label>
+                <input type="text" class="form-input" id="meta-name" placeholder="e.g. Operation Blackout">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Kategori</label>
+                <select class="form-select" id="meta-category">
+                  <option value="">— Pilih Kategori —</option>
+                  <option value="operasi">Operasi</option>
+                  <option value="dokumentasi">Dokumentasi</option>
+                  <option value="infrastruktur">Infrastruktur</option>
+                  <option value="anggota">Anggota</option>
+                  <option value="arsip">Arsip</option>
+                  <option value="lainnya">Lainnya</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Deskripsi (Opsional)</label>
+                <textarea class="form-textarea" id="meta-desc" placeholder="Deskripsi singkat foto..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Tag (pisah dengan koma)</label>
+                <input type="text" class="form-input" id="meta-tags" placeholder="e.g. classified, breach, 2024">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Visibilitas</label>
+                <select class="form-select" id="meta-visibility">
+                  <option value="public">Publik (tampil di gallery)</option>
+                  <option value="hidden">Tersembunyi (hanya admin)</option>
+                </select>
+              </div>
+
+              <button class="submit-btn" id="upload-submit" onclick="submitUpload()" disabled>
+                [ ENKRIPSI & PUBLISH ] ▶
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── GALLERY TAB ── -->
+      <div class="tab-panel" id="gallery-tab">
+        <div class="page-header">
+          <div class="page-tag">// Gallery Manager</div>
+          <div class="page-title">Kelola Gallery</div>
+          <div class="page-desc">Lihat, edit, dan hapus foto dari direktori.</div>
+        </div>
+
+        <div class="manager-toolbar">
+          <div class="search-box">
+            <span class="search-prefix">search://</span>
+            <input type="text" class="search-input" id="search-input" placeholder="cari nama foto..." oninput="filterGallery()">
+          </div>
+          <div class="toolbar-actions">
+            <button class="action-btn" onclick="selectAll()">Pilih Semua</button>
+            <button class="action-btn" onclick="deselectAll()">Batal Pilih</button>
+            <button class="action-btn danger" onclick="deleteSelected()">Hapus Dipilih</button>
+          </div>
+        </div>
+
+        <div class="manager-grid" id="manager-grid">
+          <div style="grid-column:1/-1;text-align:center;padding:4rem;border:1px dashed var(--border);color:var(--matrix-dim);font-size:0.75rem;letter-spacing:0.1em;">
+            // Direktori kosong
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LOG TAB ── -->
+      <div class="tab-panel" id="log-tab">
+        <div class="page-header">
+          <div class="page-tag">// Audit Trail</div>
+          <div class="page-title">Activity Log</div>
+          <div class="page-desc">Semua aktivitas admin tercatat di sini.</div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-bottom:1rem;">
+          <button class="action-btn" onclick="clearLog()">Hapus Log</button>
+        </div>
+
+        <div class="upload-box">
+          <div class="upload-box-title">▸ Terminal Log</div>
+          <div class="log-terminal" id="activity-log" style="height:420px;"></div>
+        </div>
+      </div>
+
+      <!-- ── SETTINGS TAB ── -->
+      <div class="tab-panel" id="settings-tab">
+        <div class="page-header">
+          <div class="page-tag">// Konfigurasi</div>
+          <div class="page-title">Pengaturan</div>
+          <div class="page-desc">Konfigurasi sistem admin panel.</div>
+        </div>
+
+        <div class="settings-grid">
+          <div class="settings-card">
+            <div class="settings-card-title">🔐 Keamanan</div>
+
+            <div class="toggle-row">
+              <div><div class="toggle-label">Auto Logout</div><div class="toggle-sub">Logout otomatis setelah 30 menit idle</div></div>
+              <div class="toggle on" id="toggle-autologout" onclick="toggleSetting(this)"></div>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Log Aktivitas</div><div class="toggle-sub">Catat semua tindakan admin</div></div>
+              <div class="toggle on" id="toggle-logging" onclick="toggleSetting(this)"></div>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Konfirmasi Hapus</div><div class="toggle-sub">Minta konfirmasi sebelum hapus foto</div></div>
+              <div class="toggle on" id="toggle-confirm" onclick="toggleSetting(this)"></div>
+            </div>
+
+            <div class="form-group" style="margin-top:1.2rem;">
+              <label class="form-label">Ganti Password</label>
+              <input type="password" class="form-input" id="new-password" placeholder="Password baru">
+            </div>
+            <div class="form-group">
+              <input type="password" class="form-input" id="confirm-password" placeholder="Konfirmasi password baru">
+            </div>
+            <button class="save-btn" onclick="changePassword()">Simpan Password</button>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">🖼️ Gallery</div>
+
+            <div class="toggle-row">
+              <div><div class="toggle-label">Mode Gelap Gallery</div><div class="toggle-sub">Tema gelap untuk tampilan publik</div></div>
+              <div class="toggle on" id="toggle-dark" onclick="toggleSetting(this)"></div>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Scanline Effect</div><div class="toggle-sub">Efek visual scanline pada foto</div></div>
+              <div class="toggle on" id="toggle-scan" onclick="toggleSetting(this)"></div>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Matrix Rain BG</div><div class="toggle-sub">Animasi matrix rain di background</div></div>
+              <div class="toggle on" id="toggle-matrix" onclick="toggleSetting(this)"></div>
+            </div>
+
+            <div class="form-group" style="margin-top:1.2rem;">
+              <label class="form-label">Judul Gallery</label>
+              <input type="text" class="form-input" id="gallery-title" value="GHOST PROTOCOL">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Max Foto per Halaman</label>
+              <select class="form-select" id="gallery-perpage">
+                <option value="12">12</option>
+                <option value="24" selected>24</option>
+                <option value="48">48</option>
+                <option value="96">Semua</option>
+              </select>
+            </div>
+            <button class="save-btn" onclick="saveSettings()">Simpan Pengaturan</button>
+          </div>
+        </div>
+
+        <!-- DANGER ZONE -->
+        <div style="border:1px solid rgba(255,0,64,0.3);padding:1.5rem;margin-top:1.5rem;background:rgba(255,0,64,0.03);">
+          <div style="font-family:'Orbitron',monospace;font-size:0.8rem;color:var(--breach);letter-spacing:0.1em;margin-bottom:1rem;">⚠ Danger Zone</div>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <button class="action-btn danger" onclick="confirmDeleteAll()">Hapus Semua Foto</button>
+            <button class="action-btn danger" onclick="resetAdmin()">Reset Admin Credentials</button>
+            <button class="action-btn danger" onclick="clearAllData()">Hapus Semua Data</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /page -->
+
+<!-- MODAL KONFIRMASI -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Konfirmasi Aksi</div>
+    <div class="modal-body" id="modal-body">Apakah Anda yakin?</div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">[ Batal ]</button>
+      <button class="modal-confirm" id="modal-confirm-btn">[ Konfirmasi ]</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="if(event.target===this)closeLightbox()">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" onclick="closeLightbox()">[ ESC ] TUTUP</button>
+    <img id="lb-img" src="" alt="">
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// MATRIX RAIN (shared)
+// ═══════════════════════════════════════
+function initMatrixRain(canvasId, opacity) {
+  const c = document.getElementById(canvasId);
+  if (!c) return;
+  const cx = c.getContext('2d');
+  let cols, drops;
+  function init() {
+    c.width = window.innerWidth; c.height = window.innerHeight;
+    cols = Math.floor(c.width / 14);
+    drops = Array(cols).fill(1);
+  }
+  const chars = 'アイウエオ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*';
+  function draw() {
+    cx.fillStyle = 'rgba(6,6,16,0.05)'; cx.fillRect(0,0,c.width,c.height);
+    cx.font = '13px Share Tech Mono';
+    drops.forEach((y,i) => {
+      cx.fillStyle = Math.random()>0.97?'#ffffff':'#00ff41';
+      cx.fillText(chars[Math.floor(Math.random()*chars.length)], i*14, y*14);
+      if (y*14>c.height && Math.random()>0.975) drops[i]=0;
+      drops[i]++;
+    });
+  }
+  init(); setInterval(draw, 55);
+  window.addEventListener('resize', init);
+}
+initMatrixRain('matrix-canvas', 0.05);
+initMatrixRain('login-canvas', 0.08);
+
+// ═══════════════════════════════════════
+// CUSTOM CURSOR
+// ═══════════════════════════════════════
+const cursor = document.getElementById('cursor');
+const cursorDot = document.getElementById('cursor-dot');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = (e.clientX-10)+'px'; cursor.style.top = (e.clientY-10)+'px';
+  cursorDot.style.left = (e.clientX-2)+'px'; cursorDot.style.top = (e.clientY-2)+'px';
+});
+
+// ═══════════════════════════════════════
+// AUTH SYSTEM
+// ═══════════════════════════════════════
+const ADMIN_KEY = 'ghost_admin_creds';
+const DEFAULT_CREDS = { username: 'admin', password: 'ghost2024' };
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_SECS = 30;
+
+let attempts = 0;
+let lockoutEnd = null;
+let sessionStart = null;
+let sessionTimer = null;
+let sessionUploads = 0;
+
+function getCreds() {
+  try { return JSON.parse(localStorage.getItem(ADMIN_KEY)) || DEFAULT_CREDS; }
+  catch { return DEFAULT_CREDS; }
+}
+
+function togglePassword() {
+  const input = document.getElementById('password');
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function doLogin() {
+  if (lockoutEnd && Date.now() < lockoutEnd) return;
+
+  const uname = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value;
+  const btn = document.getElementById('login-btn');
+  const loading = document.getElementById('login-loading');
+  const alert = document.getElementById('login-alert');
+
+  if (!uname || !pass) {
+    showLoginAlert('Isi username dan password terlebih dahulu.');
+    return;
+  }
+
+  btn.disabled = true; loading.classList.add('show'); alert.classList.remove('show');
+
+  setTimeout(() => {
+    const creds = getCreds();
+    if (uname === creds.username && pass === creds.password) {
+      // SUCCESS
+      attempts = 0;
+      sessionStart = Date.now();
+      document.getElementById('display-username').textContent = uname;
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'flex';
+      document.getElementById('dashboard').style.flexDirection = 'column';
+      initDashboard();
+      addLog('success', `Login berhasil — user: ${uname}`);
+      startSessionTimer();
+    } else {
+      // FAIL
+      attempts++;
+      const left = MAX_ATTEMPTS - attempts;
+      if (attempts >= MAX_ATTEMPTS) {
+        startLockout();
+      } else {
+        showLoginAlert(`Kredensial salah. Sisa percobaan: ${left}`);
+        updateAttemptCounter(left);
+      }
+    }
+    btn.disabled = false; loading.classList.remove('show');
+  }, 1200);
+}
+
+function showLoginAlert(msg) {
+  const el = document.getElementById('login-alert');
+  document.getElementById('alert-msg').textContent = msg;
+  el.classList.add('show');
+}
+
+function updateAttemptCounter(left) {
+  const el = document.getElementById('attempt-counter');
+  el.textContent = `Percobaan tersisa: ${left}`;
+  el.className = 'attempt-counter' + (left <= 2 ? (left <= 1 ? ' danger' : ' warn') : '');
+}
+
+function startLockout() {
+  lockoutEnd = Date.now() + LOCKOUT_SECS * 1000;
+  document.getElementById('login-body').style.display = 'none';
+  document.getElementById('lockout-body').style.display = 'block';
+  let remaining = LOCKOUT_SECS;
+  const t = document.getElementById('lockout-timer');
+  const interval = setInterval(() => {
+    remaining--;
+    const m = String(Math.floor(remaining/60)).padStart(2,'0');
+    const s = String(remaining%60).padStart(2,'0');
+    t.textContent = `${m}:${s}`;
+    if (remaining <= 0) {
+      clearInterval(interval);
+      lockoutEnd = null; attempts = 0;
+      document.getElementById('login-body').style.display = 'block';
+      document.getElementById('lockout-body').style.display = 'none';
+      document.getElementById('attempt-counter').textContent = '';
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+    }
+  }, 1000);
+}
+
+function doLogout() {
+  openModal('Konfirmasi Logout', 'Apakah Anda yakin ingin keluar dari sesi admin?', () => {
+    addLog('info', 'Admin logout');
+    clearInterval(sessionTimer);
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('password').value = '';
+    document.getElementById('username').value = '';
+    document.getElementById('login-alert').classList.remove('show');
+    showToast('Sesi berakhir. Sampai jumpa.', 'warn');
+  });
+}
+
+// Enter key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') doLogin();
+  if (e.key === 'Escape') { closeLightbox(); closeModal(); }
+});
+
+// ═══════════════════════════════════════
+// SESSION TIMER
+// ═══════════════════════════════════════
+function startSessionTimer() {
+  sessionTimer = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+    const m = String(Math.floor(elapsed/60)).padStart(2,'0');
+    const s = String(elapsed%60).padStart(2,'0');
+    document.getElementById('session-time').textContent = `Sesi: ${m}:${s}`;
+    // update clock
+    document.getElementById('current-time').textContent = new Date().toLocaleTimeString('id-ID');
+  }, 1000);
+}
+
+// ═══════════════════════════════════════
+// PHOTOS DATA
+// ═══════════════════════════════════════
+function getPhotos() {
+  try { return JSON.parse(localStorage.getItem('ghost_photos') || '[]'); }
+  catch { return []; }
+}
+function savePhotos(photos) {
+  localStorage.setItem('ghost_photos', JSON.stringify(photos));
+}
+
+// ═══════════════════════════════════════
+// DASHBOARD INIT
+// ═══════════════════════════════════════
+function initDashboard() {
+  updateStats();
+  renderManagerGrid();
+  document.getElementById('current-time').textContent = new Date().toLocaleTimeString('id-ID');
+}
+
+function updateStats() {
+  const photos = getPhotos();
+  const today = new Date().toLocaleDateString('id-ID');
+  const todayCount = photos.filter(p => p.date === today).length;
+  const totalSize = photos.reduce((acc, p) => acc + (p.src ? Math.round(p.src.length * 0.75 / 1024) : 0), 0);
+
+  document.getElementById('stat-total').textContent = photos.length;
+  document.getElementById('stat-today').textContent = todayCount;
+  document.getElementById('stat-size').textContent = totalSize > 1024 ? (totalSize/1024).toFixed(1)+' MB' : totalSize+' KB';
+  document.getElementById('stat-uploads').textContent = sessionUploads;
+  document.getElementById('photo-storage-stat').textContent = `Storage: ${photos.length} foto`;
+
+  // sidebar bars
+  const pct = Math.min(photos.length / 50 * 100, 100);
+  document.getElementById('sb-photo-bar').style.width = pct + '%';
+  document.getElementById('sb-photo-val').textContent = `${photos.length} / 50 foto`;
+  document.getElementById('sb-storage-bar').style.width = Math.min(totalSize/5000*100, 100) + '%';
+  document.getElementById('sb-storage-val').textContent = totalSize > 1024 ? (totalSize/1024).toFixed(1)+' MB' : totalSize+' KB';
+}
+
+// ═══════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════
+function switchTab(tabId, sidebarEl) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  if (sidebarEl) sidebarEl.classList.add('active');
+  if (tabId === 'gallery-tab') renderManagerGrid();
+  if (tabId === 'dashboard-tab') { updateStats(); syncDashLog(); }
+}
+
+// ═══════════════════════════════════════
+// FILE UPLOAD
+// ═══════════════════════════════════════
+let pendingFiles = [];
+
+function handleFiles(e) {
+  pendingFiles = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
+  renderPreviews();
+}
+
+function renderPreviews() {
+  const grid = document.getElementById('preview-grid');
+  const countEl = document.getElementById('file-count');
+  const submitBtn = document.getElementById('upload-submit');
+  grid.innerHTML = '';
+
+  if (pendingFiles.length === 0) {
+    grid.style.display = 'none'; countEl.style.display = 'none';
+    submitBtn.disabled = true; return;
+  }
+
+  grid.style.display = 'grid';
+  countEl.style.display = 'block';
+  countEl.textContent = `${pendingFiles.length} file dipilih — siap diupload`;
+  submitBtn.disabled = false;
+
+  pendingFiles.forEach((file, i) => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const div = document.createElement('div');
+      div.className = 'preview-item';
+      div.innerHTML = `
+        <img src="${ev.target.result}" alt="">
+        <button class="preview-remove" onclick="removePreview(${i})">✕</button>
+        <div class="preview-name">${file.name}</div>
+      `;
+      grid.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function removePreview(idx) {
+  pendingFiles.splice(idx, 1);
+  renderPreviews();
+}
+
+function submitUpload() {
+  if (pendingFiles.length === 0) { showToast('Pilih file terlebih dahulu', 'error'); return; }
+  const name = document.getElementById('meta-name').value.trim();
+  const category = document.getElementById('meta-category').value;
+  const desc = document.getElementById('meta-desc').value.trim();
+  const tags = document.getElementById('meta-tags').value.trim();
+  const visibility = document.getElementById('meta-visibility').value;
+
+  const btn = document.getElementById('upload-submit');
+  const progressBar = document.getElementById('progress-bar');
+  const progressFill = document.getElementById('progress-fill');
+  const progressLabel = document.getElementById('progress-label');
+
+  btn.disabled = true;
+  progressBar.classList.add('active');
+  progressFill.style.width = '0%';
+  progressLabel.textContent = 'Mengenkripsi dan memproses...';
+
+  let processed = 0;
+  const photos = getPhotos();
+
+  pendingFiles.forEach((file, i) => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      photos.push({
+        src: ev.target.result,
+        name: name || file.name.replace(/\.[^/.]+$/,'').toUpperCase(),
+        category: category || 'lainnya',
+        desc, tags,
+        visibility,
+        date: new Date().toLocaleDateString('id-ID'),
+        timestamp: Date.now(),
+        size: (file.size/1024).toFixed(1)+' KB'
+      });
+      processed++;
+      const pct = Math.round(processed / pendingFiles.length * 100);
+      progressFill.style.width = pct + '%';
+      progressLabel.textContent = `Memproses ${processed}/${pendingFiles.length} file (${pct}%)`;
+
+      if (processed === pendingFiles.length) {
+        savePhotos(photos);
+        sessionUploads += processed;
+        addLog('success', `Upload ${processed} foto — "${name || 'tanpa judul'}" [${category||'lainnya'}]`);
+        updateStats();
+        btn.disabled = false;
+        progressLabel.textContent = `✓ ${processed} foto berhasil diupload!`;
+        setTimeout(() => { progressBar.classList.remove('active'); progressFill.style.width='0%'; }, 3000);
+        pendingFiles = [];
+        document.getElementById('preview-grid').innerHTML = '';
+        document.getElementById('preview-grid').style.display = 'none';
+        document.getElementById('file-count').style.display = 'none';
+        document.getElementById('file-input').value = '';
+        document.getElementById('meta-name').value = '';
+        document.getElementById('meta-desc').value = '';
+        document.getElementById('meta-tags').value = '';
+        showToast(`✓ ${processed} foto berhasil diupload`, 'success');
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Drag & Drop
+const dz = document.getElementById('dropzone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('drag-over');
+  const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+  if (files.length) { pendingFiles = files; renderPreviews(); }
+});
+
+// ═══════════════════════════════════════
+// GALLERY MANAGER
+// ═══════════════════════════════════════
+let selectedIds = new Set();
+
+function renderManagerGrid(filter='') {
+  const grid = document.getElementById('manager-grid');
+  const photos = getPhotos();
+  const filtered = filter ? photos.filter((p,i) => (p.name||'').toLowerCase().includes(filter.toLowerCase()) || i.toString().includes(filter)) : photos;
+
+  grid.innerHTML = '';
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:4rem;border:1px dashed var(--border);color:var(--matrix-dim);font-size:0.75rem;letter-spacing:0.1em;">// Direktori kosong atau tidak ditemukan</div>`;
+    return;
+  }
+
+  filtered.forEach((photo, i) => {
+    const realIdx = photos.indexOf(photo);
+    const isSelected = selectedIds.has(realIdx);
+    const div = document.createElement('div');
+    div.className = 'mgr-item' + (isSelected ? ' selected' : '');
+    div.innerHTML = `
+      <div class="mgr-checkbox" onclick="toggleSelect(${realIdx}, this.parentElement)">${isSelected ? '✓' : ''}</div>
+      <div class="mgr-scan"></div>
+      <img class="mgr-img" src="${photo.src}" alt="" onclick="openLightbox('${photo.src}')">
+      <div class="mgr-info">
+        <div class="mgr-name">${photo.name || 'CLASSIFIED'}</div>
+        <div class="mgr-meta">${photo.date} · ${photo.category||'—'} · ${photo.size||'?'}</div>
+        <div class="mgr-actions">
+          <button class="mgr-btn" onclick="openLightbox('${photo.src}')">Lihat</button>
+          <button class="mgr-btn del" onclick="deleteSingle(${realIdx})">Hapus</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function toggleSelect(idx, el) {
+  if (selectedIds.has(idx)) { selectedIds.delete(idx); el.classList.remove('selected'); el.querySelector('.mgr-checkbox').textContent=''; }
+  else { selectedIds.add(idx); el.classList.add('selected'); el.querySelector('.mgr-checkbox').textContent='✓'; }
+}
+
+function selectAll() { const p = getPhotos(); p.forEach((_,i)=>selectedIds.add(i)); renderManagerGrid(document.getElementById('search-input').value); }
+function deselectAll() { selectedIds.clear(); renderManagerGrid(document.getElementById('search-input').value); }
+
+function deleteSelected() {
+  if (selectedIds.size === 0) { showToast('Pilih foto terlebih dahulu', 'warn'); return; }
+  openModal('Hapus Foto Dipilih', `Hapus ${selectedIds.size} foto yang dipilih? Tindakan ini tidak dapat dibatalkan.`, () => {
+    const photos = getPhotos();
+    const remaining = photos.filter((_,i) => !selectedIds.has(i));
+    savePhotos(remaining);
+    addLog('warn', `Hapus ${selectedIds.size} foto yang dipilih`);
+    selectedIds.clear();
+    updateStats();
+    renderManagerGrid();
+    showToast(`${selectedIds.size || 'Semua dipilih'} foto dihapus`, 'success');
+  });
+}
+
+function deleteSingle(idx) {
+  openModal('Hapus Foto', 'Hapus foto ini dari direktori? Tindakan ini tidak dapat dibatalkan.', () => {
+    const photos = getPhotos();
+    const name = photos[idx]?.name || 'foto';
+    photos.splice(idx, 1);
+    savePhotos(photos);
+    addLog('warn', `Hapus foto: "${name}"`);
+    selectedIds.clear();
+    updateStats();
+    renderManagerGrid(document.getElementById('search-input').value);
+    showToast('Foto dihapus', 'success');
+  });
+}
+
+function filterGallery() {
+  renderManagerGrid(document.getElementById('search-input').value);
+}
+
+// ═══════════════════════════════════════
+// LOGGING
+// ═══════════════════════════════════════
+const logHistory = [];
+
+function addLog(type, msg) {
+  const time = new Date().toLocaleTimeString('id-ID');
+  const entry = { type, msg, time };
+  logHistory.push(entry);
+
+  const line = `<div class="log-line"><span class="log-time">[${time}]</span><span class="log-${type}"> ${type.toUpperCase().padEnd(5)} — ${msg}</span></div>`;
+
+  ['activity-log', 'dash-log'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.insertAdjacentHTML('afterbegin', line); }
+  });
+}
+
+function syncDashLog() {
+  const el = document.getElementById('dash-log');
+  if (!el) return;
+  el.innerHTML = logHistory.slice().reverse().map(e =>
+    `<div class="log-line"><span class="log-time">[${e.time}]</span><span class="log-${e.type}"> ${e.type.toUpperCase().padEnd(5)} — ${e.msg}</span></div>`
+  ).join('');
+}
+
+function clearLog() {
+  openModal('Hapus Log', 'Hapus semua catatan aktivitas?', () => {
+    logHistory.length = 0;
+    ['activity-log','dash-log'].forEach(id => { const el=document.getElementById(id); if(el)el.innerHTML=''; });
+    showToast('Log dihapus', 'warn');
+  });
+}
+
+// ═══════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════
+function toggleSetting(el) {
+  el.classList.toggle('on');
+  showToast('Pengaturan diperbarui', 'success');
+}
+
+function changePassword() {
+  const np = document.getElementById('new-password').value;
+  const cp = document.getElementById('confirm-password').value;
+  if (!np || np.length < 6) { showToast('Password minimal 6 karakter', 'error'); return; }
+  if (np !== cp) { showToast('Password tidak cocok', 'error'); return; }
+  const creds = getCreds();
+  creds.password = np;
+  localStorage.setItem(ADMIN_KEY, JSON.stringify(creds));
+  document.getElementById('new-password').value = '';
+  document.getElementById('confirm-password').value = '';
+  addLog('info', 'Password admin diubah');
+  showToast('Password berhasil diubah', 'success');
+}
+
+function saveSettings() {
+  addLog('info', 'Pengaturan gallery disimpan');
+  showToast('Pengaturan disimpan', 'success');
+}
+
+function confirmDeleteAll() {
+  openModal('⚠ Hapus Semua Foto', 'Ini akan menghapus SEMUA foto dari direktori secara permanen. Tindakan ini TIDAK DAPAT DIBATALKAN!', () => {
+    savePhotos([]);
+    selectedIds.clear();
+    addLog('err', 'SEMUA foto dihapus oleh admin');
+    updateStats();
+    renderManagerGrid();
+    showToast('Semua foto dihapus', 'error');
+  });
+}
+
+function resetAdmin() {
+  openModal('Reset Credentials', 'Reset username dan password ke default (admin / ghost2024)?', () => {
+    localStorage.setItem(ADMIN_KEY, JSON.stringify(DEFAULT_CREDS));
+    addLog('warn', 'Admin credentials direset ke default');
+    showToast('Credentials direset ke default', 'warn');
+  });
+}
+
+function clearAllData() {
+  openModal('⚠ HAPUS SEMUA DATA', 'Ini akan menghapus SEMUA data termasuk foto, log, dan pengaturan. Anda akan logout otomatis.', () => {
+    localStorage.removeItem('ghost_photos');
+    localStorage.removeItem(ADMIN_KEY);
+    addLog('err', 'Semua data dihapus');
+    setTimeout(() => doLogout(), 1500);
+    showToast('Semua data dihapus. Logout...', 'error');
+  });
+}
+
+// ═══════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════
+let modalCallback = null;
+function openModal(title, body, cb) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').textContent = body;
+  modalCallback = cb;
+  document.getElementById('modal').classList.add('active');
+  document.getElementById('modal-confirm-btn').onclick = () => { if(modalCallback)modalCallback(); closeModal(); };
+}
+function closeModal() { document.getElementById('modal').classList.remove('active'); modalCallback = null; }
+
+// ═══════════════════════════════════════
+// LIGHTBOX
+// ═══════════════════════════════════════
+function openLightbox(src) {
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
+
+// ═══════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════
+let toastTimer;
+function showToast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
